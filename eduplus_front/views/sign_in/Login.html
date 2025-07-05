@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./style.css">
+  
+  <style>
+   // ... existing code ...
+  </style>
+  <title>로그인</title>
+</head>
+<body>
+  <div class="login">
+    <div class="group-1">
+      <div class="ellipse-2"></div>
+      <div class="ellipse-3"></div>
+    </div>
+    <div class="group-5">
+      <div class="login2">LOGIN</div>
+      <div class="input-container">
+        <div class="rectangle-1">
+          <input type="text" placeholder="Username" id="username">
+        </div>
+      </div>
+      <div class="input-container">
+        <div class="rectangle-2">
+          <input type="password" placeholder="Password" id="password">
+        </div>
+      </div>
+      <div class="error-message" id="errorMessage">로그인 정보를 입력해주세요</div>
+      <div class="rectangle-3" onclick="validateLogin()">
+        <div class="login3">LOGIN</div>
+      </div>
+      <div class="sign-up-container">
+        <div class="don-t-you-have-any-acount">don't you have any acount?</div>
+        <div class="sign-up"><a href="../회원가입3-project/SignIn.html">Sign Up</a></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 공통 설정 파일 먼저 로드 -->
+  <script src="../js/config.js"></script>
+  <script src="./login.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/sign_up/style.css">
+  
+  
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+
+   input {
+       width: 100%;
+       height: 100%;
+       padding: 15px 18px;
+       font-family: "MPlus2-Regular", sans-serif;
+       font-size: 16px;
+       color: #fff;
+   }
+
+   input::placeholder {
+       color: #808080;
+   }
+
+   .rectangle-3 {
+       cursor: pointer;
+   }
+
+   .error-message {
+       color: #ff5053;
+       font-family: "MPlus2-Regular", sans-serif;
+       font-size: 14px;
+       margin-bottom: 10px;
+       display: none;
+   }
+   
+   .input-container {
+       margin-bottom: 20px;
+   }
+   </style>
+  <title>회원가입</title>
+</head>
+<body>
+  <div class="sign-in">
+    <div class="group-1">
+      <div class="ellipse-2"></div>
+      <div class="ellipse-3"></div>
+    </div>
+    <div class="group-6">
+      <div class="sign-up">SIGN-UP</div>
+      <div class="frame-2">
+        <div class="rectangle-1 input-container">
+          <input type="text" placeholder="Username" id="username">
+        </div>
+        <div class="rectangle-4 input-container">
+          <input type="email" placeholder="Email Address" id="email">
+        </div>
+        <div class="rectangle-1 input-container">
+          <input type="password" placeholder="Password" id="password">
+        </div>
+        <div class="rectangle-2 input-container">
+          <input type="password" placeholder="Check Password" id="checkPassword">
+        </div>
+        <div class="error-message" id="errorMessage">Please fill in all fields</div>
+        <div class="rectangle-3" onclick="validateForm()">
+          <div class="login">SIGN UP</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공통 설정 파일 먼저 로드 -->
+  <script src="/js/config.js"></script>
+  <script src="/js/sign_up/signup.js"></script>
+</body>
+</html>

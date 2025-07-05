@@ -1,0 +1,689 @@
+/* 기본 리셋 및 기본 스타일 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Lexend", sans-serif;
+  color: #0d171c;
+  background: #ffffff;
+  overflow-x: hidden;
+}
+
+/* 메인 컨테이너 */
+.div {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 메인 프레임 */
+.depth-0-frame-0 {
+  background: #f7fafa;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 콘텐츠 영역 */
+.depth-1-frame-0 {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 헤더 */
+.depth-2-frame-0 {
+  width: 100%;
+  padding: 12px 5%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e8eb;
+}
+
+/* 로고 영역 */
+.depth-3-frame-0 {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+}
+
+/* 로고 이미지 컨테이너 */
+.depth-4-frame-0,
+.depth-5-frame-0 {
+  display: flex;
+}
+
+/* 로고 이미지 */
+.vector-0,
+.vector-1 {
+  width: 16px;
+  height: 16px;
+}
+
+/* 로고 텍스트 */
+.edu {
+  font-family: "Lexend-Bold", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* 네비게이션 */
+.depth-3-frame-1 {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+/* 네비게이션 아이템 컨테이너 */
+.depth-4-frame-02 {
+  display: flex;
+  flex-direction: row;
+  gap: 36px;
+  align-items: center;
+  height: 40px;
+}
+
+/* 네비게이션 아이템 */
+.classroom,
+.library,
+.assignments,
+.grades,
+.people {
+  font-family: "Lexend-Medium", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 메인 컨텐츠 영역 */
+.depth-2-frame-1 {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
+
+/* 학생 뽑기 컨테이너 */
+.depth-3-frame-02 {
+  width: 90%;
+  max-width: 960px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: relative;
+}
+
+/* 제목 */
+.div2 {
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* 설정 섹션 */
+.depth-4-frame-13 {
+  padding: 8px 16px 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.div3 {
+  font-family: "Lexend-Bold", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.switch-field {
+  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 340px;
+}
+
+.checkbox-and-label {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.label {
+  color: #1e1e1e;
+  font-size: 16px;
+  flex: 1;
+}
+
+/* 스위치 스타일 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #4285F4;
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.description {
+  color: #757575;
+  font-size: 14px;
+}
+
+/* 아바타 컨테이너 영역 */
+.depth-4-frame-6 {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  margin-top: 60px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+}
+
+/* 선택 표시기 스타일 */
+.selection-indicator {
+  display: none; /* 표시기를 완전히 숨김 */
+}
+
+/* 아바타 캐러셀 스타일 */
+.avatar-carousel {
+  position: absolute;
+  display: flex;
+  height: 100%;
+  will-change: transform;
+  left: 0;
+}
+
+/* 아바타 박스 스타일 */
+.avatar-box {
+  width: 80px;
+  height: 120px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* 선택된 아바타 스타일 */
+.avatar-box.selected {
+  animation: highlight 1s ease-in-out;
+  background-color: #bfdaff;
+  border: 2px solid #4285F4;
+}
+
+@keyframes highlight {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* 아바타 이미지 스타일 */
+.avatar-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+/* 아바타 번호 스타일 */
+.avatar-number {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  width: 100%;
+  padding: 4px 0;
+}
+
+/* 아바타 박스 숨김 스타일 */
+.avatar-box.hidden {
+  display: none;
+}
+
+/* 뽑기 버튼 스타일 */
+.depth-5-frame-04 {
+  width: 148px;
+  height: 40px;
+  background-color: #4285F4;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 5px;
+  z-index: 10;
+  transition: background-color 0.3s ease;
+}
+
+.depth-5-frame-04:hover {
+  background-color: #2a75f3;
+}
+
+.depth-6-frame-03 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.div4 {
+  color: #ffffff;
+  font-family: Pretendard;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 145%;
+  text-align: center;
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 768px) {
+  .depth-4-frame-6 {
+    height: 150px;
+  }
+  
+  .avatar-box {
+    width: 70px;
+    height: 110px;
+    margin: 0 8px;
+  }
+  
+  .avatar-img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .selection-indicator {
+    width: 70px;
+    height: 110px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .depth-4-frame-6 {
+    height: 130px;
+  }
+  
+  .avatar-box {
+    width: 60px;
+    height: 100px;
+    margin: 0 6px;
+  }
+  
+  .avatar-img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .selection-indicator {
+    width: 60px;
+    height: 100px;
+  }
+}
+
+/* 미디어 쿼리 */
+@media (max-width: 1200px) {
+  .rectangle-5,
+  .rectangle-6,
+  .rectangle-7,
+  .rectangle-72,
+  .rectangle-73 {
+    width: 19%;
+  }
+  
+  ._3-d-avatars-31,
+  ._3-d-avatars-32,
+  ._3-d-avatars-33,
+  ._3-d-avatars-332,
+  ._3-d-avatars-333 {
+    width: 13%;
+  }
+}
+
+@media (max-width: 992px) {
+  .depth-4-frame-02 {
+    gap: 20px;
+  }
+  
+  .rectangle-5,
+  .rectangle-6,
+  .rectangle-7,
+  .rectangle-72,
+  .rectangle-73 {
+    width: 20%;
+  }
+  
+  ._3-d-avatars-31,
+  ._3-d-avatars-32,
+  ._3-d-avatars-33,
+  ._3-d-avatars-332,
+  ._3-d-avatars-333 {
+    width: 14%;
+  }
+}
+
+@media (max-width: 768px) {
+  .depth-2-frame-0 {
+    padding: 10px 3%;
+  }
+  
+  .depth-3-frame-02 {
+    width: 95%;
+  }
+  
+  .depth-4-frame-6 {
+    height: 350px;
+  }
+  
+  .rectangle-5,
+  .rectangle-6,
+  .rectangle-7,
+  .rectangle-72,
+  .rectangle-73 {
+    width: 22%;
+  }
+  
+  ._3-d-avatars-31,
+  ._3-d-avatars-32,
+  ._3-d-avatars-33,
+  ._3-d-avatars-332,
+  ._3-d-avatars-333 {
+    width: 16%;
+  }
+  
+  /* 배치 조정 - 768px 이하에서는 행을 2줄로 배치 */
+  .rectangle-5 {
+    left: 10%;
+    top: 25%;
+  }
+  
+  .rectangle-6 {
+    left: 40%;
+    top: 25%;
+  }
+  
+  .rectangle-7 {
+    left: 70%; 
+    top: 25%;
+  }
+  
+  .rectangle-72 {
+    left: 25%;
+    top: 65%;
+  }
+  
+  .rectangle-73 {
+    left: 55%;
+    top: 65%;
+  }
+  
+  /* 아바타 이미지를 회색 상자 정중앙에 배치 */
+  ._3-d-avatars-31 {
+    left: 10%;
+    top: 25%;
+    transform: translate(50%, -50%);
+  }
+  
+  ._3-d-avatars-32 {
+    left: 40%;
+    top: 25%;
+    transform: translate(50%, -50%);
+  }
+  
+  ._3-d-avatars-33 {
+    left: 70%;
+    top: 25%;
+    transform: translate(50%, -50%);
+  }
+  
+  ._3-d-avatars-332 {
+    left: 25%;
+    top: 65%;
+    transform: translate(50%, -50%);
+  }
+  
+  ._3-d-avatars-333 {
+    left: 55%;
+    top: 65%;
+    transform: translate(50%, -50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .depth-4-frame-02 {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 10px;
+  }
+  
+  .classroom,
+  .library,
+  .assignments,
+  .grades,
+  .people {
+    font-size: 12px;
+  }
+  
+  .div2 {
+    font-size: 20px;
+  }
+  
+  .depth-4-frame-6 {
+    height: 400px;
+  }
+  
+  .rectangle-5,
+  .rectangle-6,
+  .rectangle-7,
+  .rectangle-72,
+  .rectangle-73 {
+    width: 30%;
+  }
+  
+  ._3-d-avatars-31,
+  ._3-d-avatars-32,
+  ._3-d-avatars-33,
+  ._3-d-avatars-332,
+  ._3-d-avatars-333 {
+    width: 20%;
+  }
+  
+  /* 배치 조정 - 480px 이하에서는 행을 3줄로 배치 */
+  .rectangle-5 {
+    left: 15%;
+    top: 15%;
+  }
+  
+  .rectangle-6 {
+    left: 60%;
+    top: 15%;
+  }
+  
+  .rectangle-7 {
+    left: 15%; 
+    top: 45%;
+  }
+  
+  .rectangle-72 {
+    left: 60%;
+    top: 45%;
+  }
+  
+  .rectangle-73 {
+    left: 37.5%;
+    top: 75%;
+  }
+  
+  /* 아바타 이미지를 회색 상자 정중앙에 배치 */
+  ._3-d-avatars-31 {
+    left: 15%;
+    top: 15%;
+    transform: translate(50%, -50%);
+  }
+  
+  ._3-d-avatars-32 {
+    left: 60%;
+    top: 15%;
+    transform: translate(50%, -50%);
+  }
+  
+  ._3-d-avatars-33 {
+    left: 15%;
+    top: 45%;
+    transform: translate(50%, -50%);
+  }
+  
+  ._3-d-avatars-332 {
+    left: 60%;
+    top: 45%;
+    transform: translate(50%, -50%);
+  }
+  
+  ._3-d-avatars-333 {
+    left: 37.5%;
+    top: 75%;
+    transform: translate(50%, -50%);
+  }
+}
+
+/* 아바타 배경 사각형과 이미지 스타일은 이제 사용하지 않음 */
+.rectangle-5,
+.rectangle-6,
+.rectangle-7,
+.rectangle-72,
+.rectangle-73,
+._3-d-avatars-31,
+._3-d-avatars-32,
+._3-d-avatars-33,
+._3-d-avatars-332,
+._3-d-avatars-333 {
+  display: none;
+}
+
+.student-count-field {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.count-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.count-input input[type="number"] {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.count-input button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.count-input button:hover {
+  background-color: #45a049;
+}
+
+.count-input input[type="number"]::-webkit-inner-spin-button,
+.count-input input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+/* 선택된 학생 목록 섹션 스타일 제거 */
+.selected-students-section,
+.selected-students-header,
+.selected-students-header h3,
+.clear-button,
+.selected-students-list,
+.selected-student-item,
+.selected-student-avatar,
+.selected-student-number {
+  display: none;
+}

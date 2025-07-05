@@ -1,0 +1,167 @@
+.sign-in,
+.sign-in * {
+  box-sizing: border-box;
+}
+.sign-in {
+  background: #252525;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+.group-1 {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.ellipse-2 {
+  background: #e7b36a;
+  border-radius: 50%;
+  width: 50%;
+  max-width: 946px;
+  height: 50vw;
+  max-height: 946px;
+  position: absolute;
+  left: -25%;
+  top: -113px;
+}
+.ellipse-3 {
+  background: #ff5053;
+  border-radius: 50%;
+  width: 25%;
+  max-width: 416.37px;
+  height: 25vw;
+  max-height: 416.37px;
+  position: absolute;
+  left: -12.5%;
+  top: 151.81px;
+}
+.group-6 {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.sign-up {
+  color: #ffffff;
+  text-align: center;
+  font-family: "Livvic-Thin", sans-serif;
+  font-size: 96px;
+  font-weight: 100;
+  margin-bottom: 50px;
+  margin-top: 0;
+}
+.frame-2 {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 570px;
+  position: relative;
+}
+.rectangle-1 {
+  border-radius: 5px;
+  border-style: solid;
+  border-color: #b9b9b9;
+  border-width: 1px;
+  width: 550px;
+  height: 48px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.rectangle-2 {
+  border-radius: 5px;
+  border-style: solid;
+  border-color: #b9b9b9;
+  border-width: 1px;
+  width: 550px;
+  height: 48px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.rectangle-4 {
+  border-radius: 5px;
+  border-style: solid;
+  border-color: #b9b9b9;
+  border-width: 1px;
+  width: 550px;
+  height: 48px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.rectangle-3 {
+  background: #ffdd00;
+  border-radius: 5px;
+  width: 550px;
+  height: 48px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.login {
+  color: #252525;
+  text-align: center;
+  font-family: "MPlus2-Bold", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+.password {
+  color: #808080;
+  text-align: left;
+  font-family: "MPlus2-Regular", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  position: absolute;
+  left: 18px;
+  top: 15px;
+}
+.check-password {
+  color: #808080;
+  text-align: left;
+  font-family: "MPlus2-Regular", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  position: absolute;
+  left: 18px;
+  top: 15px;
+}
+.email-address {
+  color: #808080;
+  text-align: left;
+  font-family: "MPlus2-Regular", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  position: absolute;
+  left: 18px;
+  top: 15px;
+}
+.username {
+  color: #808080;
+  text-align: left;
+  font-family: "MPlus2-Regular", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  position: absolute;
+  left: 18px;
+  top: 15px;
+}
+.frame-3 {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 570px;
+  position: relative;
+  margin-bottom: 20px;
+}

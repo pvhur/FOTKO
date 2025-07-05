@@ -1,0 +1,929 @@
+.div,
+.div * {
+  box-sizing: border-box;
+}
+.div {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+}
+.depth-0-frame-0 {
+  background: #f7fafa;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  min-height: 800px;
+  position: relative;
+  overflow: hidden;
+}
+.depth-1-frame-0 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-2-frame-0 {
+  border-style: solid;
+  border-color: #e5e8eb;
+  border-width: 0px 0px 1px 0px;
+  padding: 12px 40px 12px 40px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-3-frame-0 {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-4-frame-0 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-5-frame-0 {
+  flex: 1;
+  width: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.vector-0 {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  overflow: visible;
+}
+.vector-1 {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  overflow: visible;
+}
+.depth-6-frame-0 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.depth-7-frame-0 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 15px;
+  height: 12px;
+  position: relative;
+}
+.depth-4-frame-1 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  height: 23px;
+  position: relative;
+}
+.edu-plus {
+  color: #0d171c;
+  text-align: left;
+  font-family: "Lexend-Bold", sans-serif;
+  font-size: 18px;
+  line-height: 23px;
+  font-weight: 700;
+  position: relative;
+  align-self: stretch;
+}
+.depth-3-frame-1 {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex: 1;
+  position: relative;
+}
+.depth-4-frame-02 {
+  display: flex;
+  flex-direction: row;
+  gap: 36px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  height: 40px;
+  position: relative;
+}
+.depth-5-frame-02 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.div2 {
+  color: #0d171c;
+  text-align: left;
+  font-family: "Lexend-Medium", sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+  position: relative;
+  align-self: stretch;
+}
+.depth-5-frame-1 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-5-frame-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-4-frame-12 {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-5-frame-03 {
+  background: #1f94e0;
+  border-radius: 12px;
+  padding: 0px 16px 0px 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 84px;
+  height: 40px;
+  min-width: 84px;
+  max-width: 480px;
+  position: relative;
+  overflow: hidden;
+}
+.depth-6-frame-02 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.div3 {
+  color: #f7fafa;
+  text-align: center;
+  font-family: "Lexend-Bold", sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 700;
+  position: relative;
+  align-self: stretch;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.depth-5-frame-12 {
+  background: #e8edf2;
+  border-radius: 12px;
+  padding: 0px 16px 0px 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 40px;
+  min-width: 84px;
+  max-width: 480px;
+  position: relative;
+  overflow: hidden;
+}
+.div4 {
+  color: #0d171c;
+  text-align: center;
+  font-family: "Lexend-Bold", sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 700;
+  position: relative;
+  align-self: stretch;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.depth-2-frame-1 {
+  padding: 20px 160px 20px 160px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: center;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.depth-3-frame-02 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex: 1;
+  max-width: 960px;
+  position: relative;
+  overflow: hidden;
+}
+.depth-4-frame-03 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-5-frame-04 {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.depth-6-frame-03 {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  border-radius: 12px;
+  padding: 0px 40px 40px 40px;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 480px;
+  min-height: 480px;
+  position: relative;
+  overflow: hidden;
+}
+.depth-7-frame-02 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 1048px;
+  position: absolute;
+  left: 16px;
+  top: 329px;
+}
+.depth-8-frame-0 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.div5 {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Lexend-Black", sans-serif;
+  font-size: 48px;
+  line-height: 60px;
+  letter-spacing: -2px;
+  font-weight: 900;
+  position: relative;
+  align-self: stretch;
+}
+.depth-8-frame-1 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 680px;
+  position: relative;
+}
+.edu-plus2 {
+  color: #ffffff;
+  text-align: center;
+  font-family: "Lexend-Regular", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  position: relative;
+  width: 656px;
+}
+.depth-7-frame-1 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 480px;
+  height: 64px;
+  min-width: 160px;
+  max-width: 480px;
+  position: absolute;
+  left: 216px;
+  top: 477px;
+}
+.depth-8-frame-02 {
+  border-radius: 12px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.depth-9-frame-0 {
+  background: #f7fafa;
+  border-radius: 12px 0px 0px 12px;
+  border-style: solid;
+  border-color: #d1dee5;
+  border-width: 1px 0px 1px 1px;
+  padding: 0px 0px 0px 15px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-10-frame-0 {
+  flex: 1;
+  height: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.vector-02 {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  overflow: visible;
+}
+.depth-11-frame-0 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.depth-9-frame-1 {
+  background: #f7fafa;
+  border-style: solid;
+  border-color: #d1dee5;
+  border-width: 1px 0px 1px 0px;
+  padding: 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.div6 {
+  color: #4f7a94;
+  text-align: left;
+  font-family: "Lexend-Regular", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  position: relative;
+}
+.depth-9-frame-2 {
+  background: #f7fafa;
+  border-radius: 0px 12px 12px 0px;
+  border-style: solid;
+  border-color: #d1dee5;
+  border-width: 1px 1px 1px 0px;
+  padding: 0px 7px 0px 0px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-10-frame-02 {
+  background: #1f94e0;
+  border-radius: 12px;
+  padding: 0px 20px 0px 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 48px;
+  min-width: 84px;
+  max-width: 480px;
+  position: relative;
+  overflow: hidden;
+}
+.depth-11-frame-02 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.div7 {
+  color: #f7fafa;
+  text-align: center;
+  font-family: "Lexend-Bold", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 700;
+  position: relative;
+  align-self: stretch;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.depth-4-frame-13 {
+  padding: 40px 16px 40px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-5-frame-05 {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-6-frame-04 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-7-frame-03 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 720px;
+  max-width: 720px;
+  position: relative;
+}
+.div8 {
+  color: #0d171c;
+  text-align: left;
+  font-family: "Lexend-Black", sans-serif;
+  font-size: 36px;
+  line-height: 45px;
+  letter-spacing: -1px;
+  font-weight: 900;
+  position: relative;
+  align-self: stretch;
+}
+.depth-7-frame-12 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 720px;
+  max-width: 720px;
+  position: relative;
+}
+.edu-plus3 {
+  color: #0d171c;
+  text-align: left;
+  font-family: "Lexend-Regular", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  position: relative;
+  align-self: stretch;
+}
+.depth-6-frame-1 {
+  background: #1f94e0;
+  border-radius: 12px;
+  padding: 0px 20px 0px 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 48px;
+  min-width: 84px;
+  max-width: 480px;
+  position: relative;
+  overflow: hidden;
+}
+.depth-7-frame-04 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.depth-5-frame-13 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-6-frame-05 {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.depth-7-frame-05 {
+  padding: 0px 0px 12px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 223px;
+  position: relative;
+}
+.depth-8-frame-03 {
+  border-radius: 12px;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 125px;
+  position: relative;
+  overflow: hidden;
+  object-fit: cover;
+}
+.depth-8-frame-12 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-9-frame-02 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.div9 {
+  color: #0d171c;
+  text-align: left;
+  font-family: "Lexend-Medium", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  position: relative;
+  align-self: stretch;
+}
+.depth-9-frame-12 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.div10 {
+  color: #4f7a94;
+  text-align: left;
+  font-family: "Lexend-Regular", sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 400;
+  position: relative;
+  align-self: stretch;
+}
+.depth-7-frame-13 {
+  padding: 0px 0px 12px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 223px;
+  position: relative;
+}
+.depth-7-frame-2 {
+  padding: 0px 0px 12px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 223px;
+  position: relative;
+}
+.depth-7-frame-3 {
+  padding: 0px 0px 12px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 223px;
+  position: relative;
+}
+.depth-4-frame-2 {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-5-frame-06 {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.depth-6-frame-06 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 301px;
+  position: relative;
+}
+.depth-7-frame-06 {
+  border-radius: 12px;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  object-fit: cover;
+}
+.depth-6-frame-12 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 301px;
+  position: relative;
+}
+.depth-6-frame-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 301px;
+  position: relative;
+}
+.depth-4-frame-3 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-5-frame-07 {
+  padding: 80px 40px 80px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.depth-6-frame-07 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-7-frame-07 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 720px;
+  max-width: 720px;
+  position: relative;
+}
+.edu-plus4 {
+  color: #0d171c;
+  text-align: center;
+  font-family: "Lexend-Black", sans-serif;
+  font-size: 36px;
+  line-height: 45px;
+  letter-spacing: -1px;
+  font-weight: 900;
+  position: relative;
+  align-self: stretch;
+}
+.depth-7-frame-14 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.div11 {
+  color: #0d171c;
+  text-align: center;
+  font-family: "Lexend-Regular", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  position: relative;
+  align-self: stretch;
+}
+.depth-6-frame-13 {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: center;
+  align-self: stretch;
+  flex: 1;
+  position: relative;
+}
+.depth-7-frame-08 {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: flex-start;
+  justify-content: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  position: relative;
+}
+.depth-8-frame-04 {
+  background: #1f94e0;
+  border-radius: 12px;
+  padding: 0px 20px 0px 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 48px;
+  min-width: 84px;
+  max-width: 480px;
+  position: relative;
+  overflow: hidden;
+}
+.depth-9-frame-03 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
