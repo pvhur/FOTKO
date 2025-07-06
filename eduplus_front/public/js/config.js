@@ -5,6 +5,7 @@ const SERVER_CONFIG = {
   
   // API 엔드포인트
   ENDPOINTS: {
+    GET_SESSION: "/auth/get_session",
     LOGIN: '/auth/login',
     SIGNUP: '/auth/signup',
     LOGOUT: '/auth/logout'

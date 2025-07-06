@@ -23,12 +23,7 @@ app.listen(port, () => {
 
 // 메인/웰컴 페이지
 app.get('/', (req, res) => {
-  console.log(req.session.user);
-  if (!req.session.user) {
-    res.sendFile(path.join(__dirname, './views/welecome/index.html'));
-  } else {
-    res.sendFile(path.join(__dirname, './views/main/index.html'));
-  }
+  res.sendFile(path.join(__dirname, './views/welecome/index.html'));
 });
 
 // 로그인 페이지
@@ -45,29 +40,17 @@ app.get('/signup', (req, res) => {
 
 // 학생 정보(관리) 페이지
 app.get('/students', (req, res) => {
-  if (!req.session.user) {
-    res.redirect('/login');
-  } else {
-    res.sendFile(path.join(__dirname, './views/student_management/index.html'));
-  }
+  res.sendFile(path.join(__dirname, './views/student_management/index.html'));
 });
 
 // 랜덤 자리 페이지
 app.get('/random_seat', (req, res) => {
-  if (!req.session.user) {
-    res.redirect('/login');
-  } else {
-    res.sendFile(path.join(__dirname, './views/random_seat/index.html'));
-  }
+  res.sendFile(path.join(__dirname, './views/random_seat/index.html'));
 });
 
 // 랜덤 학생 페이지
 app.get('/random_student', (req, res) => {
-  if (!req.session.user) {
-    res.redirect('/login');
-  } else {
-    res.sendFile(path.join(__dirname, './views/random_student/index.html'));
-  }
+  res.sendFile(path.join(__dirname, './views/random_student/index.html'));
 });
 
 // /main 경로 추가

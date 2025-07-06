@@ -5,6 +5,7 @@ module.exports = {
     cookie: {
       httpOnly: true, // JavaScript에서 쿠키 접근 불가 (XSS 방어)
       secure: false, //  HTTPS에서만 전송 (보안 강화)
+      sameSite: 'lax'
     }
   };
   

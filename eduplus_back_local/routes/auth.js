@@ -40,9 +40,11 @@ router.post("/login", (req, res) => {
 
         // 로그인 성공 -> 세션 저장
         req.session.user = { id: row.session_id };
-
-        db.close();
-        return res.status(200).send({ success: true, message: "Login successful", status: 200 });
+        console.log("로그인 직후 세션:", req.session);
+        req.session.save(() => {
+          db.close();
+          return res.status(200).send({ success: true, message: "Login successful", status: 200 });
+        });
       });
     });
   } else {
@@ -76,9 +78,11 @@ router.post("/login", (req, res) => {
 
         // 로그인 성공 -> 세션 저장
         req.session.user = { id: row.session_id };
-
-        db.close();
-        return res.status(200).send({ success: true, message: "Login successful", status: 200 });
+        console.log("로그인 직후 세션:", req.session);
+        req.session.save(() => {
+          db.close();
+          return res.status(200).send({ success: true, message: "Login successful", status: 200 });
+        });
       });
     });
   }
@@ -279,6 +283,7 @@ router.get("/logout", (req, res) => {
 });
 
 router.get("/get_session", async (req, res) => {
+  console.log("세션 상태:", req.session); // 추가
   if (!req.session.user) {
     return res.status(200).send({
       success: true,
