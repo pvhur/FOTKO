@@ -1,7 +1,7 @@
 // 서버 연결 설정
 const SERVER_CONFIG = {
   // 서버 기본 URL
-  BASE_URL: 'http://127.0.0.1:80',
+  BASE_URL: 'http://localhost:80',
   
   // API 엔드포인트
   ENDPOINTS: {

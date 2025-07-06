@@ -3,10 +3,9 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const sessionConfig = require("./config/sessionConfig");
 const app = express();
-const port = 443;
+const port = 3000;
 const cors = require("cors");
 const path = require("path");
-const https = require('https');
 
 app.use(cors({
   origin: [
@@ -15,7 +14,6 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(session(sessionConfig));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -70,4 +68,9 @@ app.get('/random_student', (req, res) => {
   } else {
     res.sendFile(path.join(__dirname, './views/random_student/index.html'));
   }
+});
+
+// /main 경로 추가
+app.get('/main', (req, res) => {
+  res.sendFile(path.join(__dirname, './views/main/index.html'));
 });

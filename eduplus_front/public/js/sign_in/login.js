@@ -1,16 +1,43 @@
-function validateLogin() {
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  const errorMessage = document.getElementById('errorMessage');
+// 페이지 로드 시 세션 체크 후 로그인 상태면 /main으로 이동
+window.addEventListener('DOMContentLoaded', function() {
+  fetch('http://127.0.0.1:80/auth/get_session', {
+    method: 'GET',
+    credentials: 'include'
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.isLoggedIn) {
+      window.location.href = '/main';
+    }
+  });
+});
 
-  if (!username || !password) {
-    errorMessage.textContent = '아이디와 비밀번호를 모두 입력해주세요';
-    errorMessage.style.display = 'block';
-  } else {
-    errorMessage.style.display = 'none';
-    // 로그인 요청 보내기
-    loginUser(username, password);
-  }
+function validateLogin() {
+  // 세션 체크 후 이미 로그인 상태면 바로 /main 이동
+  fetch('http://127.0.0.1:80/auth/get_session', {
+    method: 'GET',
+    credentials: 'include'
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.isLoggedIn) {
+      window.location.href = '/main';
+    } else {
+      // 기존 로그인 로직 실행
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('errorMessage');
+
+      if (!username || !password) {
+        errorMessage.textContent = '아이디와 비밀번호를 모두 입력해주세요';
+        errorMessage.style.display = 'block';
+      } else {
+        errorMessage.style.display = 'none';
+        // 로그인 요청 보내기
+        loginUser(username, password);
+      }
+    }
+  });
 }
 
 // 서버에 로그인 요청 보내기
@@ -56,7 +83,7 @@ function loginUser(username, password) {
       localStorage.setItem('loginToken', data.access_token);
     }
     // 로그인 성공 시 메인 페이지로 리다이렉트
-    window.location.href = '/';
+    window.location.href = '/main';
   })
   .catch(error => {
     console.error('에러:', error);
