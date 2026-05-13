@@ -32,7 +32,9 @@
         <span class="nav-user-name">${user.username}</span>
         <span class="nav-user-role nav-user-role-${user.role}">${user.role === 'admin' ? '관리자' : '편집자'}</span>
       </div>
-      <button class="nav-logout-btn" onclick="kickoffLogout()">로그아웃</button>`;
+      <button class="nav-logout-btn">로그아웃</button>`;
+
+    wrap.querySelector('.nav-logout-btn').addEventListener('click', kickoffLogout);
 
     // 구독하기 버튼 앞에 삽입
     const subBtn = parent.querySelector('a[href="#"]');
@@ -42,5 +44,5 @@
 
 async function kickoffLogout() {
   try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) {}
-  window.location.href = '/kickoff';
+  window.location.replace('/kickoff');
 }

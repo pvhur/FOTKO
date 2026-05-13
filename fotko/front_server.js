@@ -164,6 +164,7 @@ function requireEditor(req, res, next) {
 
 // 현재 세션
 app.get('/api/auth/me', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   if (!req.session.userId) return res.status(401).json({ error: 'unauthorized' });
   res.json({ id: req.session.userId, username: req.session.username, role: req.session.role });
 });
@@ -251,8 +252,14 @@ app.post('/api/auth/signup', async (req, res) => {
 
 // 로그아웃
 app.post('/api/auth/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.clearCookie('kickoff.sid');
+  const cookieOpts = { path: '/', httpOnly: true, sameSite: 'lax', secure: isProd };
+  if (!req.session?.userId) {
+    res.clearCookie('kickoff.sid', cookieOpts);
+    return res.json({ ok: true });
+  }
+  req.session.destroy(err => {
+    if (err) console.error('[Logout] session destroy error:', err);
+    res.clearCookie('kickoff.sid', cookieOpts);
     res.json({ ok: true });
   });
 });
