@@ -1,8 +1,0 @@
-TABLE:users
-COLUMNS,id,name,age,created_at
-TYPES,int,text,int,datetime
-SIZES,,,,
-PRIMARY_KEY,id
-CREATED_AT,2024-08-13T14:44:56.287254
-DATA,1,Alice,30,2024-08-13T12:00:00
-DATA,2,Bob,25,2024-08-13T12:05:00

@@ -455,13 +455,7 @@ app.use((err, req, res, _next) => {
 app.listen(PORT, () => console.log(`[Kickoff] http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`));
 
 const V = (p) => path.join(__dirname, './views', p);
-app.get('/',                  (req, res) => res.sendFile(path.join(__dirname, './views/welecome/index.html')));
-app.get('/login',             (req, res) => res.sendFile(path.join(__dirname, './views/sign_in/index.html')));
-app.get('/signup',            (req, res) => res.sendFile(path.join(__dirname, './views/sign_up/index.html')));
-app.get('/students',          (req, res) => res.sendFile(path.join(__dirname, './views/student_management/index.html')));
-app.get('/random_seat',       (req, res) => res.sendFile(path.join(__dirname, './views/random_seat/index.html')));
-app.get('/random_student',    (req, res) => res.sendFile(path.join(__dirname, './views/random_student/index.html')));
-app.get('/main',              (req, res) => res.sendFile(path.join(__dirname, './views/main/index.html')));
+app.get('/',                  (req, res) => res.redirect('/kickoff'));
 app.get('/kickoff',           (req, res) => sendHTML(res, V('health/index.html')));
 app.get('/kickoff/league',    (req, res) => sendHTML(res, V('health/league.html')));
 app.get('/kickoff/results',   (req, res) => sendHTML(res, V('health/results.html')));
