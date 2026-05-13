@@ -6,7 +6,10 @@ const bcrypt    = require('bcryptjs');
 
 /* ── 연결 풀 ── */
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString:
+    process.env.POSTGRES_URL ||
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL_NON_POOLING,
   ssl: process.env.NODE_ENV === 'production'
     ? { rejectUnauthorized: false }
     : false,
@@ -82,7 +85,10 @@ class PgSessionStore extends session.Store {
         [sid, Date.now()]
       );
       cb(null, rows[0] ? JSON.parse(rows[0].sess) : null);
-    } catch (e) { cb(e); }
+    } catch (e) {
+      console.error('[Session.get]', e.message);
+      cb(null, null); // DB 오류 시 세션 없음으로 처리 (500 방지)
+    }
   }
 
   async set(sid, sess, cb) {
@@ -96,14 +102,17 @@ class PgSessionStore extends session.Store {
         [sid, JSON.stringify(sess), ttl]
       );
       cb(null);
-    } catch (e) { cb(e); }
+    } catch (e) {
+      console.error('[Session.set]', e.message);
+      cb(null); // DB 오류 시 무시 (500 방지)
+    }
   }
 
   async destroy(sid, cb) {
     try {
       await pool.query('DELETE FROM sessions WHERE sid=$1', [sid]);
       cb(null);
-    } catch (e) { cb(e); }
+    } catch (e) { cb(null); }
   }
 
   async touch(sid, sess, cb) {
@@ -116,7 +125,7 @@ class PgSessionStore extends session.Store {
         [ttl, sid]
       );
       cb(null);
-    } catch (e) { cb(e); }
+    } catch (e) { cb(null); }
   }
 }
 
