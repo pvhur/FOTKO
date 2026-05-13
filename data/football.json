@@ -1,0 +1,474 @@
+{
+  "breaking": [
+    "손흥민, 시즌 15호 골 기록 — 토트넘 리그 3위 유지",
+    "맨체스터 시티, 챔피언스리그 16강 진출 확정",
+    "레알 마드리드, 姆바페 올 시즌 최고 활약 중 — 리그 공동 득점왕",
+    "바르셀로나, 라민 야말 재계약 협상 마무리 단계",
+    "분데스리가 — 바이에른 뮌헨, 도르트문트와 3점 차 선두 유지"
+  ],
+  "featured": {
+    "category": "프리미어리그",
+    "label": "LIVE",
+    "tag": "단독",
+    "imgDate": "프리미어리그 · 2026.05.13",
+    "title": "토트넘,텔의 뼈아픈 실수로 승리를 놓치다",
+    "desc": "토트넘과 리즈의 경기 토트넘은 50분에 텔의 엄청난 원더골로 선제골을 넣었지만 70분경 패널티 박스의 수비 과정에서 텔의 뼈아픈 실수로 패널티킥을 내줌으로 승리를 놓쳤습니다",
+    "author": "박준혁 기자",
+    "time": "2026. 5. 13 · 오후 10:42"
+  },
+  "scores": [
+    {
+      "home": "토트넘",
+      "away": "아스널",
+      "score": "2 - 1",
+      "status": "FT",
+      "live": false
+    },
+    {
+      "home": "맨시티",
+      "away": "리버풀",
+      "score": "3 - 1",
+      "status": "73'",
+      "live": true
+    },
+    {
+      "home": "첼시",
+      "away": "뉴캐슬",
+      "score": "0 - 0",
+      "status": "21:00",
+      "live": false
+    },
+    {
+      "home": "맨유",
+      "away": "에버턴",
+      "score": "1 - 2",
+      "status": "FT",
+      "live": false
+    }
+  ],
+  "popular": [
+    {
+      "title": "姆바페, 레알 마드리드와의 재계약 의사 밝혀",
+      "meta": "라 리가 · 2시간 전"
+    },
+    {
+      "title": "바이에른, 레반도프스키 복귀설 공식 부인",
+      "meta": "분데스리가 · 4시간 전"
+    },
+    {
+      "title": "챔피언스리그 조별리그 일정 및 대진표 발표",
+      "meta": "UEFA · 6시간 전"
+    },
+    {
+      "title": "황희찬, 울버햄튼 올 시즌 최다 공격포인트 기록",
+      "meta": "프리미어리그 · 8시간 전"
+    },
+    {
+      "title": "AC 밀란, 새 홈구장 '산시로 재건축' 최종 승인",
+      "meta": "세리에 A · 어제"
+    }
+  ],
+  "news": [
+    {
+      "category": "챔피언스리그",
+      "title": "맨체스터 시티, 레알 마드리드와 8강 빅매치 확정",
+      "desc": "UEFA가 발표한 챔피언스리그 8강 대진에서 맨체스터 시티와 레알 마드리드가 맞붙게 됐다.",
+      "badge": "new",
+      "time": "1시간 전"
+    },
+    {
+      "category": "이적 시장",
+      "title": "바르셀로나, 마르쿠스 래시포드 여름 영입 추진 — 90M 유로",
+      "desc": "맨체스터 유나이티드와 계약 기간이 남아있는 래시포드지만 바르셀로나 측의 접촉이 있었다고 알려졌다.",
+      "badge": "transfer",
+      "time": "3시간 전"
+    },
+    {
+      "category": "분석",
+      "title": "데이터로 보는 2025-26 프리미어리그 — 아스널의 수비 혁신이 핵심",
+      "desc": "이번 시즌 아스널이 기록 중인 실점 수 21개는 역대 반환점 기준 최저 기록에 근접하고 있다.",
+      "badge": "analysis",
+      "time": "5시간 전"
+    },
+    {
+      "category": "라 리가",
+      "title": "엘 클라시코 프리뷰 — 레알 vs 바르사, 라 리가 우승 판가름",
+      "desc": "이번 주말 열리는 엘 클라시코는 사실상 우승 결정전이다. 두 팀의 승점 차는 단 1점.",
+      "badge": "new",
+      "time": "6시간 전"
+    },
+    {
+      "category": "세리에 A",
+      "title": "인터 밀란, 나폴리 꺾고 단독 선두 — 오타메디가 멀티골 폭발",
+      "desc": "인터 밀란이 나폴리를 3-0으로 대파하며 세리에 A 단독 선두에 올라섰다.",
+      "badge": "result",
+      "time": "어제"
+    },
+    {
+      "category": "국가대표",
+      "title": "홍명보 감독, 2026 월드컵 최종 26인 명단 발표 — 이강인 주장 완장",
+      "desc": "6월 개막하는 2026 FIFA 월드컵을 앞두고 대한민국 대표팀 최종 엔트리가 확정됐다.",
+      "badge": "national",
+      "time": "어제"
+    }
+  ],
+  "standings": {
+    "pl": [
+      {
+        "rank": 1,
+        "tier": "cl",
+        "name": "아스널",
+        "p": 35,
+        "w": 24,
+        "d": 5,
+        "l": 6,
+        "gd": "+38",
+        "pts": 77,
+        "form": "WWDWL"
+      },
+      {
+        "rank": 2,
+        "tier": "cl",
+        "name": "맨체스터 시티",
+        "p": 35,
+        "w": 23,
+        "d": 5,
+        "l": 7,
+        "gd": "+41",
+        "pts": 74,
+        "form": "WWWDW"
+      },
+      {
+        "rank": 3,
+        "tier": "cl",
+        "name": "토트넘",
+        "p": 35,
+        "w": 21,
+        "d": 7,
+        "l": 7,
+        "gd": "+28",
+        "pts": 70,
+        "form": "LWWDW"
+      },
+      {
+        "rank": 4,
+        "tier": "cl",
+        "name": "리버풀",
+        "p": 35,
+        "w": 20,
+        "d": 7,
+        "l": 8,
+        "gd": "+22",
+        "pts": 67,
+        "form": "WLDWL"
+      },
+      {
+        "rank": 5,
+        "tier": "uel",
+        "name": "첼시",
+        "p": 35,
+        "w": 18,
+        "d": 8,
+        "l": 9,
+        "gd": "+15",
+        "pts": 62,
+        "form": "DWLWD"
+      },
+      {
+        "rank": 6,
+        "tier": "uel",
+        "name": "뉴캐슬",
+        "p": 35,
+        "w": 17,
+        "d": 9,
+        "l": 9,
+        "gd": "+12",
+        "pts": 60,
+        "form": "WDWLW"
+      },
+      {
+        "rank": 7,
+        "tier": "def",
+        "name": "맨체스터 유나이티드",
+        "p": 35,
+        "w": 12,
+        "d": 8,
+        "l": 15,
+        "gd": "-8",
+        "pts": 44,
+        "form": "LDLWL"
+      },
+      {
+        "rank": 18,
+        "tier": "rel",
+        "name": "번리",
+        "p": 35,
+        "w": 7,
+        "d": 5,
+        "l": 23,
+        "gd": "-34",
+        "pts": 26,
+        "form": "LLDLL"
+      }
+    ],
+    "laliga": [
+      {
+        "rank": 1,
+        "tier": "cl",
+        "name": "레알 마드리드",
+        "p": 34,
+        "w": 25,
+        "d": 4,
+        "l": 5,
+        "gd": "+45",
+        "pts": 79,
+        "form": "WWWWL"
+      },
+      {
+        "rank": 2,
+        "tier": "cl",
+        "name": "바르셀로나",
+        "p": 34,
+        "w": 24,
+        "d": 5,
+        "l": 5,
+        "gd": "+38",
+        "pts": 77,
+        "form": "WWDWW"
+      },
+      {
+        "rank": 3,
+        "tier": "cl",
+        "name": "아틀레티코 마드리드",
+        "p": 34,
+        "w": 20,
+        "d": 6,
+        "l": 8,
+        "gd": "+22",
+        "pts": 66,
+        "form": "WDWWL"
+      },
+      {
+        "rank": 4,
+        "tier": "cl",
+        "name": "레알 소시에다드",
+        "p": 34,
+        "w": 16,
+        "d": 8,
+        "l": 10,
+        "gd": "+14",
+        "pts": 56,
+        "form": "DWWLW"
+      },
+      {
+        "rank": 5,
+        "tier": "uel",
+        "name": "비야레알",
+        "p": 34,
+        "w": 14,
+        "d": 9,
+        "l": 11,
+        "gd": "+8",
+        "pts": 51,
+        "form": "WDLWW"
+      }
+    ],
+    "bundesliga": [
+      {
+        "rank": 1,
+        "tier": "cl",
+        "name": "바이에른 뮌헨",
+        "p": 32,
+        "w": 22,
+        "d": 4,
+        "l": 6,
+        "gd": "+42",
+        "pts": 70,
+        "form": "WWWWW"
+      },
+      {
+        "rank": 2,
+        "tier": "cl",
+        "name": "도르트문트",
+        "p": 32,
+        "w": 21,
+        "d": 4,
+        "l": 7,
+        "gd": "+31",
+        "pts": 67,
+        "form": "WWDWL"
+      },
+      {
+        "rank": 3,
+        "tier": "cl",
+        "name": "레버쿠젠",
+        "p": 32,
+        "w": 19,
+        "d": 6,
+        "l": 7,
+        "gd": "+28",
+        "pts": 63,
+        "form": "WDWWW"
+      },
+      {
+        "rank": 4,
+        "tier": "cl",
+        "name": "RB 라이프치히",
+        "p": 32,
+        "w": 17,
+        "d": 5,
+        "l": 10,
+        "gd": "+18",
+        "pts": 56,
+        "form": "WWLWW"
+      }
+    ],
+    "seriea": [
+      {
+        "rank": 1,
+        "tier": "cl",
+        "name": "인터 밀란",
+        "p": 35,
+        "w": 24,
+        "d": 5,
+        "l": 6,
+        "gd": "+40",
+        "pts": 77,
+        "form": "WWWWW"
+      },
+      {
+        "rank": 2,
+        "tier": "cl",
+        "name": "나폴리",
+        "p": 35,
+        "w": 22,
+        "d": 6,
+        "l": 7,
+        "gd": "+32",
+        "pts": 72,
+        "form": "WWDLW"
+      },
+      {
+        "rank": 3,
+        "tier": "cl",
+        "name": "AC 밀란",
+        "p": 35,
+        "w": 20,
+        "d": 7,
+        "l": 8,
+        "gd": "+25",
+        "pts": 67,
+        "form": "WDWWL"
+      },
+      {
+        "rank": 4,
+        "tier": "uel",
+        "name": "유벤투스",
+        "p": 35,
+        "w": 17,
+        "d": 8,
+        "l": 10,
+        "gd": "+16",
+        "pts": 59,
+        "form": "WDWDW"
+      }
+    ]
+  },
+  "fixtures": [
+    {
+      "league": "프리미어리그 · R37",
+      "home": "첼시",
+      "away": "뉴캐슬",
+      "date": "5월 14일 (수) · 오전 04:00"
+    },
+    {
+      "league": "챔피언스리그 · 8강",
+      "home": "맨시티",
+      "away": "레알 마드리드",
+      "date": "5월 15일 (목) · 새벽 03:00"
+    },
+    {
+      "league": "라 리가 · R34",
+      "home": "레알 마드리드",
+      "away": "바르셀로나",
+      "date": "5월 17일 (토) · 오전 04:00"
+    },
+    {
+      "league": "프리미어리그 · R37",
+      "home": "아스널",
+      "away": "리버풀",
+      "date": "5월 18일 (일) · 오후 11:30"
+    },
+    {
+      "league": "분데스리가 · R33",
+      "home": "바이에른 뮌헨",
+      "away": "도르트문트",
+      "date": "5월 18일 (일) · 오후 10:30"
+    },
+    {
+      "league": "세리에 A · R36",
+      "home": "인터 밀란",
+      "away": "AC 밀란",
+      "date": "5월 19일 (월) · 새벽 03:45"
+    }
+  ],
+  "topScorers": {
+    "pl": [
+      {"rank":1,"player":"손흥민","team":"토트넘","goals":15,"assists":8,"apps":34},
+      {"rank":2,"player":"엘링 홀란드","team":"맨체스터 시티","goals":14,"assists":5,"apps":30},
+      {"rank":3,"player":"모하메드 살라","team":"리버풀","goals":13,"assists":11,"apps":34},
+      {"rank":4,"player":"부카요 사카","team":"아스널","goals":12,"assists":9,"apps":34},
+      {"rank":5,"player":"콜 팔머","team":"첼시","goals":11,"assists":7,"apps":33}
+    ],
+    "laliga": [
+      {"rank":1,"player":"킬리안 姆바페","team":"레알 마드리드","goals":24,"assists":10,"apps":33},
+      {"rank":2,"player":"로베르트 레반도프스키","team":"바르셀로나","goals":19,"assists":6,"apps":31},
+      {"rank":3,"player":"라민 야말","team":"바르셀로나","goals":14,"assists":18,"apps":33},
+      {"rank":4,"player":"비니시우스 주니오르","team":"레알 마드리드","goals":13,"assists":12,"apps":32},
+      {"rank":5,"player":"알렉스 세를로트","team":"레알 소시에다드","goals":11,"assists":4,"apps":33}
+    ],
+    "bundesliga": [
+      {"rank":1,"player":"해리 케인","team":"바이에른 뮌헨","goals":22,"assists":9,"apps":31},
+      {"rank":2,"player":"제이든 산초","team":"도르트문트","goals":11,"assists":8,"apps":31},
+      {"rank":3,"player":"플로리안 비르츠","team":"레버쿠젠","goals":10,"assists":12,"apps":30},
+      {"rank":4,"player":"세르주 냐브리","team":"바이에른 뮌헨","goals":9,"assists":7,"apps":28},
+      {"rank":5,"player":"마르코 로이스","team":"도르트문트","goals":7,"assists":11,"apps":29}
+    ],
+    "seriea": [
+      {"rank":1,"player":"라우타로 마르티네스","team":"인터 밀란","goals":21,"assists":8,"apps":34},
+      {"rank":2,"player":"빅토르 오시멘","team":"나폴리","goals":18,"assists":5,"apps":33},
+      {"rank":3,"player":"라파엘 레앙","team":"AC 밀란","goals":14,"assists":10,"apps":34},
+      {"rank":4,"player":"페데리코 키에사","team":"유벤투스","goals":10,"assists":8,"apps":31},
+      {"rank":5,"player":"마르쿠스 튀람","team":"인터 밀란","goals":9,"assists":7,"apps":33}
+    ]
+  },
+  "transfers": [
+    {
+      "player": "姆바페",
+      "from": "레알 마드리드",
+      "to": "재계약",
+      "fee": "해당없음",
+      "detail": "2030년까지 연장",
+      "type": "여름 이적",
+      "badge": "official"
+    },
+    {
+      "player": "마르쿠스 래시포드",
+      "from": "맨체스터 유나이티드",
+      "to": "바르셀로나",
+      "fee": "€85M",
+      "detail": "협상 초기",
+      "type": "여름 이적",
+      "badge": "rumor"
+    },
+    {
+      "player": "도미닉 솔란케",
+      "from": "본머스",
+      "to": "토트넘",
+      "fee": "€65M",
+      "detail": "5년 계약",
+      "type": "겨울 이적",
+      "badge": "done"
+    }
+  ]
+}

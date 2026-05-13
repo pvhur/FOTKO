@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>분석 — Kickoff</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/kickoff.css" />
+  <style>
+    /* ── Analysis page ── */
+    .analysis-hero { padding:calc(56px + 48px) 0 40px; }
+
+    /* Featured analysis article */
+    .featured-analysis { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); overflow:hidden; display:grid; grid-template-columns:1fr 1fr; margin-top:28px; position:relative; }
+    .featured-analysis::before { content:''; position:absolute; inset:0 0 auto; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent); pointer-events:none; }
+    .fa-image { background:var(--surface-2); border-right:1px solid var(--hairline); min-height:280px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .fa-image::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 8px,rgba(255,255,255,.018) 8px,rgba(255,255,255,.018) 9px); }
+    .fa-image-label { position:relative; z-index:1; font-size:12px; color:var(--ink-tertiary); }
+    .fa-body { padding:36px; display:flex; flex-direction:column; justify-content:center; }
+    .fa-meta { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+    .fa-title { font-size:clamp(18px,2vw,26px); font-weight:700; line-height:1.25; letter-spacing:-.5px; margin-bottom:14px; }
+    .fa-desc { font-size:14px; color:var(--ink-muted); line-height:1.65; margin-bottom:24px; }
+    .fa-footer { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid var(--hairline); }
+    .byline { display:flex; align-items:center; gap:9px; }
+    .byline-avatar { width:30px; height:30px; border-radius:var(--r-full); background:var(--surface-3); border:1px solid var(--hairline); display:flex; align-items:center; justify-content:center; }
+    .byline-name { font-size:13px; color:var(--ink-muted); font-weight:500; }
+    .byline-date { font-size:12px; color:var(--ink-tertiary); }
+
+    /* Stats section */
+    .stats-section { margin:56px 0 0; }
+    .league-stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .league-stat-card { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); padding:20px; }
+    .lsc-league { font-size:11px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:12px; }
+    .lsc-leader { font-size:15px; font-weight:600; margin-bottom:4px; }
+    .lsc-pts { font-size:13px; color:var(--ink-subtle); margin-bottom:16px; }
+    .stat-bar-wrap { display:flex; flex-direction:column; gap:8px; }
+    .stat-bar-row { display:flex; flex-direction:column; gap:4px; }
+    .stat-bar-label { display:flex; justify-content:space-between; font-size:11px; color:var(--ink-subtle); }
+    .stat-bar-label span:last-child { font-weight:600; color:var(--ink); }
+    .stat-bar-track { height:4px; background:var(--surface-3); border-radius:2px; overflow:hidden; }
+    .stat-bar-fill { height:100%; border-radius:2px; transition:width .6s ease; }
+
+    /* Data insight cards */
+    .insight-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:14px; }
+    .insight-card { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); padding:20px; }
+    .insight-num { font-size:32px; font-weight:700; letter-spacing:-1px; margin-bottom:4px; }
+    .insight-label { font-size:13px; color:var(--ink-subtle); line-height:1.4; }
+    .insight-sub { font-size:11px; color:var(--ink-tertiary); margin-top:6px; }
+
+    /* Articles grid */
+    .articles-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .article-row-wide { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+
+    /* Filter */
+    .filter-bar { display:flex; align-items:center; gap:8px; margin-bottom:28px; flex-wrap:wrap; }
+
+    @media(max-width:1024px) {
+      .featured-analysis { grid-template-columns:1fr; }
+      .fa-image { min-height:200px; border-right:none; border-bottom:1px solid var(--hairline); }
+      .league-stats-grid { grid-template-columns:repeat(2,1fr); }
+      .articles-grid { grid-template-columns:repeat(2,1fr); }
+      .insight-row { grid-template-columns:repeat(3,1fr); }
+    }
+    @media(max-width:768px) {
+      .league-stats-grid { grid-template-columns:1fr 1fr; }
+      .articles-grid,.article-row-wide { grid-template-columns:1fr; }
+      .insight-row { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="/kickoff" class="nav-logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".4"/>
+      </svg>
+      Kickoff
+    </a>
+    <ul class="nav-links">
+      <li><a href="/kickoff">홈</a></li>
+      <li><a href="/kickoff/league">리그</a></li>
+      <li><a href="/kickoff/results">경기 결과</a></li>
+      <li><a href="/kickoff/transfers">이적 시장</a></li>
+      <li><a href="/kickoff/analysis" class="active">분석</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-search">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>검색</span>
+      </div>
+      <a href="/kickoff/login" class="btn btn-secondary btn-sm" id="nav-login-btn">로그인</a>
+      <a href="#" class="btn btn-primary btn-sm">구독하기</a>
+    </div>
+  </div>
+</nav>
+
+<div class="analysis-hero">
+  <div class="wrap">
+    <div class="eyebrow-label">데이터 & 인사이트</div>
+    <h1 class="t-display-md">분석</h1>
+    <p style="font-size:15px;color:var(--ink-subtle);margin-top:8px;">경기 데이터, 전술 분석, 리그 통계를 심층적으로 다룹니다.</p>
+    <div id="featuredAnalysis"></div>
+  </div>
+</div>
+
+<!-- League stats -->
+<section class="section stats-section">
+  <div class="wrap">
+    <div class="section-header-row">
+      <div>
+        <div class="eyebrow-label">리그 통계</div>
+        <h2 class="t-headline">2025–26 시즌 데이터</h2>
+      </div>
+      <a href="/kickoff/league" class="btn btn-secondary btn-sm">전체 순위 보기</a>
+    </div>
+    <div class="league-stats-grid" id="leagueStatsGrid"></div>
+
+    <!-- Data insights -->
+    <div style="margin-top:28px;">
+      <div style="font-size:12px;font-weight:600;color:var(--ink-tertiary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;">주목할 수치</div>
+      <div class="insight-row" id="insightRow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- All articles -->
+<section class="section" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-header-row">
+      <div>
+        <div class="eyebrow-label">기사 아카이브</div>
+        <h2 class="t-headline">전체 뉴스</h2>
+      </div>
+    </div>
+    <div class="filter-bar" id="filterBar"></div>
+    <div class="articles-grid" id="articlesGrid"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/kickoff" class="nav-logo" style="margin-bottom:16px;display:flex;">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="var(--primary)" stroke-width="1.5"/><path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="var(--primary)" opacity=".4"/></svg>
+          Kickoff
+        </a>
+        <p>축구를 더 깊게. 매일 업데이트되는 뉴스, 경기 분석, 이적 소식을 전합니다.</p>
+      </div>
+      <div class="footer-col"><h4>리그</h4><ul><li><a href="/kickoff/league">프리미어리그</a></li><li><a href="/kickoff/league">라 리가</a></li><li><a href="/kickoff/league">분데스리가</a></li><li><a href="/kickoff/league">세리에 A</a></li></ul></div>
+      <div class="footer-col"><h4>콘텐츠</h4><ul><li><a href="/kickoff/analysis">분석</a></li><li><a href="/kickoff/transfers">이적 시장</a></li><li><a href="/kickoff/results">경기 결과</a></li></ul></div>
+      <div class="footer-col"><h4>대회</h4><ul><li><a href="#">챔피언스리그</a></li><li><a href="#">유로파리그</a></li><li><a href="#">FIFA 월드컵</a></li></ul></div>
+      <div class="footer-col"><h4>Kickoff</h4><ul><li><a href="#">소개</a></li><li><a href="#">광고 문의</a></li><li><a href="#">문의</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Kickoff. All rights reserved.</p>
+      <div class="footer-links"><a href="#">개인정보처리방침</a><a href="#">이용약관</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const BADGE_MAP = {
+  new:['badge-new','새 기사'], transfer:['badge-result','이적'], analysis:['badge-result','분석'],
+  result:['badge-result','결과'], national:['badge-green','대표팀'],
+  official:['badge-new','공식'], rumor:['badge-result','루머'], done:['badge-green','완료'],
+};
+const LEAGUE_LABELS = { pl:'프리미어리그', laliga:'라 리가', bundesliga:'분데스리가', seriea:'세리에 A' };
+const LEAGUE_COLORS = {
+  pl:'rgba(94,106,210,.7)', laliga:'rgba(251,191,36,.7)',
+  bundesliga:'rgba(239,68,68,.7)', seriea:'rgba(74,222,128,.7)'
+};
+const FILTERS = ['전체', '분석', '이적', '대표팀', '결과'];
+const NEWS_SVG = `<svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="5" y="5" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M9 10h10M9 14h7M9 18h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+const USER_SVG = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 12C2.5 9.51 4.52 7.5 7 7.5s4.5 2.01 4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+
+let activeFilter = '전체';
+let _data = null;
+
+async function load() {
+  const r = await fetch('/api/data');
+  _data = await r.json();
+  renderFeatured();
+  renderLeagueStats();
+  renderInsights();
+  renderFilterBar();
+  renderArticles();
+}
+
+function renderFeatured() {
+  const analysis = (_data.news||[]).find(n=>n.badge==='analysis') || _data.featured;
+  if (!analysis) return;
+  // Use featured article from data
+  const f = _data.featured;
+  document.getElementById('featuredAnalysis').innerHTML = `
+    <div class="featured-analysis">
+      <div class="fa-image"><span class="fa-image-label">${f.imgDate||''}</span></div>
+      <div class="fa-body">
+        <div class="fa-meta">
+          <span class="badge badge-result">분석</span>
+          <span style="font-size:12px;color:var(--ink-tertiary);">${f.category||''}</span>
+        </div>
+        <h2 class="fa-title">${f.title}</h2>
+        <p class="fa-desc">${f.desc}</p>
+        <div class="fa-footer">
+          <div class="byline">
+            <div class="byline-avatar">${USER_SVG}</div>
+            <div>
+              <div class="byline-name">${f.author||''}</div>
+              <div class="byline-date">${f.time||''}</div>
+            </div>
+          </div>
+          <a href="#" class="btn btn-ghost btn-sm">전체 기사 읽기</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderLeagueStats() {
+  const standings = _data.standings || {};
+  document.getElementById('leagueStatsGrid').innerHTML = Object.entries(LEAGUE_LABELS).map(([k, label]) => {
+    const rows = standings[k] || [];
+    if (!rows.length) return '';
+    const leader = rows[0];
+    const second = rows[1];
+    const ptsGap = second ? leader.pts - second.pts : 0;
+    const maxPts = leader.pts;
+    const color = LEAGUE_COLORS[k] || 'var(--primary)';
+    return `
+      <div class="league-stat-card">
+        <div class="lsc-league">${label}</div>
+        <div class="lsc-leader">${leader.name}</div>
+        <div class="lsc-pts">${leader.pts}점 · ${leader.p}경기 · 2위와 ${ptsGap}점 차</div>
+        <div class="stat-bar-wrap">
+          ${rows.slice(0,3).map(r => `
+            <div class="stat-bar-row">
+              <div class="stat-bar-label">
+                <span>${r.name}</span>
+                <span>${r.pts}pts</span>
+              </div>
+              <div class="stat-bar-track">
+                <div class="stat-bar-fill" style="width:${Math.round(r.pts/maxPts*100)}%;background:${color};"></div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderInsights() {
+  const standings = _data.standings || {};
+  const pl = standings.pl || [];
+  const leader = pl[0] || {};
+  const allPL = pl.reduce((a,r)=>a+r.pts,0);
+  const news = _data.news || [];
+  const scorers = _data.topScorers?.pl || [];
+  const topScorer = scorers[0] || {};
+  document.getElementById('insightRow').innerHTML = `
+    <div class="insight-card">
+      <div class="insight-num" style="color:var(--primary-hover);">${leader.pts||'—'}</div>
+      <div class="insight-label">${leader.name||'PL 선두'} 승점</div>
+      <div class="insight-sub">${leader.p||0}경기 기준 · 폼: ${leader.form||'—'}</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num" style="color:#4ade80;">${topScorer.goals||'—'}</div>
+      <div class="insight-label">${topScorer.player||'득점왕'} 시즌 골</div>
+      <div class="insight-sub">${topScorer.team||''} · ${topScorer.assists||0} 도움</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num" style="color:#fbbf24;">${news.length}</div>
+      <div class="insight-label">이번 주 기사</div>
+      <div class="insight-sub">분석 ${news.filter(n=>n.badge==='analysis').length}건 포함</div>
+    </div>`;
+}
+
+function renderFilterBar() {
+  document.getElementById('filterBar').innerHTML =
+    FILTERS.map(f => `<div class="chip${f===activeFilter?' active':''}" onclick="setFilter('${f}')">${f}</div>`).join('');
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  renderFilterBar();
+  renderArticles();
+}
+
+function renderArticles() {
+  const all = _data.news || [];
+  const FILTER_MAP = { '전체':null, '분석':'analysis', '이적':'transfer', '대표팀':'national', '결과':'result' };
+  const filterKey = FILTER_MAP[activeFilter];
+  const filtered = filterKey ? all.filter(n=>n.badge===filterKey) : all;
+
+  if (!filtered.length) {
+    document.getElementById('articlesGrid').innerHTML =
+      `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--ink-tertiary);">해당 카테고리 기사가 없습니다.</div>`;
+    return;
+  }
+
+  document.getElementById('articlesGrid').innerHTML = filtered.map(n => {
+    const [bc, bt] = BADGE_MAP[n.badge] || ['badge-result', n.badge];
+    return `
+      <article class="news-card">
+        <div class="news-thumb"><div class="news-thumb-inner">${NEWS_SVG}</div></div>
+        <div class="news-body">
+          <div class="news-category">${n.category}</div>
+          <div class="news-title">${n.title}</div>
+          <div class="news-desc">${n.desc}</div>
+          <div class="news-footer">
+            <span class="badge ${bc}">${bt}</span>
+            <span>${n.time}</span>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+}
+
+load();
+</script>
+<script src="/js/kickoff-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kickoff Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --canvas:          #010102;
+      --surface-1:       #0d0e11;
+      --surface-2:       #16181d;
+      --surface-3:       #1e2128;
+      --surface-4:       #252830;
+      --hairline:        #23252a;
+      --hairline-strong: #2e3039;
+      --primary:         #5e6ad2;
+      --primary-hover:   #828fff;
+      --primary-focus:   #5e69d1;
+      --ink:             #f7f8f8;
+      --ink-muted:       #d0d6e0;
+      --ink-subtle:      #8a8f98;
+      --ink-tertiary:    #62666d;
+      --on-primary:      #ffffff;
+      --success:         #4ade80;
+      --success-dim:     rgba(39,166,68,.12);
+      --danger:          #f87171;
+      --danger-dim:      rgba(239,68,68,.10);
+      --warn:            #fbbf24;
+      --warn-dim:        rgba(251,191,36,.10);
+      --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-pill:9999px;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--canvas); color:var(--ink); font-family:'Inter',-apple-system,sans-serif; font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; min-height:100vh; }
+    a { color:inherit; text-decoration:none; }
+    button { cursor:pointer; border:none; font-family:inherit; }
+    input, textarea, select { font-family:inherit; }
+    ul { list-style:none; }
+
+    /* ── Buttons ── */
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:8px 14px; border-radius:var(--r-md); font-size:13px; font-weight:500; line-height:1.2; white-space:nowrap; transition:background .14s, color .14s, border-color .14s; cursor:pointer; }
+    .btn-primary   { background:var(--primary); color:var(--on-primary); border:none; }
+    .btn-primary:hover   { background:var(--primary-hover); }
+    .btn-secondary { background:var(--surface-2); color:var(--ink); border:1px solid var(--hairline); }
+    .btn-secondary:hover { background:var(--surface-3); border-color:var(--hairline-strong); }
+    .btn-ghost     { background:transparent; color:var(--ink-subtle); border:none; }
+    .btn-ghost:hover { color:var(--ink); background:var(--surface-2); }
+    .btn-danger    { background:var(--danger-dim); color:var(--danger); border:1px solid rgba(239,68,68,.2); }
+    .btn-danger:hover { background:rgba(239,68,68,.18); }
+    .btn-sm        { padding:5px 10px; font-size:12px; }
+    .btn-xs        { padding:3px 8px; font-size:11px; border-radius:var(--r-sm); }
+    .btn-icon      { padding:6px; border-radius:var(--r-sm); }
+    .btn-full      { width:100%; }
+
+    /* ── Form inputs ── */
+    .inp { width:100%; background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:8px 11px; color:var(--ink); font-size:13px; outline:none; transition:border-color .14s, box-shadow .14s; }
+    .inp:focus { border-color:var(--primary-focus); box-shadow:0 0 0 2px rgba(94,106,210,.18); }
+    .inp::placeholder { color:var(--ink-tertiary); }
+    textarea.inp { resize:vertical; }
+    select.inp { cursor:pointer; }
+    select.inp option { background:var(--surface-3); }
+    .inp-sm { padding:5px 9px; font-size:12px; border-radius:var(--r-sm); }
+
+    .field { display:flex; flex-direction:column; gap:5px; }
+    .field label { font-size:11px; font-weight:500; color:var(--ink-subtle); letter-spacing:.3px; text-transform:uppercase; }
+
+    /* ── Role badges ── */
+    .role-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:var(--r-pill); font-size:11px; font-weight:600; letter-spacing:.3px; text-transform:uppercase; }
+    .role-admin  { background:rgba(94,106,210,.15); color:var(--primary-hover); border:1px solid rgba(94,106,210,.25); }
+    .role-editor { background:var(--success-dim); color:var(--success); border:1px solid rgba(39,166,68,.2); }
+
+    /* ── ① LOGIN / SIGNUP SCREENS ── */
+    .auth-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; }
+    .auth-card { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); padding:40px; width:100%; max-width:380px; position:relative; overflow:hidden; }
+    .auth-card::before { content:''; position:absolute; inset:0 0 auto; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent); pointer-events:none; }
+    .auth-logo { display:flex; align-items:center; gap:8px; font-size:16px; font-weight:600; letter-spacing:-.3px; margin-bottom:32px; }
+    .auth-logo svg { color:var(--primary); }
+    .auth-title { font-size:22px; font-weight:600; letter-spacing:-.5px; margin-bottom:6px; }
+    .auth-sub   { font-size:13px; color:var(--ink-subtle); margin-bottom:28px; }
+    .auth-fields { display:flex; flex-direction:column; gap:14px; margin-bottom:20px; }
+    .auth-err { font-size:12px; color:var(--danger); margin-top:8px; min-height:18px; }
+    .auth-footer { margin-top:20px; text-align:center; font-size:13px; color:var(--ink-tertiary); }
+    .auth-footer a { color:var(--primary); cursor:pointer; }
+    .auth-footer a:hover { color:var(--primary-hover); }
+    .auth-divider { border:none; border-top:1px solid var(--hairline); margin:20px 0; }
+
+    /* ── ② ADMIN SHELL ── */
+    #adminScreen { display:none; }
+
+    /* Top bar */
+    .topbar { position:fixed; inset:0 0 auto; z-index:200; height:52px; background:rgba(1,1,2,.9); backdrop-filter:blur(16px); border-bottom:1px solid var(--hairline); display:flex; align-items:center; justify-content:space-between; padding:0 20px; }
+    .topbar-left { display:flex; align-items:center; gap:10px; }
+    .topbar-logo { display:flex; align-items:center; gap:7px; font-size:15px; font-weight:600; letter-spacing:-.3px; }
+    .topbar-logo svg { color:var(--primary); }
+    .topbar-sep { width:1px; height:18px; background:var(--hairline-strong); }
+    .topbar-right { display:flex; align-items:center; gap:8px; }
+    .topbar-user { display:flex; align-items:center; gap:8px; padding:4px 10px; background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-pill); }
+    .topbar-username { font-size:13px; font-weight:500; }
+
+    /* Body grid */
+    .admin-body { display:grid; grid-template-columns:220px 1fr; min-height:100vh; padding-top:52px; }
+
+    /* Sidebar */
+    .sidebar { background:var(--surface-1); border-right:1px solid var(--hairline); padding:16px 0; position:sticky; top:52px; height:calc(100vh - 52px); overflow-y:auto; }
+    .sidebar-group-label { font-size:10px; font-weight:600; color:var(--ink-tertiary); letter-spacing:.6px; text-transform:uppercase; padding:12px 16px 5px; }
+    .sidebar-item { display:flex; align-items:center; gap:9px; padding:8px 16px; font-size:13px; font-weight:500; color:var(--ink-subtle); cursor:pointer; transition:background .12s, color .12s; }
+    .sidebar-item:hover { background:var(--surface-2); color:var(--ink-muted); }
+    .sidebar-item.active { background:var(--surface-2); color:var(--ink); }
+    .sidebar-item .si-icon { width:22px; height:22px; border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--surface-3); }
+    .sidebar-item.active .si-icon { background:rgba(94,106,210,.2); }
+    .sidebar-item .si-icon svg { color:var(--ink-tertiary); }
+    .sidebar-item.active .si-icon svg { color:var(--primary-hover); }
+    .si-count { margin-left:auto; background:var(--surface-3); border-radius:var(--r-xs,4px); padding:1px 7px; font-size:11px; color:var(--ink-tertiary); }
+
+    /* Main content */
+    .main { padding:32px; background:var(--canvas); min-height:calc(100vh - 52px); }
+    .main-header { margin-bottom:28px; }
+    .main-title { font-size:22px; font-weight:600; letter-spacing:-.5px; }
+    .main-desc  { font-size:13px; color:var(--ink-subtle); margin-top:4px; }
+
+    .section-page { display:none; }
+    .section-page.active { display:block; }
+
+    /* ── ③ DASHBOARD ── */
+    .dash-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+    .dash-card { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); padding:20px; cursor:pointer; transition:background .15s, border-color .15s; position:relative; overflow:hidden; }
+    .dash-card::before { content:''; position:absolute; inset:0 0 auto; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.055),transparent); pointer-events:none; }
+    .dash-card:hover { background:var(--surface-2); border-color:var(--hairline-strong); }
+    .dash-card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; }
+    .dash-card-icon { width:34px; height:34px; border-radius:var(--r-md); display:flex; align-items:center; justify-content:center; }
+    .dash-card-count { font-size:28px; font-weight:700; letter-spacing:-.8px; line-height:1; }
+    .dash-card-label { font-size:13px; font-weight:500; color:var(--ink-muted); margin-bottom:3px; }
+    .dash-card-sub   { font-size:11px; color:var(--ink-tertiary); }
+    .dash-card-arrow { color:var(--ink-tertiary); transition:color .14s; }
+    .dash-card:hover .dash-card-arrow { color:var(--primary-hover); }
+
+    /* Recent news preview on dashboard */
+    .dash-recent-title { font-size:13px; font-weight:600; color:var(--ink-subtle); text-transform:uppercase; letter-spacing:.3px; margin-bottom:12px; }
+    .dash-recent-list { display:flex; flex-direction:column; gap:8px; }
+    .dash-recent-item { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); padding:14px 16px; display:flex; align-items:center; gap:14px; }
+    .dash-recent-cat { font-size:11px; font-weight:500; color:var(--primary); text-transform:uppercase; letter-spacing:.3px; width:90px; flex-shrink:0; }
+    .dash-recent-text { font-size:13px; font-weight:500; color:var(--ink); flex:1; }
+    .dash-recent-time { font-size:12px; color:var(--ink-tertiary); flex-shrink:0; }
+
+    /* ── ④ SECTION PANELS ── */
+    .panel { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); overflow:hidden; margin-bottom:16px; }
+    .panel-head { background:var(--surface-2); border-bottom:1px solid var(--hairline); padding:11px 16px; display:flex; align-items:center; justify-content:space-between; }
+    .panel-head h3 { font-size:13px; font-weight:600; }
+    .panel-body { padding:16px; }
+
+    /* Card-style edit rows */
+    .edit-list { display:flex; flex-direction:column; gap:8px; }
+    .edit-row { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px 14px; display:flex; align-items:center; gap:10px; transition:border-color .12s; }
+    .edit-row:hover { border-color:var(--hairline-strong); }
+    .edit-row .drag { color:var(--ink-tertiary); cursor:grab; flex-shrink:0; font-size:15px; }
+    .edit-row input, .edit-row select { background:transparent; border:none; outline:none; color:var(--ink); font-size:13px; }
+    .edit-row input:focus, .edit-row select:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:2px 6px; }
+    .edit-row input::placeholder { color:var(--ink-tertiary); }
+    .edit-row .del-btn { flex-shrink:0; opacity:.5; transition:opacity .12s; }
+    .edit-row:hover .del-btn { opacity:1; }
+
+    /* Score rows */
+    .score-row { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:10px 14px; display:grid; grid-template-columns:1fr 110px 1fr 80px 60px 36px; align-items:center; gap:8px; transition:border-color .12s; }
+    .score-row:hover { border-color:var(--hairline-strong); }
+    .score-row input, .score-row select { background:transparent; border:none; outline:none; color:var(--ink); font-size:13px; width:100%; }
+    .score-row input:focus, .score-row select:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:2px 6px; }
+    .score-row input::placeholder { color:var(--ink-tertiary); }
+    .score-label { font-size:10px; color:var(--ink-tertiary); text-transform:uppercase; letter-spacing:.3px; text-align:center; margin-bottom:4px; }
+    .score-col { display:flex; flex-direction:column; }
+
+    /* News card rows */
+    .news-edit-row { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px 14px; transition:border-color .12s; }
+    .news-edit-row:hover { border-color:var(--hairline-strong); }
+    .news-edit-top { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .news-edit-title-row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:start; }
+    .news-edit-title-row input { background:transparent; border:none; outline:none; color:var(--ink); font-size:13px; font-weight:500; width:100%; }
+    .news-edit-title-row input:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:3px 7px; }
+    .news-edit-desc { margin-top:6px; }
+    .news-edit-desc input { background:transparent; border:none; outline:none; color:var(--ink-subtle); font-size:12px; width:100%; }
+    .news-edit-desc input:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:2px 6px; }
+    .news-edit-meta { display:flex; align-items:center; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid var(--hairline); }
+    .news-edit-meta select, .news-edit-meta input { background:var(--surface-3); border:1px solid var(--hairline); border-radius:var(--r-sm); padding:3px 8px; color:var(--ink); font-size:12px; outline:none; }
+    .news-edit-meta option { background:var(--surface-3); }
+
+    /* Featured split layout */
+    .featured-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .featured-preview { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-lg); overflow:hidden; }
+    .preview-img { height:120px; background:var(--surface-3); display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--hairline); }
+    .preview-img span { font-size:12px; color:var(--ink-tertiary); }
+    .preview-body { padding:16px; }
+    .preview-badges { display:flex; gap:6px; margin-bottom:10px; }
+    .preview-badge { padding:2px 8px; border-radius:var(--r-pill); font-size:11px; font-weight:500; }
+    .pb-live { background:rgba(239,68,68,.12); color:#f87171; border:1px solid rgba(239,68,68,.2); }
+    .pb-tag  { background:rgba(94,106,210,.14); color:var(--primary-hover); border:1px solid rgba(94,106,210,.2); }
+    .preview-title { font-size:15px; font-weight:600; line-height:1.3; letter-spacing:-.2px; margin-bottom:8px; }
+    .preview-desc  { font-size:12px; color:var(--ink-subtle); line-height:1.5; }
+    .preview-author { margin-top:12px; padding-top:10px; border-top:1px solid var(--hairline); font-size:11px; color:var(--ink-tertiary); }
+
+    .featured-form { display:flex; flex-direction:column; gap:12px; }
+    .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .form-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+
+    /* Standings editor */
+    .league-tabs { display:flex; gap:4px; margin-bottom:16px; }
+    .league-tab { padding:6px 14px; border-radius:var(--r-md); font-size:12px; font-weight:500; color:var(--ink-subtle); background:var(--surface-2); border:1px solid var(--hairline); cursor:pointer; transition:background .12s, color .12s; }
+    .league-tab.active { background:var(--primary); color:var(--on-primary); border-color:var(--primary); }
+
+    .standings-edit-list { display:flex; flex-direction:column; gap:6px; }
+    .standing-row { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:8px 12px; display:grid; grid-template-columns:36px 55px 1fr 36px 32px 32px 32px 46px 42px 68px 32px; align-items:center; gap:6px; transition:border-color .12s; }
+    .standing-row:hover { border-color:var(--hairline-strong); }
+    .standing-row input, .standing-row select { background:transparent; border:none; outline:none; color:var(--ink); font-size:12px; width:100%; text-align:center; }
+    .standing-row input:first-of-type { text-align:center; }
+    .standing-row input.name-inp { text-align:left; }
+    .standing-row input:focus, .standing-row select:focus { background:var(--surface-3); border-radius:var(--r-xs,4px); padding:2px 4px; }
+
+    /* Fixture rows */
+    .fixture-row-edit { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:10px 14px; display:grid; grid-template-columns:180px 1fr 1fr 1fr 36px; align-items:center; gap:8px; transition:border-color .12s; }
+    .fixture-row-edit:hover { border-color:var(--hairline-strong); }
+    .fixture-row-edit input { background:transparent; border:none; outline:none; color:var(--ink); font-size:13px; width:100%; }
+    .fixture-row-edit input:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:2px 6px; }
+    .fixture-row-edit input::placeholder { color:var(--ink-tertiary); }
+    .fixture-vs { font-size:11px; color:var(--ink-tertiary); text-align:center; }
+
+    /* Transfer rows */
+    .transfer-row-edit { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px 14px; transition:border-color .12s; }
+    .transfer-row-edit:hover { border-color:var(--hairline-strong); }
+    .transfer-top { display:grid; grid-template-columns:1fr 1fr 1fr 80px 70px 36px; gap:8px; align-items:center; margin-bottom:8px; }
+    .transfer-top input, .transfer-top select { background:transparent; border:none; outline:none; color:var(--ink); font-size:13px; width:100%; }
+    .transfer-top input:focus, .transfer-top select:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:2px 6px; }
+    .transfer-top input::placeholder { color:var(--ink-tertiary); }
+    .transfer-bottom { display:grid; grid-template-columns:1fr 80px; gap:8px; align-items:center; padding-top:8px; border-top:1px solid var(--hairline); }
+    .transfer-bottom input { background:transparent; border:none; outline:none; color:var(--ink-subtle); font-size:12px; width:100%; }
+    .transfer-bottom input:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:2px 6px; }
+    .transfer-bottom input::placeholder { color:var(--ink-tertiary); }
+
+    /* ── ⑤ USERS SECTION ── */
+    .user-list { display:flex; flex-direction:column; gap:8px; }
+    .user-row { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px 16px; display:flex; align-items:center; gap:14px; transition:border-color .12s; }
+    .user-row:hover { border-color:var(--hairline-strong); }
+    .user-avatar { width:32px; height:32px; border-radius:var(--r-pill); background:var(--surface-3); border:1px solid var(--hairline); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:var(--ink-subtle); flex-shrink:0; }
+    .user-info { flex:1; }
+    .user-name  { font-size:13px; font-weight:500; }
+    .user-email { font-size:12px; color:var(--ink-tertiary); }
+    .user-meta  { font-size:11px; color:var(--ink-tertiary); margin-left:auto; }
+    .user-actions { display:flex; align-items:center; gap:8px; }
+    .role-select { background:var(--surface-3); border:1px solid var(--hairline); border-radius:var(--r-sm); padding:4px 9px; color:var(--ink); font-size:12px; font-weight:500; outline:none; cursor:pointer; }
+    .role-select option { background:var(--surface-3); }
+    .me-tag { font-size:10px; font-weight:600; color:var(--ink-tertiary); background:var(--surface-3); border-radius:var(--r-xs,4px); padding:1px 6px; text-transform:uppercase; letter-spacing:.3px; }
+
+    /* Column headers for score/standing */
+    .col-headers { display:grid; padding:0 14px 4px; }
+    .col-headers span { font-size:10px; color:var(--ink-tertiary); text-transform:uppercase; letter-spacing:.3px; text-align:center; }
+
+    /* ── Toast ── */
+    #toast { position:fixed; bottom:24px; right:24px; z-index:9999; padding:10px 16px; border-radius:var(--r-md); font-size:13px; font-weight:500; opacity:0; transform:translateY(8px); transition:opacity .2s, transform .2s; pointer-events:none; }
+    #toast.ok  { background:var(--surface-2); border:1px solid rgba(39,166,68,.3);  color:var(--success); }
+    #toast.err { background:var(--surface-2); border:1px solid rgba(239,68,68,.3);  color:var(--danger); }
+    #toast.show { opacity:1; transform:translateY(0); }
+
+    /* ── Util ── */
+    .hidden { display:none !important; }
+    .mt8 { margin-top:8px; }
+    .gap-8 { gap:8px; }
+    .flex-row { display:flex; align-items:center; gap:8px; }
+    .del-btn { background:var(--danger-dim); color:var(--danger); border:1px solid rgba(239,68,68,.18); border-radius:var(--r-sm); padding:5px; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:.6; transition:opacity .12s; flex-shrink:0; }
+    .del-btn:hover { opacity:1; background:rgba(239,68,68,.2); }
+    .save-indicator { font-size:12px; color:var(--ink-tertiary); }
+    .save-indicator.ok  { color:var(--success); }
+    .save-indicator.err { color:var(--danger); }
+
+    @media (max-width:900px) {
+      .admin-body { grid-template-columns:1fr; }
+      .sidebar { position:static; height:auto; border-right:none; border-bottom:1px solid var(--hairline); display:flex; overflow-x:auto; padding:8px; }
+      .sidebar-group-label { display:none; }
+      .sidebar-item { padding:6px 10px; white-space:nowrap; }
+      .dash-grid { grid-template-columns:repeat(2,1fr); }
+      .featured-grid { grid-template-columns:1fr; }
+      .score-row { grid-template-columns:1fr 80px 1fr 70px 50px 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     LOADING / 403 화면
+════════════════════════════════════════════════════ -->
+<div id="gateScreen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+  <div style="text-align:center;color:var(--ink-tertiary);">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="margin:0 auto 12px;display:block;animation:spin 1s linear infinite;">
+      <circle cx="16" cy="16" r="12" stroke="var(--hairline-strong)" stroke-width="2.5"/>
+      <path d="M16 4a12 12 0 0112 12" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    <p style="font-size:13px;">인증 확인 중...</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     ADMIN SHELL
+════════════════════════════════════════════════════ -->
+<div id="adminScreen">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".35"/>
+        </svg>
+        Kickoff
+      </div>
+      <div class="topbar-sep"></div>
+      <span style="font-size:12px;color:var(--ink-tertiary);">Admin Panel</span>
+    </div>
+    <div class="topbar-right">
+      <span class="save-indicator" id="saveIndicator"></span>
+      <div class="topbar-user">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="var(--ink-subtle)" stroke-width="1.2"/><path d="M2.5 12c0-2.49 2.02-4.5 4.5-4.5s4.5 2.01 4.5 4.5" stroke="var(--ink-subtle)" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span class="topbar-username" id="topbarUsername">—</span>
+        <span id="topbarRoleBadge"></span>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="window.open('/kickoff','_blank')">사이트 보기</button>
+      <button class="btn btn-primary btn-sm" onclick="saveAll()" id="saveBtn">저장</button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-group-label">개요</div>
+      <div class="sidebar-item active" onclick="switchSection('dashboard')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="4.5" height="4.5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="7.5" y="1" width="4.5" height="4.5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="7.5" width="4.5" height="4.5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="7.5" y="7.5" width="4.5" height="4.5" rx="1" stroke="currentColor" stroke-width="1.2"/></svg></span>
+        대시보드
+      </div>
+
+      <div class="sidebar-group-label">콘텐츠</div>
+      <div class="sidebar-item" onclick="switchSection('breaking')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 3h10M1.5 6.5h7M1.5 10h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+        속보 티커 <span class="si-count" id="cnt-breaking">0</span>
+      </div>
+      <div class="sidebar-item" onclick="switchSection('featured')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 6h5M4 8.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+        메인 기사
+      </div>
+      <div class="sidebar-item" onclick="switchSection('scores')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 6.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+        경기 결과 <span class="si-count" id="cnt-scores">0</span>
+      </div>
+      <div class="sidebar-item" onclick="switchSection('popular')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5l1.27 2.57 2.84.41-2.05 2 .48 2.82L6.5 8l-2.54 1.3.48-2.82-2.05-2 2.84-.41L6.5 1.5z" stroke="currentColor" stroke-width="1.1"/></svg></span>
+        인기 뉴스 <span class="si-count" id="cnt-popular">0</span>
+      </div>
+      <div class="sidebar-item" onclick="switchSection('news')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 2.5h10v8H1.5z" stroke="currentColor" stroke-width="1.2" rx="1"/><path d="M3.5 5h6M3.5 7.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+        최신 뉴스 <span class="si-count" id="cnt-news">0</span>
+      </div>
+
+      <div class="sidebar-group-label">데이터</div>
+      <div class="sidebar-item" onclick="switchSection('standings')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 10.5V7l2.5-2 2 1.5L8.5 4l3 2.5v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        순위표
+      </div>
+      <div class="sidebar-item" onclick="switchSection('fixtures')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="2" width="10" height="9.5" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 5h10M4.5 1v2M8.5 1v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+        경기 일정 <span class="si-count" id="cnt-fixtures">0</span>
+      </div>
+      <div class="sidebar-item" onclick="switchSection('transfers')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 4.5h9M8 2l3 2.5L8 7M11 8.5H2M5 6.5l-3 2 3 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        이적 시장 <span class="si-count" id="cnt-transfers">0</span>
+      </div>
+
+      <div class="sidebar-group-label admin-only hidden">관리</div>
+      <div class="sidebar-item admin-only hidden" onclick="switchSection('users')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5" cy="4.5" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M1 11c0-2.21 1.79-4 4-4s4 1.79 4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9.5 2v4M7.5 4h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+        사용자 관리
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="section-page active" id="sec-dashboard">
+        <div class="main-header">
+          <div class="main-title">대시보드</div>
+          <div class="main-desc">전체 콘텐츠 현황을 한눈에 확인하세요.</div>
+        </div>
+
+        <div class="dash-grid" id="dashGrid"></div>
+
+        <div class="dash-recent-title">최신 뉴스 기사</div>
+        <div class="dash-recent-list" id="dashRecentNews"></div>
+      </div>
+
+      <!-- ── 속보 티커 ── -->
+      <div class="section-page" id="sec-breaking">
+        <div class="main-header">
+          <div class="main-title">속보 티커</div>
+          <div class="main-desc">상단 스크롤 배너에 표시되는 속보 문구입니다. 순서대로 반복 출력됩니다.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>속보 목록</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addBreaking()">+ 항목 추가</button>
+          </div>
+          <div class="panel-body">
+            <div class="edit-list" id="breakingList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 메인 기사 ── -->
+      <div class="section-page" id="sec-featured">
+        <div class="main-header">
+          <div class="main-title">메인 기사</div>
+          <div class="main-desc">히어로 섹션 최상단에 표시되는 주요 기사입니다.</div>
+        </div>
+        <div class="featured-grid">
+          <div class="featured-preview">
+            <div class="preview-img"><span id="prev-imgDate">프리미어리그 · 날짜</span></div>
+            <div class="preview-body">
+              <div class="preview-badges">
+                <span class="preview-badge pb-live" id="prev-label">LIVE</span>
+                <span class="preview-badge pb-tag"  id="prev-tag">단독</span>
+              </div>
+              <div class="preview-title" id="prev-title">기사 제목이 여기 표시됩니다</div>
+              <div class="preview-desc"  id="prev-desc">본문 요약이 여기 표시됩니다.</div>
+              <div class="preview-author" id="prev-author">작성자 · 시간</div>
+            </div>
+          </div>
+          <div class="featured-form">
+            <div class="form-row-3">
+              <div class="field"><label>카테고리</label><input class="inp inp-sm" id="f-category" oninput="updatePreview()" /></div>
+              <div class="field"><label>라벨</label><input class="inp inp-sm" id="f-label" placeholder="LIVE" oninput="updatePreview()" /></div>
+              <div class="field"><label>태그</label><input class="inp inp-sm" id="f-tag" placeholder="단독" oninput="updatePreview()" /></div>
+            </div>
+            <div class="field"><label>이미지 날짜 표시</label><input class="inp inp-sm" id="f-imgDate" oninput="updatePreview()" /></div>
+            <div class="field"><label>제목</label><textarea class="inp" id="f-title" rows="2" oninput="updatePreview()"></textarea></div>
+            <div class="field"><label>본문 요약</label><textarea class="inp" id="f-desc" rows="3" oninput="updatePreview()"></textarea></div>
+            <div class="form-row-2">
+              <div class="field"><label>작성자</label><input class="inp inp-sm" id="f-author" oninput="updatePreview()" /></div>
+              <div class="field"><label>작성 시간</label><input class="inp inp-sm" id="f-time" oninput="updatePreview()" /></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 경기 결과 ── -->
+      <div class="section-page" id="sec-scores">
+        <div class="main-header">
+          <div class="main-title">경기 결과</div>
+          <div class="main-desc">히어로 사이드바 스코어보드에 표시되는 오늘의 경기입니다.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>경기 목록</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addScore()">+ 경기 추가</button>
+          </div>
+          <div class="panel-body">
+            <div class="col-headers" style="grid-template-columns:1fr 110px 1fr 80px 60px 36px;gap:8px;padding:0 14px 4px;">
+              <span>홈 팀</span><span>스코어</span><span>원정 팀</span><span>상태</span><span style="text-align:center;">라이브</span><span></span>
+            </div>
+            <div class="edit-list" id="scoresList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 인기 뉴스 ── -->
+      <div class="section-page" id="sec-popular">
+        <div class="main-header">
+          <div class="main-title">인기 뉴스</div>
+          <div class="main-desc">히어로 사이드바 "많이 본 기사" 목록입니다.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>기사 목록</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addPopular()">+ 기사 추가</button>
+          </div>
+          <div class="panel-body">
+            <div class="edit-list" id="popularList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 최신 뉴스 ── -->
+      <div class="section-page" id="sec-news">
+        <div class="main-header">
+          <div class="main-title">최신 뉴스</div>
+          <div class="main-desc">뉴스 카드 그리드에 표시되는 기사입니다. 카드를 클릭해 직접 편집하세요.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>기사 목록</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addNews()">+ 기사 추가</button>
+          </div>
+          <div class="panel-body">
+            <div class="edit-list" id="newsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 순위표 ── -->
+      <div class="section-page" id="sec-standings">
+        <div class="main-header">
+          <div class="main-title">순위표</div>
+          <div class="main-desc">리그별 순위 데이터입니다. 폼은 W/D/L 5글자 문자열로 입력하세요.</div>
+        </div>
+        <div class="league-tabs" id="leagueTabs"></div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3 id="standingsPanelTitle">프리미어리그 순위</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addStandingRow()">+ 팀 추가</button>
+          </div>
+          <div class="panel-body">
+            <div class="col-headers" style="grid-template-columns:36px 55px 1fr 36px 32px 32px 32px 46px 42px 68px 32px;gap:6px;padding:0 12px 4px;">
+              <span>순위</span><span>등급</span><span style="text-align:left;">구단</span>
+              <span>경기</span><span>승</span><span>무</span><span>패</span><span>득실</span><span>승점</span><span>폼</span><span></span>
+            </div>
+            <div class="standings-edit-list" id="standingsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 경기 일정 ── -->
+      <div class="section-page" id="sec-fixtures">
+        <div class="main-header">
+          <div class="main-title">경기 일정</div>
+          <div class="main-desc">예정된 경기 일정입니다.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>경기 목록</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addFixture()">+ 경기 추가</button>
+          </div>
+          <div class="panel-body">
+            <div class="col-headers" style="grid-template-columns:180px 1fr 36px 1fr 1fr 36px;gap:8px;padding:0 14px 4px;">
+              <span>리그 · 라운드</span><span>홈 팀</span><span></span><span>원정 팀</span><span>날짜 · 시간</span><span></span>
+            </div>
+            <div class="edit-list" id="fixturesList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 이적 시장 ── -->
+      <div class="section-page" id="sec-transfers">
+        <div class="main-header">
+          <div class="main-title">이적 시장</div>
+          <div class="main-desc">이적 카드에 표시되는 이적 정보입니다.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>이적 목록</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addTransfer()">+ 이적 추가</button>
+          </div>
+          <div class="panel-body">
+            <div class="edit-list" id="transfersList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 사용자 관리 (admin only) ── -->
+      <div class="section-page admin-only hidden" id="sec-users">
+        <div class="main-header">
+          <div class="main-title">사용자 관리</div>
+          <div class="main-desc">등록된 사용자 목록입니다. 역할을 변경하거나 계정을 삭제할 수 있습니다.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>사용자 목록</h3></div>
+          <div class="panel-body">
+            <div class="user-list" id="userList"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCRIPT
+════════════════════════════════════════════════════ -->
+<script>
+/* ── State ── */
+let D = {};
+let ME = null;
+let activeLeague = 'pl';
+const LEAGUES = { pl:'프리미어리그', laliga:'라 리가', bundesliga:'분데스리가', seriea:'세리에 A' };
+const BADGE_OPTS = ['new','transfer','analysis','result','national','official','rumor','done'];
+const BADGE_LABEL = { new:'새 기사', transfer:'이적', analysis:'분석', result:'결과', national:'대표팀', official:'공식', rumor:'루머', done:'완료' };
+const TIER_OPTS = ['cl','uel','rel','def'];
+
+/* ── Init ── */
+(async function init() {
+  try {
+    const r = await fetch('/api/auth/me', { credentials: 'include' });
+    if (r.ok) {
+      ME = await r.json();
+      if (ME.role !== 'admin') {
+        // Editor: no admin access
+        window.location.href = '/kickoff';
+        return;
+      }
+      const dr = await fetch('/api/data');
+      D = await dr.json();
+      enterAdmin();
+    } else {
+      // Not logged in → redirect to login
+      window.location.href = '/kickoff/login?redirect=/kickoff/admin';
+    }
+  } catch {
+    window.location.href = '/kickoff/login?redirect=/kickoff/admin';
+  }
+})();
+
+function enterAdmin() {
+  document.getElementById('gateScreen').style.display = 'none';
+  document.getElementById('adminScreen').style.display = 'block';
+
+  // Topbar user info
+  document.getElementById('topbarUsername').textContent = ME.username;
+  document.getElementById('topbarRoleBadge').innerHTML =
+    `<span class="role-badge role-${ME.role}">${ME.role === 'admin' ? '관리자' : '편집자'}</span>`;
+
+  // Show admin-only elements
+  if (ME.role === 'admin') {
+    document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+  }
+
+  renderAllSections();
+  switchSection('dashboard');
+}
+
+async function doLogout() {
+  try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) {}
+  window.location.href = '/kickoff';
+}
+
+/* ── Section nav ── */
+function switchSection(name) {
+  document.querySelectorAll('.section-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  const btn = document.querySelector(`.sidebar-item[onclick="switchSection('${name}')"]`);
+  if (btn) btn.classList.add('active');
+}
+
+/* ── Save ── */
+async function saveAll() {
+  collectAll();
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '저장 중...';
+  try {
+    const r = await fetch('/api/data', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(D)
+    });
+    if (!r.ok) throw new Error();
+    showToast('저장됐습니다.', 'ok');
+    setIndicator('저장 완료', 'ok');
+    renderDashboard(); // counts 업데이트
+  } catch {
+    showToast('저장에 실패했습니다.', 'err');
+    setIndicator('저장 실패', 'err');
+  } finally {
+    btn.textContent = '저장';
+  }
+}
+
+function setIndicator(msg, type) {
+  const el = document.getElementById('saveIndicator');
+  el.textContent = msg; el.className = 'save-indicator ' + type;
+  setTimeout(() => { el.textContent = ''; el.className = 'save-indicator'; }, 3000);
+}
+
+function collectAll() {
+  collectBreaking(); collectFeatured(); collectScores();
+  collectPopular(); collectNews(); collectStandings();
+  collectFixtures(); collectTransfers();
+}
+
+/* ── Render all ── */
+function renderAllSections() {
+  renderDashboard();
+  renderBreaking(); renderFeatured(); renderScores();
+  renderPopular(); renderNews(); renderLeagueTabs();
+  renderStandingsEditor(activeLeague); renderFixtures(); renderTransfers();
+  updateCounts();
+  if (ME.role === 'admin') renderUsers();
+}
+
+function updateCounts() {
+  const set = (id, n) => { const el = document.getElementById(id); if(el) el.textContent = n; };
+  set('cnt-breaking',  D.breaking?.length  || 0);
+  set('cnt-scores',    D.scores?.length    || 0);
+  set('cnt-popular',   D.popular?.length   || 0);
+  set('cnt-news',      D.news?.length      || 0);
+  set('cnt-fixtures',  D.fixtures?.length  || 0);
+  set('cnt-transfers', D.transfers?.length || 0);
+}
+
+/* ── DASHBOARD ── */
+const DASH_CARDS = [
+  { key:'breaking',  label:'속보 티커',  sub:'배너 문구',        color:'rgba(94,106,210,.18)',  tc:'var(--primary-hover)', section:'breaking'  },
+  { key:'featured',  label:'메인 기사',  sub:'히어로 기사',       color:'rgba(251,191,36,.12)',  tc:'#fbbf24',              section:'featured'  },
+  { key:'scores',    label:'경기 결과',  sub:'스코어보드',        color:'rgba(74,222,128,.1)',   tc:'#4ade80',              section:'scores'    },
+  { key:'popular',   label:'인기 뉴스',  sub:'많이 본 기사',      color:'rgba(248,113,113,.1)', tc:'#f87171',              section:'popular'   },
+  { key:'news',      label:'최신 뉴스',  sub:'뉴스 그리드',       color:'rgba(94,106,210,.18)',  tc:'var(--primary-hover)', section:'news'      },
+  { key:'standings', label:'순위표',     sub:'4개 리그',          color:'rgba(251,191,36,.12)',  tc:'#fbbf24',              section:'standings' },
+  { key:'fixtures',  label:'경기 일정',  sub:'예정 경기',         color:'rgba(74,222,128,.1)',   tc:'#4ade80',              section:'fixtures'  },
+  { key:'transfers', label:'이적 시장',  sub:'이적 정보',         color:'rgba(248,113,113,.1)', tc:'#f87171',              section:'transfers' },
+];
+function renderDashboard() {
+  const counts = {
+    breaking: D.breaking?.length||0, featured: 1,
+    scores: D.scores?.length||0, popular: D.popular?.length||0,
+    news: D.news?.length||0, standings: 4,
+    fixtures: D.fixtures?.length||0, transfers: D.transfers?.length||0,
+  };
+  document.getElementById('dashGrid').innerHTML = DASH_CARDS.map(c => `
+    <div class="dash-card" onclick="switchSection('${c.section}')">
+      <div class="dash-card-top">
+        <div class="dash-card-icon" style="background:${c.color};">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="4.5" stroke="${c.tc}" stroke-width="1.4"/></svg>
+        </div>
+        <svg class="dash-card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="dash-card-count" style="color:${c.tc};">${counts[c.key]}</div>
+      <div class="dash-card-label">${c.label}</div>
+      <div class="dash-card-sub">${c.sub}</div>
+    </div>`).join('');
+
+  // Recent news
+  document.getElementById('dashRecentNews').innerHTML = (D.news||[]).slice(0,4).map(n => `
+    <div class="dash-recent-item">
+      <span class="dash-recent-cat">${n.category||''}</span>
+      <span class="dash-recent-text">${n.title||''}</span>
+      <span class="dash-recent-time">${n.time||''}</span>
+    </div>`).join('') || '<div style="color:var(--ink-tertiary);font-size:13px;padding:8px 0;">뉴스 없음</div>';
+}
+
+/* ── DEL button helper ── */
+const DEL = `<button class="del-btn" onclick="this.closest('[data-row]').remove();updateCounts();" title="삭제"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>`;
+const ESC = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* ── BREAKING ── */
+function renderBreaking() {
+  const list = document.getElementById('breakingList');
+  list.innerHTML = '';
+  (D.breaking||[]).forEach(t => list.appendChild(mkBreakingRow(t)));
+}
+function mkBreakingRow(text='') {
+  const d = document.createElement('div');
+  d.className = 'edit-row'; d.dataset.row = '1';
+  d.innerHTML = `<span class="drag">⠿</span>
+    <input type="text" value="${ESC(text)}" placeholder="속보 문구 입력" style="flex:1;" />
+    ${DEL}`;
+  return d;
+}
+function addBreaking() { document.getElementById('breakingList').appendChild(mkBreakingRow()); updateCounts(); }
+function collectBreaking() {
+  D.breaking = [...document.querySelectorAll('#breakingList input')]
+    .map(i=>i.value.trim()).filter(Boolean);
+}
+
+/* ── FEATURED ── */
+function renderFeatured() {
+  const f = D.featured || {};
+  ['category','label','tag','imgDate','title','desc','author','time'].forEach(k => {
+    const el = document.getElementById('f-'+k);
+    if(el) el.value = f[k]||'';
+  });
+  updatePreview();
+}
+function updatePreview() {
+  const g = id => document.getElementById(id)?.value||'';
+  document.getElementById('prev-imgDate').textContent  = g('f-imgDate')  || '날짜';
+  document.getElementById('prev-label').textContent    = g('f-label')    || 'LIVE';
+  document.getElementById('prev-tag').textContent      = g('f-tag')      || '태그';
+  document.getElementById('prev-title').textContent    = g('f-title')    || '제목';
+  document.getElementById('prev-desc').textContent     = g('f-desc')     || '본문 요약';
+  document.getElementById('prev-author').textContent   = (g('f-author')||'작성자') + ' · ' + (g('f-time')||'시간');
+}
+function collectFeatured() {
+  const g = id => document.getElementById(id)?.value.trim()||'';
+  D.featured = { category:g('f-category'), label:g('f-label'), tag:g('f-tag'),
+    imgDate:g('f-imgDate'), title:g('f-title'), desc:g('f-desc'),
+    author:g('f-author'), time:g('f-time') };
+}
+
+/* ── SCORES ── */
+function renderScores() {
+  const list = document.getElementById('scoresList');
+  list.innerHTML = '';
+  (D.scores||[]).forEach(s => list.appendChild(mkScoreRow(s)));
+}
+function mkScoreRow(s={}) {
+  const d = document.createElement('div');
+  d.className = 'score-row'; d.dataset.row = '1';
+  d.innerHTML = `
+    <input type="text" value="${ESC(s.home)}" placeholder="홈 팀" />
+    <input type="text" value="${ESC(s.score||'0 - 0')}" style="text-align:center;font-weight:600;" />
+    <input type="text" value="${ESC(s.away)}" placeholder="원정 팀" style="text-align:right;" />
+    <input type="text" value="${ESC(s.status)}" placeholder="FT / 73'" style="text-align:center;" />
+    <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
+      <input type="checkbox" ${s.live?'checked':''} title="라이브" style="cursor:pointer;accent-color:var(--primary);width:14px;height:14px;" />
+      <span style="font-size:11px;color:var(--ink-tertiary);">LIVE</span>
+    </div>
+    ${DEL}`;
+  return d;
+}
+function addScore() { document.getElementById('scoresList').appendChild(mkScoreRow()); updateCounts(); }
+function collectScores() {
+  D.scores = [...document.querySelectorAll('#scoresList [data-row]')].map(r => {
+    const ins = r.querySelectorAll('input');
+    return { home:ins[0].value, score:ins[1].value, away:ins[2].value, status:ins[3].value, live:ins[4].checked };
+  });
+}
+
+/* ── POPULAR ── */
+function renderPopular() {
+  const list = document.getElementById('popularList');
+  list.innerHTML = '';
+  (D.popular||[]).forEach(p => list.appendChild(mkPopularRow(p)));
+}
+function mkPopularRow(p={}) {
+  const d = document.createElement('div');
+  d.className = 'edit-row'; d.dataset.row = '1';
+  d.innerHTML = `
+    <input type="text" value="${ESC(p.title)}" placeholder="기사 제목" style="flex:1;" />
+    <input type="text" value="${ESC(p.meta)}"  placeholder="출처 · 시간" style="width:160px;color:var(--ink-subtle);" />
+    ${DEL}`;
+  return d;
+}
+function addPopular() { document.getElementById('popularList').appendChild(mkPopularRow()); updateCounts(); }
+function collectPopular() {
+  D.popular = [...document.querySelectorAll('#popularList [data-row]')].map(r => {
+    const ins = r.querySelectorAll('input');
+    return { title:ins[0].value, meta:ins[1].value };
+  });
+}
+
+/* ── NEWS ── */
+function renderNews() {
+  const list = document.getElementById('newsList');
+  list.innerHTML = '';
+  (D.news||[]).forEach(n => list.appendChild(mkNewsRow(n)));
+}
+function mkNewsRow(n={}) {
+  const d = document.createElement('div');
+  d.className = 'news-edit-row'; d.dataset.row = '1';
+  const badgeOpts = BADGE_OPTS.map(b=>`<option value="${b}" ${n.badge===b?'selected':''}>${BADGE_LABEL[b]||b}</option>`).join('');
+  d.innerHTML = `
+    <div class="news-edit-top">
+      <input type="text" value="${ESC(n.category)}" placeholder="카테고리" style="width:110px;background:rgba(94,106,210,.1);border:1px solid rgba(94,106,210,.2);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--primary-hover);font-size:11px;font-weight:500;outline:none;text-transform:uppercase;letter-spacing:.3px;" />
+      <div style="flex:1;"></div>
+      <select style="background:var(--surface-3);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:3px 8px;color:var(--ink);font-size:12px;outline:none;">${badgeOpts}</select>
+      <input type="text" value="${ESC(n.time)}" placeholder="1시간 전" style="width:80px;color:var(--ink-tertiary);font-size:12px;" />
+      <button class="del-btn" onclick="this.closest('[data-row]').remove();updateCounts();" title="삭제"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </div>
+    <input type="text" value="${ESC(n.title)}" placeholder="기사 제목" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink);font-size:13px;font-weight:500;" />
+    <div class="mt8">
+      <input type="text" value="${ESC(n.desc)}" placeholder="기사 요약" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink-subtle);font-size:12px;" />
+    </div>`;
+  return d;
+}
+function addNews() { document.getElementById('newsList').appendChild(mkNewsRow()); updateCounts(); }
+function collectNews() {
+  D.news = [...document.querySelectorAll('#newsList [data-row]')].map(r => {
+    const inputs  = r.querySelectorAll('input');
+    const selects = r.querySelectorAll('select');
+    return { category:inputs[0].value, badge:selects[0].value, time:inputs[1].value, title:inputs[2].value, desc:inputs[3].value };
+  });
+}
+
+/* ── STANDINGS ── */
+function renderLeagueTabs() {
+  document.getElementById('leagueTabs').innerHTML = Object.entries(LEAGUES).map(([k,v])=>
+    `<div class="league-tab${k===activeLeague?' active':''}" onclick="switchLeague('${k}')">${v}</div>`).join('');
+}
+function switchLeague(l) { collectStandings(); activeLeague=l; renderLeagueTabs(); renderStandingsEditor(l); }
+function renderStandingsEditor(league) {
+  document.getElementById('standingsPanelTitle').textContent = LEAGUES[league]+' 순위';
+  const list = document.getElementById('standingsList');
+  list.innerHTML = '';
+  (D.standings?.[league]||[]).forEach(r => list.appendChild(mkStandingRow(r)));
+}
+function mkStandingRow(r={}) {
+  const d = document.createElement('div');
+  d.className = 'standing-row'; d.dataset.row = '1';
+  const tierOpts = TIER_OPTS.map(t=>`<option value="${t}" ${r.tier===t?'selected':''}>${t.toUpperCase()}</option>`).join('');
+  d.innerHTML = `
+    <input type="number" value="${r.rank||''}" min="1" max="99" />
+    <select>${tierOpts}</select>
+    <input type="text" value="${ESC(r.name)}" class="name-inp" placeholder="구단명" />
+    <input type="number" value="${r.p||0}" /><input type="number" value="${r.w||0}" />
+    <input type="number" value="${r.d||0}" /><input type="number" value="${r.l||0}" />
+    <input type="text"   value="${ESC(r.gd||'0')}" />
+    <input type="number" value="${r.pts||0}" />
+    <input type="text"   value="${ESC(r.form||'')}" placeholder="WWDWL" />
+    ${DEL}`;
+  return d;
+}
+function addStandingRow() { document.getElementById('standingsList').appendChild(mkStandingRow()); }
+function collectStandings() {
+  if (!D.standings) D.standings = {};
+  D.standings[activeLeague] = [...document.querySelectorAll('#standingsList [data-row]')].map(r => {
+    const ins = r.querySelectorAll('input,select');
+    return { rank:+ins[0].value, tier:ins[1].value, name:ins[2].value,
+      p:+ins[3].value, w:+ins[4].value, d:+ins[5].value, l:+ins[6].value,
+      gd:ins[7].value, pts:+ins[8].value, form:ins[9].value };
+  });
+}
+
+/* ── FIXTURES ── */
+function renderFixtures() {
+  const list = document.getElementById('fixturesList');
+  list.innerHTML = '';
+  (D.fixtures||[]).forEach(f => list.appendChild(mkFixtureRow(f)));
+}
+function mkFixtureRow(f={}) {
+  const d = document.createElement('div');
+  d.className = 'fixture-row-edit'; d.dataset.row = '1';
+  d.innerHTML = `
+    <input type="text" value="${ESC(f.league)}" placeholder="프리미어리그 · R37" />
+    <input type="text" value="${ESC(f.home)}"   placeholder="홈 팀" />
+    <span class="fixture-vs">vs</span>
+    <input type="text" value="${ESC(f.away)}"   placeholder="원정 팀" />
+    <input type="text" value="${ESC(f.date)}"   placeholder="5월 14일 · 04:00" />
+    ${DEL}`;
+  return d;
+}
+function addFixture() { document.getElementById('fixturesList').appendChild(mkFixtureRow()); updateCounts(); }
+function collectFixtures() {
+  D.fixtures = [...document.querySelectorAll('#fixturesList [data-row]')].map(r => {
+    const ins = r.querySelectorAll('input');
+    return { league:ins[0].value, home:ins[1].value, away:ins[2].value, date:ins[3].value };
+  });
+}
+
+/* ── TRANSFERS ── */
+function renderTransfers() {
+  const list = document.getElementById('transfersList');
+  list.innerHTML = '';
+  (D.transfers||[]).forEach(t => list.appendChild(mkTransferRow(t)));
+}
+function mkTransferRow(t={}) {
+  const d = document.createElement('div');
+  d.className = 'transfer-row-edit'; d.dataset.row = '1';
+  const badgeOpts = ['official','rumor','done'].map(b=>`<option value="${b}" ${t.badge===b?'selected':''}>${b}</option>`).join('');
+  d.innerHTML = `
+    <div class="transfer-top">
+      <input type="text" value="${ESC(t.player)}" placeholder="선수명" />
+      <input type="text" value="${ESC(t.from)}"   placeholder="이전 팀" />
+      <input type="text" value="${ESC(t.to)}"     placeholder="이적 팀" />
+      <input type="text" value="${ESC(t.fee)}"    placeholder="이적료" />
+      <select>${badgeOpts}</select>
+      ${DEL}
+    </div>
+    <div class="transfer-bottom">
+      <input type="text" value="${ESC(t.detail)}" placeholder="상세 (예: 5년 계약)" />
+      <input type="text" value="${ESC(t.type)}"   placeholder="여름 이적" />
+    </div>`;
+  return d;
+}
+function addTransfer() { document.getElementById('transfersList').appendChild(mkTransferRow()); updateCounts(); }
+function collectTransfers() {
+  D.transfers = [...document.querySelectorAll('#transfersList [data-row]')].map(r => {
+    const ins = r.querySelectorAll('input');
+    const sel = r.querySelector('select');
+    return { player:ins[0].value, from:ins[1].value, to:ins[2].value,
+      fee:ins[3].value, badge:sel.value, detail:ins[4].value, type:ins[5].value };
+  });
+}
+
+/* ── USERS ── */
+async function renderUsers() {
+  try {
+    const r = await fetch('/api/users');
+    if (!r.ok) return;
+    const users = await r.json();
+    document.getElementById('userList').innerHTML = users.map(u => `
+      <div class="user-row" data-uid="${ESC(u.id)}">
+        <div class="user-avatar">${u.username[0].toUpperCase()}</div>
+        <div class="user-info">
+          <div class="user-name">${ESC(u.username)} ${u.id===ME.id?'<span class="me-tag">나</span>':''}</div>
+          <div class="user-email">${ESC(u.email)}</div>
+        </div>
+        <div class="user-meta">${new Date(u.createdAt).toLocaleDateString('ko-KR')} 가입</div>
+        <div class="user-actions">
+          ${u.id !== ME.id ? `
+            <select class="role-select" onchange="changeRole('${ESC(u.id)}',this.value)">
+              <option value="editor" ${u.role==='editor'?'selected':''}>편집자</option>
+              <option value="admin"  ${u.role==='admin' ?'selected':''}>관리자</option>
+            </select>
+            <button class="btn btn-danger btn-xs" onclick="deleteUser('${ESC(u.id)}')">삭제</button>
+          ` : `<span class="role-badge role-${u.role}">${u.role==='admin'?'관리자':'편집자'}</span>`}
+        </div>
+      </div>`).join('');
+  } catch { showToast('사용자 목록을 불러오지 못했습니다.', 'err'); }
+}
+
+async function changeRole(uid, role) {
+  const r = await fetch(`/api/users/${uid}`, {
+    method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ role })
+  });
+  if (r.ok) showToast(`역할이 변경됐습니다.`, 'ok');
+  else showToast('역할 변경에 실패했습니다.', 'err');
+}
+
+async function deleteUser(uid) {
+  if (!confirm('이 계정을 삭제하시겠습니까?')) return;
+  const r = await fetch(`/api/users/${uid}`, { method:'DELETE' });
+  if (r.ok) { showToast('계정이 삭제됐습니다.', 'ok'); renderUsers(); }
+  else showToast('삭제에 실패했습니다.', 'err');
+}
+
+/* ── Toast ── */
+let _toastTimer;
+function showToast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = type + ' show';
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { el.className = type; }, 2800);
+}
+</script>
+</body>
+</html>
