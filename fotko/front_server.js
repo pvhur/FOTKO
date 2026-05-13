@@ -13,6 +13,7 @@ const fs           = require('fs');
 const crypto       = require('crypto');
 const bcrypt       = require('bcryptjs');
 const { db, BetterSQLiteStore } = require('./config/database');
+const { fetchStandings, fetchTodayMatches, fetchFixtures } = require('./config/footballApi');
 
 const app    = express();
 const PORT   = process.env.PORT   || 3000;
@@ -442,6 +443,48 @@ app.post('/api/data', requireEditor, (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════
+   라이브 축구 데이터 API (football-data.org)
+═══════════════════════════════════════════════════════ */
+
+// 모든 리그 순위표 (5분 캐시)
+app.get('/api/live/standings', async (req, res) => {
+  try {
+    const [pl, laliga, bundesliga, seriea] = await Promise.all([
+      fetchStandings('pl'),
+      fetchStandings('laliga'),
+      fetchStandings('bundesliga'),
+      fetchStandings('seriea'),
+    ]);
+    res.set('Cache-Control', 'public, max-age=300');
+    res.json({ pl, laliga, bundesliga, seriea });
+  } catch (e) {
+    res.status(503).json({ error: e.message });
+  }
+});
+
+// 오늘 경기 결과 (1분 캐시)
+app.get('/api/live/matches', async (req, res) => {
+  try {
+    const matches = await fetchTodayMatches();
+    res.set('Cache-Control', 'public, max-age=60');
+    res.json(matches);
+  } catch (e) {
+    res.status(503).json({ error: e.message });
+  }
+});
+
+// 7일 이내 예정 경기 (5분 캐시)
+app.get('/api/live/fixtures', async (req, res) => {
+  try {
+    const fixtures = await fetchFixtures();
+    res.set('Cache-Control', 'public, max-age=300');
+    res.json(fixtures);
+  } catch (e) {
+    res.status(503).json({ error: e.message });
+  }
+});
+
+/* ══════════════════════════════════════════════════════
    헬스체크 (호스팅 플랫폼용)
 ═══════════════════════════════════════════════════════ */
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
@@ -459,8 +502,6 @@ app.use((err, req, res, _next) => {
 /* ══════════════════════════════════════════════════════
    페이지 라우트
 ═══════════════════════════════════════════════════════ */
-app.listen(PORT, () => console.log(`[Kickoff] http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`));
-
 const V = (p) => path.join(__dirname, './views', p);
 app.get('/',                  (req, res) => res.redirect('/kickoff'));
 app.get('/kickoff',           (req, res) => sendHTML(res, V('health/index.html')));
@@ -471,3 +512,14 @@ app.get('/kickoff/analysis',  (req, res) => sendHTML(res, V('health/analysis.htm
 app.get('/kickoff/login',     (req, res) => sendHTML(res, V('health/login.html')));
 app.get('/kickoff/signup',    (req, res) => sendHTML(res, V('health/signup.html')));
 app.get('/kickoff/admin',     (req, res) => sendHTML(res, V('health/admin.html')));
+
+/* ══════════════════════════════════════════════════════
+   서버 시작 (로컬) / Vercel export
+═══════════════════════════════════════════════════════ */
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () =>
+    console.log(`[Kickoff] http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`)
+  );
+}
+
+module.exports = app;
