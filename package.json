@@ -4,19 +4,22 @@
   "main": "index.js",
   "scripts": {
     "start": "node front_server.js",
-    "dev":   "nodemon front_server.js",
-    "prod":  "NODE_ENV=production node front_server.js"
+    "dev": "nodemon front_server.js",
+    "prod": "NODE_ENV=production node front_server.js"
   },
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": ["football", "soccer", "news"],
+  "keywords": [
+    "football",
+    "soccer",
+    "news"
+  ],
   "author": "",
   "license": "ISC",
   "description": "Kickoff — 축구 뉴스 사이트",
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^12.10.0",
     "body-parser": "^2.2.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
@@ -25,8 +28,7 @@
     "express-rate-limit": "^8.5.1",
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
-    "https": "^1.0.0",
-    "path": "^0.12.7"
+    "pg": "^8.13.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

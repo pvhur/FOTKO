@@ -12,7 +12,10 @@ const path         = require('path');
 const fs           = require('fs');
 const crypto       = require('crypto');
 const bcrypt       = require('bcryptjs');
-const { db, BetterSQLiteStore } = require('./config/database');
+const { pool, initDB, PgSessionStore } = require('./config/database');
+
+/* ── DB 초기화 (모듈 로드 시 1회 실행) ── */
+initDB().catch(e => console.error('[DB] 초기화 오류:', e.message));
 
 const app    = express();
 const PORT   = process.env.PORT   || 3000;
@@ -122,13 +125,13 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 /* ══════════════════════════════════════════════════════
-   세션 (SQLite 영구 스토어)
+   세션 (PostgreSQL 스토어)
 ═══════════════════════════════════════════════════════ */
 app.use(session({
   secret:            process.env.SESSION_SECRET || 'dev-secret-CHANGE-IN-PROD',
   resave:            false,
   saveUninitialized: false,
-  store:             new BetterSQLiteStore(db),
+  store:             new PgSessionStore(),
   name:              'kickoff.sid',
   cookie: {
     httpOnly: true,
@@ -181,17 +184,18 @@ app.post('/api/auth/login', async (req, res) => {
     return res.status(400).json({ error: '입력값이 올바르지 않습니다.' });
 
   try {
-    const user = db.prepare(
-      'SELECT * FROM users WHERE username=? OR email=?'
-    ).get(identifier, identifier);
+    await initDB();
+    const { rows } = await pool.query(
+      'SELECT * FROM users WHERE username=$1 OR email=$2',
+      [identifier, identifier]
+    );
+    const user = rows[0];
 
-    // timing-safe: always run bcrypt to prevent enumeration attacks
     const dummyHash = '$2b$12$invalidhashinvalidhash1234567890';
     if (!user) {
       await bcrypt.compare(password, dummyHash);
       return res.status(401).json({ error: '아이디/이메일 또는 비밀번호가 올바르지 않습니다.' });
     }
-    // 구글 전용 계정 (비밀번호 없음)
     if (!user.password_hash || user.password_hash === '$GOOGLE$') {
       await bcrypt.compare(password, dummyHash);
       return res.status(401).json({ error: '이 계정은 구글 로그인으로만 접속할 수 있습니다.' });
@@ -207,7 +211,8 @@ app.post('/api/auth/login', async (req, res) => {
       req.session.role     = user.role;
       res.json({ ok: true, user: { id: user.id, username: user.username, role: user.role } });
     });
-  } catch {
+  } catch (e) {
+    console.error('[Login]', e.message);
     res.status(500).json({ error: '서버 오류' });
   }
 });
@@ -228,15 +233,21 @@ app.post('/api/auth/signup', async (req, res) => {
     return res.status(400).json({ error: '비밀번호는 8자 이상이어야 합니다.' });
 
   try {
-    const existing = db.prepare('SELECT id FROM users WHERE username=? OR email=?').get(username, email);
-    if (existing) return res.status(409).json({ error: '이미 사용 중인 아이디 또는 이메일입니다.' });
+    await initDB();
+    const { rows: existRows } = await pool.query(
+      'SELECT id FROM users WHERE username=$1 OR email=$2',
+      [username, email]
+    );
+    if (existRows.length > 0)
+      return res.status(409).json({ error: '이미 사용 중인 아이디 또는 이메일입니다.' });
 
     const hash = await bcrypt.hash(password, 12);
     const id   = Date.now().toString();
-    db.prepare(`
-      INSERT INTO users (id, username, email, password_hash, role, created_at)
-      VALUES (?,?,?,?,'editor',?)
-    `).run(id, username, email, hash, new Date().toISOString());
+    await pool.query(
+      `INSERT INTO users (id, username, email, password_hash, role, created_at)
+       VALUES ($1,$2,$3,$4,'editor',$5)`,
+      [id, username, email, hash, new Date().toISOString()]
+    );
 
     req.session.regenerate((err) => {
       if (err) return res.status(500).json({ error: '서버 오류' });
@@ -246,6 +257,7 @@ app.post('/api/auth/signup', async (req, res) => {
       res.json({ ok: true, user: { id, username, role: 'editor' } });
     });
   } catch (e) {
+    console.error('[Signup]', e.message);
     res.status(500).json({ error: '서버 오류' });
   }
 });
@@ -333,20 +345,25 @@ app.get('/api/auth/google/callback', async (req, res) => {
     const email    = profile.email    || null;
     const name     = profile.name     || profile.given_name || 'user';
 
-    // 3. 유저 조회 / 생성
-    let user = db.prepare('SELECT * FROM users WHERE google_id=?').get(googleId);
+    await initDB();
+    let { rows: userRows } = await pool.query(
+      'SELECT * FROM users WHERE google_id=$1', [googleId]
+    );
+    let user = userRows[0];
 
     if (!user && email) {
-      // 같은 이메일로 가입된 계정이 있으면 연결
-      user = db.prepare('SELECT * FROM users WHERE email=?').get(email);
-      if (user) {
-        db.prepare('UPDATE users SET google_id=? WHERE id=?').run(googleId, user.id);
-        user = db.prepare('SELECT * FROM users WHERE id=?').get(user.id);
+      const { rows: emailRows } = await pool.query(
+        'SELECT * FROM users WHERE email=$1', [email]
+      );
+      if (emailRows.length > 0) {
+        user = emailRows[0];
+        await pool.query('UPDATE users SET google_id=$1 WHERE id=$2', [googleId, user.id]);
+        const { rows: updated } = await pool.query('SELECT * FROM users WHERE id=$1', [user.id]);
+        user = updated[0];
       }
     }
 
     if (!user) {
-      // 신규 계정 생성
       let base = name.toLowerCase()
         .replace(/[^a-z0-9]/g, '_')
         .replace(/_+/g, '_')
@@ -355,15 +372,19 @@ app.get('/api/auth/google/callback', async (req, res) => {
       if (base.length < 3) base = 'user';
       let username = base;
       let n = 1;
-      while (db.prepare('SELECT id FROM users WHERE username=?').get(username)) {
+      while (true) {
+        const { rows: check } = await pool.query('SELECT id FROM users WHERE username=$1', [username]);
+        if (check.length === 0) break;
         username = `${base}${n++}`;
       }
       const id = Date.now().toString();
-      db.prepare(`
-        INSERT INTO users (id, username, email, password_hash, role, google_id, created_at)
-        VALUES (?,?,?,'$GOOGLE$','editor',?,?)
-      `).run(id, username, email, googleId, new Date().toISOString());
-      user = db.prepare('SELECT * FROM users WHERE id=?').get(id);
+      await pool.query(
+        `INSERT INTO users (id, username, email, password_hash, role, google_id, created_at)
+         VALUES ($1,$2,$3,'$GOOGLE$','editor',$4,$5)`,
+        [id, username, email, googleId, new Date().toISOString()]
+      );
+      const { rows: newUser } = await pool.query('SELECT * FROM users WHERE id=$1', [id]);
+      user = newUser[0];
     }
 
     const oauthRedirect = req.session.oauthRedirect || '/kickoff';
@@ -384,33 +405,50 @@ app.get('/api/auth/google/callback', async (req, res) => {
 ═══════════════════════════════════════════════════════ */
 
 // 목록
-app.get('/api/users', requireAdmin, (req, res) => {
-  const users = db.prepare(
-    'SELECT id, username, email, role, created_at FROM users ORDER BY created_at'
-  ).all();
-  res.json(users);
+app.get('/api/users', requireAdmin, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, username, email, role, created_at FROM users ORDER BY created_at'
+    );
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
 });
 
 // 역할 변경
-app.patch('/api/users/:id', requireAdmin, (req, res) => {
+app.patch('/api/users/:id', requireAdmin, async (req, res) => {
   const { role } = req.body;
   if (!['admin', 'editor'].includes(role))
     return res.status(400).json({ error: '유효하지 않은 역할입니다.' });
   if (req.params.id === req.session.userId)
     return res.status(400).json({ error: '자신의 역할은 변경할 수 없습니다.' });
 
-  const result = db.prepare('UPDATE users SET role=? WHERE id=?').run(role, req.params.id);
-  if (result.changes === 0) return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
-  res.json({ ok: true });
+  try {
+    const { rowCount } = await pool.query(
+      'UPDATE users SET role=$1 WHERE id=$2', [role, req.params.id]
+    );
+    if (rowCount === 0) return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
 });
 
 // 삭제
-app.delete('/api/users/:id', requireAdmin, (req, res) => {
+app.delete('/api/users/:id', requireAdmin, async (req, res) => {
   if (req.params.id === req.session.userId)
     return res.status(400).json({ error: '자신의 계정은 삭제할 수 없습니다.' });
-  const result = db.prepare('DELETE FROM users WHERE id=?').run(req.params.id);
-  if (result.changes === 0) return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
-  res.json({ ok: true });
+
+  try {
+    const { rowCount } = await pool.query(
+      'DELETE FROM users WHERE id=$1', [req.params.id]
+    );
+    if (rowCount === 0) return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
 });
 
 /* ══════════════════════════════════════════════════════
@@ -418,27 +456,36 @@ app.delete('/api/users/:id', requireAdmin, (req, res) => {
 ═══════════════════════════════════════════════════════ */
 
 // 공개 조회
-app.get('/api/data', (req, res) => {
-  const row = db.prepare("SELECT data FROM content WHERE key='football'").get();
-  if (!row) return res.status(404).json({ error: 'data not found' });
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=30');
-  res.send(row.data);
+app.get('/api/data', async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT data FROM content WHERE key='football'");
+    if (!rows[0]) return res.status(404).json({ error: 'data not found' });
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=30');
+    res.send(rows[0].data);
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
 });
 
 // 저장 (editor 이상)
-app.post('/api/data', requireEditor, (req, res) => {
+app.post('/api/data', requireEditor, async (req, res) => {
   let payload;
   try {
-    payload = JSON.stringify(req.body); // 유효한 JSON인지 검증됨
+    payload = JSON.stringify(req.body);
   } catch {
     return res.status(400).json({ error: '올바르지 않은 데이터입니다.' });
   }
-  db.prepare(`
-    INSERT OR REPLACE INTO content (key, data, updated_at, updated_by)
-    VALUES ('football', ?, ?, ?)
-  `).run(payload, new Date().toISOString(), req.session.username || 'unknown');
-  res.json({ ok: true });
+  try {
+    await pool.query(
+      `INSERT INTO content (key, data, updated_at, updated_by) VALUES ('football',$1,$2,$3)
+       ON CONFLICT (key) DO UPDATE SET data=$1, updated_at=$2, updated_by=$3`,
+      [payload, new Date().toISOString(), req.session.username || 'unknown']
+    );
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
 });
 
 /* ══════════════════════════════════════════════════════
@@ -459,10 +506,6 @@ app.use((err, req, res, _next) => {
 /* ══════════════════════════════════════════════════════
    페이지 라우트
 ═══════════════════════════════════════════════════════ */
-if (require.main === module) {
-  app.listen(PORT, () => console.log(`[Kickoff] http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`));
-}
-
 const V = (p) => path.join(__dirname, './views', p);
 app.get('/',                  (req, res) => res.redirect('/kickoff'));
 app.get('/kickoff',           (req, res) => sendHTML(res, V('health/index.html')));
@@ -473,5 +516,11 @@ app.get('/kickoff/analysis',  (req, res) => sendHTML(res, V('health/analysis.htm
 app.get('/kickoff/login',     (req, res) => sendHTML(res, V('health/login.html')));
 app.get('/kickoff/signup',    (req, res) => sendHTML(res, V('health/signup.html')));
 app.get('/kickoff/admin',     (req, res) => sendHTML(res, V('health/admin.html')));
+
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () =>
+    console.log(`[Kickoff] http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`)
+  );
+}
 
 module.exports = app;
