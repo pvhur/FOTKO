@@ -1,0 +1,26 @@
+# 의존성
+node_modules/
+
+# 환경변수 (절대 커밋 금지)
+.env
+
+# 데이터베이스 파일
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+# 사용자 데이터 (마이그레이션 완료 후 불필요)
+data/users.json
+
+# 로그
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 에디터
+.vscode/
+.idea/
+*.swp

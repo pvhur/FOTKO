@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>이적 시장 — Kickoff</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/kickoff.css" />
+  <style>
+    /* ── Transfers page ── */
+    .transfers-hero { padding:calc(56px + 48px) 0 40px; }
+
+    /* Window banner */
+    .window-banner { display:flex; align-items:center; gap:16px; padding:16px 24px; background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); margin-top:24px; }
+    .window-icon { width:40px; height:40px; border-radius:var(--r-md); background:rgba(94,106,210,.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .window-info h3 { font-size:14px; font-weight:600; margin-bottom:3px; }
+    .window-info p { font-size:12px; color:var(--ink-subtle); }
+    .window-badge { margin-left:auto; }
+
+    /* Filter bar */
+    .filter-bar { display:flex; align-items:center; gap:8px; margin:28px 0 0; flex-wrap:wrap; }
+    .filter-label { font-size:12px; font-weight:500; color:var(--ink-tertiary); text-transform:uppercase; letter-spacing:.4px; margin-right:4px; flex-shrink:0; }
+
+    /* Transfers grid */
+    .transfers-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:32px; }
+    .transfer-big { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); overflow:hidden; transition:background .15s,border-color .15s; position:relative; }
+    .transfer-big::before { content:''; position:absolute; inset:0 0 auto; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent); pointer-events:none; }
+    .transfer-big:hover { background:var(--surface-2); border-color:var(--hairline-strong); }
+    .tb-head { padding:16px 20px 0; display:flex; align-items:center; justify-content:space-between; }
+    .tb-body { padding:20px; }
+    .tb-player { font-size:20px; font-weight:700; letter-spacing:-.5px; margin-bottom:14px; }
+    .tb-clubs { display:flex; align-items:center; gap:10px; margin-bottom:16px; padding:14px 16px; background:var(--surface-2); border-radius:var(--r-md); border:1px solid var(--hairline); }
+    .tb-club { display:flex; flex-direction:column; gap:2px; flex:1; }
+    .tb-club-name { font-size:13px; font-weight:600; color:var(--ink); }
+    .tb-club-label { font-size:11px; color:var(--ink-tertiary); }
+    .tb-arrow { color:var(--ink-tertiary); flex-shrink:0; }
+    .tb-meta { display:flex; gap:8px; flex-wrap:wrap; }
+    .tb-meta-item { display:flex; flex-direction:column; gap:2px; padding:10px 14px; background:var(--surface-2); border-radius:var(--r-md); border:1px solid var(--hairline); flex:1; min-width:80px; }
+    .tb-meta-label { font-size:10px; color:var(--ink-tertiary); text-transform:uppercase; letter-spacing:.4px; font-weight:500; }
+    .tb-meta-val { font-size:14px; font-weight:600; color:var(--ink); }
+    .tb-footer { padding:12px 20px; border-top:1px solid var(--hairline); background:var(--surface-2); display:flex; align-items:center; justify-content:space-between; }
+    .tb-type { font-size:12px; color:var(--ink-subtle); }
+
+    /* Transfer news section */
+    .transfer-news-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:32px; }
+
+    /* Empty state */
+    .empty-state { padding:64px 0; text-align:center; color:var(--ink-tertiary); }
+    .empty-state h3 { font-size:16px; font-weight:500; margin-bottom:8px; color:var(--ink-subtle); }
+
+    @media(max-width:1024px) { .transfers-grid,.transfer-news-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:768px)  { .transfers-grid,.transfer-news-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="/kickoff" class="nav-logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".4"/>
+      </svg>
+      Kickoff
+    </a>
+    <ul class="nav-links">
+      <li><a href="/kickoff">홈</a></li>
+      <li><a href="/kickoff/league">리그</a></li>
+      <li><a href="/kickoff/results">경기 결과</a></li>
+      <li><a href="/kickoff/transfers" class="active">이적 시장</a></li>
+      <li><a href="/kickoff/analysis">분석</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-search">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>검색</span>
+      </div>
+      <a href="/kickoff/login" class="btn btn-secondary btn-sm" id="nav-login-btn">로그인</a>
+      <a href="#" class="btn btn-primary btn-sm">구독하기</a>
+    </div>
+  </div>
+</nav>
+
+<div class="transfers-hero">
+  <div class="wrap">
+    <div class="eyebrow-label">2026 여름 이적 시장</div>
+    <h1 class="t-display-md">이적 시장</h1>
+    <p style="font-size:15px;color:var(--ink-subtle);margin-top:8px;">공식 발표부터 루머까지, 최신 이적 소식을 한눈에.</p>
+
+    <div class="window-banner">
+      <div class="window-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M10 3l7 7-7 7" stroke="var(--primary-hover)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="window-info">
+        <h3>2026 여름 이적 시장</h3>
+        <p>개막 2026.06.01 · 마감 2026.09.01</p>
+      </div>
+      <div class="window-badge">
+        <span class="badge badge-new">진행 중</span>
+      </div>
+    </div>
+
+    <div class="filter-bar" id="filterBar"></div>
+  </div>
+</div>
+
+<section class="section" style="padding-top:0;">
+  <div class="wrap">
+    <div class="transfers-grid" id="transfersGrid"></div>
+
+    <!-- Transfer news -->
+    <div style="margin-top:56px;">
+      <div class="section-header-row">
+        <div>
+          <div class="eyebrow-label">이적 뉴스</div>
+          <h2 class="t-headline">관련 기사</h2>
+        </div>
+      </div>
+      <div class="transfer-news-grid" id="transferNews"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/kickoff" class="nav-logo" style="margin-bottom:16px;display:flex;">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="var(--primary)" stroke-width="1.5"/><path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="var(--primary)" opacity=".4"/></svg>
+          Kickoff
+        </a>
+        <p>축구를 더 깊게. 매일 업데이트되는 뉴스, 경기 분석, 이적 소식을 전합니다.</p>
+      </div>
+      <div class="footer-col"><h4>리그</h4><ul><li><a href="/kickoff/league">프리미어리그</a></li><li><a href="/kickoff/league">라 리가</a></li><li><a href="/kickoff/league">분데스리가</a></li><li><a href="/kickoff/league">세리에 A</a></li></ul></div>
+      <div class="footer-col"><h4>콘텐츠</h4><ul><li><a href="/kickoff/analysis">분석</a></li><li><a href="/kickoff/transfers">이적 시장</a></li><li><a href="/kickoff/results">경기 결과</a></li></ul></div>
+      <div class="footer-col"><h4>대회</h4><ul><li><a href="#">챔피언스리그</a></li><li><a href="#">유로파리그</a></li><li><a href="#">FIFA 월드컵</a></li></ul></div>
+      <div class="footer-col"><h4>Kickoff</h4><ul><li><a href="#">소개</a></li><li><a href="#">광고 문의</a></li><li><a href="#">문의</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Kickoff. All rights reserved.</p>
+      <div class="footer-links"><a href="#">개인정보처리방침</a><a href="#">이용약관</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const BADGE_MAP = {
+  official:['badge-new','공식 발표'], rumor:['badge-result','루머'], done:['badge-green','완료'],
+  new:['badge-new','새 기사'], transfer:['badge-result','이적'], analysis:['badge-result','분석'],
+  result:['badge-result','결과'], national:['badge-green','대표팀'],
+};
+const FILTERS = [
+  { key:'all', label:'전체' },
+  { key:'official', label:'공식 발표' },
+  { key:'rumor', label:'루머' },
+  { key:'done', label:'완료' },
+];
+let activeFilter = 'all';
+let _data = null;
+
+async function load() {
+  const r = await fetch('/api/data');
+  _data = await r.json();
+  renderFilterBar();
+  renderTransfers();
+  renderTransferNews();
+}
+
+function renderFilterBar() {
+  document.getElementById('filterBar').innerHTML =
+    `<span class="filter-label">상태</span>` +
+    FILTERS.map(f => `<div class="chip${f.key===activeFilter?' active':''}" onclick="setFilter('${f.key}')">${f.label}</div>`).join('');
+}
+
+function setFilter(key) {
+  activeFilter = key;
+  renderFilterBar();
+  renderTransfers();
+}
+
+function renderTransfers() {
+  const all = _data.transfers || [];
+  const filtered = activeFilter === 'all' ? all : all.filter(t => t.badge === activeFilter);
+
+  if (!filtered.length) {
+    document.getElementById('transfersGrid').innerHTML =
+      `<div class="empty-state" style="grid-column:1/-1;"><h3>해당 조건의 이적 정보가 없습니다.</h3><p>다른 필터를 선택해보세요.</p></div>`;
+    return;
+  }
+
+  document.getElementById('transfersGrid').innerHTML = filtered.map(t => {
+    const [bc, bt] = BADGE_MAP[t.badge] || ['badge-result', t.badge];
+    return `
+      <div class="transfer-big">
+        <div class="tb-head">
+          <span class="badge ${bc}">${bt}</span>
+        </div>
+        <div class="tb-body">
+          <div class="tb-player">${t.player}</div>
+          <div class="tb-clubs">
+            <div class="tb-club">
+              <div class="tb-club-label">이전</div>
+              <div class="tb-club-name">${t.from}</div>
+            </div>
+            <div class="tb-arrow">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="tb-club" style="align-items:flex-end;">
+              <div class="tb-club-label">이적</div>
+              <div class="tb-club-name">${t.to}</div>
+            </div>
+          </div>
+          <div class="tb-meta">
+            <div class="tb-meta-item">
+              <div class="tb-meta-label">이적료</div>
+              <div class="tb-meta-val">${t.fee}</div>
+            </div>
+            <div class="tb-meta-item">
+              <div class="tb-meta-label">세부사항</div>
+              <div class="tb-meta-val" style="font-size:12px;">${t.detail}</div>
+            </div>
+          </div>
+        </div>
+        <div class="tb-footer">
+          <span class="tb-type">${t.type}</span>
+          <a href="#" style="font-size:12px;color:var(--primary);">자세히 보기</a>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderTransferNews() {
+  const news = (_data.news || []).filter(n => n.badge === 'transfer');
+  if (!news.length) { document.getElementById('transferNews').style.display='none'; return; }
+  const NEWS_SVG = `<svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="5" y="5" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M9 10h10M9 14h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  document.getElementById('transferNews').innerHTML = news.map(n => `
+    <article class="news-card">
+      <div class="news-thumb"><div class="news-thumb-inner">${NEWS_SVG}</div></div>
+      <div class="news-body">
+        <div class="news-category">${n.category}</div>
+        <div class="news-title">${n.title}</div>
+        <div class="news-desc">${n.desc}</div>
+        <div class="news-footer">
+          <span class="badge badge-result">이적</span>
+          <span>${n.time}</span>
+        </div>
+      </div>
+    </article>`).join('');
+}
+
+load();
+</script>
+<script src="/js/kickoff-nav.js"></script>
+</body>
+</html>
