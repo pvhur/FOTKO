@@ -459,7 +459,9 @@ app.use((err, req, res, _next) => {
 /* ══════════════════════════════════════════════════════
    페이지 라우트
 ═══════════════════════════════════════════════════════ */
-app.listen(PORT, () => console.log(`[Kickoff] http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`));
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`[Kickoff] http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`));
+}
 
 const V = (p) => path.join(__dirname, './views', p);
 app.get('/',                  (req, res) => res.redirect('/kickoff'));
@@ -471,3 +473,5 @@ app.get('/kickoff/analysis',  (req, res) => sendHTML(res, V('health/analysis.htm
 app.get('/kickoff/login',     (req, res) => sendHTML(res, V('health/login.html')));
 app.get('/kickoff/signup',    (req, res) => sendHTML(res, V('health/signup.html')));
 app.get('/kickoff/admin',     (req, res) => sendHTML(res, V('health/admin.html')));
+
+module.exports = app;

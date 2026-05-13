@@ -16,7 +16,9 @@ const bcrypt   = require('bcryptjs');
 /* ── DB 경로 ── */
 const DB_PATH = process.env.DATABASE_PATH
   ? path.resolve(process.env.DATABASE_PATH)
-  : path.join(__dirname, '../data/kickoff.db');
+  : process.env.VERCEL
+    ? '/tmp/kickoff.db'
+    : path.join(__dirname, '../data/kickoff.db');
 
 const dataDir = path.dirname(DB_PATH);
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
