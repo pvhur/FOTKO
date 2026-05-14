@@ -19,6 +19,7 @@
   "license": "ISC",
   "description": "Kickoff — 축구 뉴스 사이트",
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.0",
     "compression": "^1.8.1",

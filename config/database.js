@@ -1,29 +1,32 @@
 'use strict';
 
-const { Pool }  = require('pg');
-const session   = require('express-session');
-const bcrypt    = require('bcryptjs');
+const { neon } = require('@neondatabase/serverless');
+const session  = require('express-session');
+const bcrypt   = require('bcryptjs');
 
-/* ── 연결 풀 ── */
-const pool = new Pool({
-  connectionString:
-    process.env.POSTGRES_URL ||
-    process.env.DATABASE_URL ||
-    process.env.POSTGRES_URL_NON_POOLING,
-  ssl: (process.env.POSTGRES_URL || process.env.NODE_ENV === 'production')
-    ? { rejectUnauthorized: false }
-    : false,
-  max: 1,                         // 서버리스: 인스턴스당 연결 1개
-  idleTimeoutMillis: 0,           // 서버리스에서 유휴 연결 즉시 해제
-  connectionTimeoutMillis: 15000, // Neon 콜드 스타트 대기
-});
+/* ── HTTP 쿼리 클라이언트 (TCP 연결 없음 — 콜드 스타트 타임아웃 없음) ── */
+const _sql = neon(
+  process.env.POSTGRES_URL ||
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL_NON_POOLING
+);
+
+// pg Pool.query() 호환 래퍼
+async function dbQuery(text, params) {
+  const rows = await _sql(text, params);
+  return { rows, rowCount: rows.length };
+}
+
+// front_server.js의 pool.query() 호출을 그대로 유지하기 위한 객체
+const pool = { query: dbQuery };
 
 /* ── 스키마 초기화 ── */
 let _initPromise = null;
 async function initDB() {
   if (_initPromise) return _initPromise;
   _initPromise = (async () => {
-    await pool.query(`
+    // neon HTTP 드라이버는 다중 구문 불가 — 쿼리 분리
+    await _sql`
       CREATE TABLE IF NOT EXISTS users (
         id            TEXT PRIMARY KEY,
         username      TEXT UNIQUE NOT NULL,
@@ -33,34 +36,37 @@ async function initDB() {
                       CHECK(role IN ('admin','editor')),
         google_id     TEXT UNIQUE,
         created_at    TEXT NOT NULL
-      );
-
+      )
+    `;
+    await _sql`
       CREATE TABLE IF NOT EXISTS content (
         key        TEXT PRIMARY KEY,
         data       TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         updated_by TEXT
-      );
-
+      )
+    `;
+    await _sql`
       CREATE TABLE IF NOT EXISTS sessions (
         sid     TEXT PRIMARY KEY,
         sess    TEXT NOT NULL,
         expired BIGINT NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS idx_sess_expired ON sessions(expired);
-    `);
+      )
+    `;
+    await _sql`
+      CREATE INDEX IF NOT EXISTS idx_sess_expired ON sessions(expired)
+    `;
 
-    const { rows } = await pool.query('SELECT COUNT(*) AS c FROM users');
-    if (parseInt(rows[0].c, 10) === 0) {
+    const [row] = await _sql`SELECT COUNT(*)::int AS c FROM users`;
+    if (row.c === 0) {
       const hash = await bcrypt.hash('kickoff2026', 12);
-      await pool.query(
-        `INSERT INTO users (id, username, email, password_hash, role, created_at)
-         VALUES ($1,$2,$3,$4,'admin',$5)`,
-        ['1', 'admin', 'admin@kickoff.com', hash, new Date().toISOString()]
-      );
+      await _sql`
+        INSERT INTO users (id, username, email, password_hash, role, created_at)
+        VALUES ('1', 'admin', 'admin@kickoff.com', ${hash}, 'admin', ${new Date().toISOString()})
+      `;
       console.log('[DB] 초기 관리자 계정 생성 완료 (admin / kickoff2026)');
     }
-    console.log('[DB] PostgreSQL 연결 및 스키마 확인 완료');
+    console.log('[DB] 스키마 확인 완료');
   })().catch(e => {
     _initPromise = null; // 실패 시 다음 요청에서 재시도
     throw e;
@@ -75,7 +81,7 @@ class PgSessionStore extends session.Store {
   constructor() {
     super();
     const t = setInterval(async () => {
-      try { await pool.query('DELETE FROM sessions WHERE expired < $1', [Date.now()]); }
+      try { await _sql`DELETE FROM sessions WHERE expired < ${Date.now()}`; }
       catch (_) {}
     }, 15 * 60 * 1000);
     if (t.unref) t.unref();
@@ -83,10 +89,9 @@ class PgSessionStore extends session.Store {
 
   async get(sid, cb) {
     try {
-      const { rows } = await pool.query(
-        'SELECT sess FROM sessions WHERE sid=$1 AND expired>$2',
-        [sid, Date.now()]
-      );
+      const rows = await _sql`
+        SELECT sess FROM sessions WHERE sid=${sid} AND expired>${Date.now()}
+      `;
       cb(null, rows[0] ? JSON.parse(rows[0].sess) : null);
     } catch (e) {
       console.error('[Session.get]', e.message);
@@ -99,11 +104,10 @@ class PgSessionStore extends session.Store {
       const ttl = sess.cookie?.expires
         ? new Date(sess.cookie.expires).getTime()
         : Date.now() + 8 * 60 * 60 * 1000;
-      await pool.query(
-        `INSERT INTO sessions (sid, sess, expired) VALUES ($1,$2,$3)
-         ON CONFLICT (sid) DO UPDATE SET sess=$2, expired=$3`,
-        [sid, JSON.stringify(sess), ttl]
-      );
+      await _sql`
+        INSERT INTO sessions (sid, sess, expired) VALUES (${sid}, ${JSON.stringify(sess)}, ${ttl})
+        ON CONFLICT (sid) DO UPDATE SET sess=${JSON.stringify(sess)}, expired=${ttl}
+      `;
       cb(null);
     } catch (e) {
       console.error('[Session.set]', e.message);
@@ -113,7 +117,7 @@ class PgSessionStore extends session.Store {
 
   async destroy(sid, cb) {
     try {
-      await pool.query('DELETE FROM sessions WHERE sid=$1', [sid]);
+      await _sql`DELETE FROM sessions WHERE sid=${sid}`;
       cb(null);
     } catch (e) { cb(null); }
   }
@@ -123,10 +127,7 @@ class PgSessionStore extends session.Store {
       const ttl = sess.cookie?.expires
         ? new Date(sess.cookie.expires).getTime()
         : Date.now() + 8 * 60 * 60 * 1000;
-      await pool.query(
-        'UPDATE sessions SET expired=$1 WHERE sid=$2',
-        [ttl, sid]
-      );
+      await _sql`UPDATE sessions SET expired=${ttl} WHERE sid=${sid}`;
       cb(null);
     } catch (e) { cb(null); }
   }
