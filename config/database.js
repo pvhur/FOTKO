@@ -10,12 +10,12 @@ const pool = new Pool({
     process.env.POSTGRES_URL ||
     process.env.DATABASE_URL ||
     process.env.POSTGRES_URL_NON_POOLING,
-  ssl: process.env.NODE_ENV === 'production'
+  ssl: (process.env.POSTGRES_URL || process.env.NODE_ENV === 'production')
     ? { rejectUnauthorized: false }
     : false,
-  max: 5,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  max: 1,                         // 서버리스: 인스턴스당 연결 1개
+  idleTimeoutMillis: 0,           // 서버리스에서 유휴 연결 즉시 해제
+  connectionTimeoutMillis: 15000, // Neon 콜드 스타트 대기
 });
 
 /* ── 스키마 초기화 ── */
@@ -61,7 +61,10 @@ async function initDB() {
       console.log('[DB] 초기 관리자 계정 생성 완료 (admin / kickoff2026)');
     }
     console.log('[DB] PostgreSQL 연결 및 스키마 확인 완료');
-  })();
+  })().catch(e => {
+    _initPromise = null; // 실패 시 다음 요청에서 재시도
+    throw e;
+  });
   return _initPromise;
 }
 
@@ -87,7 +90,7 @@ class PgSessionStore extends session.Store {
       cb(null, rows[0] ? JSON.parse(rows[0].sess) : null);
     } catch (e) {
       console.error('[Session.get]', e.message);
-      cb(null, null); // DB 오류 시 세션 없음으로 처리 (500 방지)
+      cb(null, null);
     }
   }
 
@@ -104,7 +107,7 @@ class PgSessionStore extends session.Store {
       cb(null);
     } catch (e) {
       console.error('[Session.set]', e.message);
-      cb(null); // DB 오류 시 무시 (500 방지)
+      cb(null);
     }
   }
 
