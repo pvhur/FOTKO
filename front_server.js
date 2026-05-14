@@ -54,9 +54,9 @@ app.use(helmet({
       defaultSrc:  ["'self'"],
       styleSrc:    ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc:     ["'self'", 'https://fonts.gstatic.com'],
-      scriptSrc:   ["'self'", "'unsafe-inline'"],
+      scriptSrc:   ["'self'", "'unsafe-inline'", 'https://vercel.live'],
+      connectSrc:  ["'self'", 'https://vercel.live', 'wss://ws-us3.pusher.com'],
       imgSrc:      ["'self'", 'data:', 'https:'],
-      connectSrc:  ["'self'"],
       frameAncestors: ["'none'"],
       formAction:  ["'self'"],
     },
@@ -83,7 +83,9 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000')
 app.use(cors({
   origin(origin, cb) {
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    cb(new Error('CORS: 허용되지 않은 Origin'));
+    const e = new Error('CORS: 허용되지 않은 Origin');
+    e.status = 403;
+    cb(e);
   },
   credentials: true,
 }));
