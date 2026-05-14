@@ -13,7 +13,7 @@ const _sql = neon(
 
 // pg Pool.query() 호환 래퍼
 async function dbQuery(text, params) {
-  const rows = await _sql(text, params);
+  const rows = await _sql.query(text, params);
   return { rows, rowCount: rows.length };
 }
 
