@@ -58,6 +58,7 @@ app.use(helmet({
       scriptSrcAttr: ["'unsafe-inline'"],
       connectSrc:    ["'self'", 'https://vercel.live', 'wss://ws-us3.pusher.com'],
       imgSrc:        ["'self'", 'data:', 'https:'],
+      frameSrc:      ["'self'", 'https://vercel.live'],
       frameAncestors: ["'none'"],
       formAction:  ["'self'"],
     },
@@ -83,7 +84,10 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000')
   .split(',').map(s => s.trim());
 app.use(cors({
   origin(origin, cb) {
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    // Vercel 프리뷰 배포 URL 허용 (*.vercel.app)
+    if (/^https:\/\/[^.]+\.vercel\.app$/.test(origin)) return cb(null, true);
     const e = new Error('CORS: 허용되지 않은 Origin');
     e.status = 403;
     cb(e);
