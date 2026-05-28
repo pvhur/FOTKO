@@ -294,21 +294,56 @@
       align-items: center;
     }
 
-    .tc-meta { display: flex; gap: 8px; flex-wrap: wrap; }
-    .tc-meta-item {
-      flex: 1;
-      min-width: 80px;
-      padding: 10px 14px;
-      background: var(--surface-2);
-      border: 1px solid var(--hairline);
-      border-radius: var(--r-md);
+    /* 이적료 — 작은 인라인 뱃지 */
+    .tc-fee-row {
       display: flex;
-      flex-direction: column;
-      gap: 3px;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
     }
-    .tc-meta-label { font-size: 10px; color: var(--ink-tertiary); text-transform: uppercase; letter-spacing: .4px; font-weight: 500; }
-    .tc-meta-val { font-size: 14px; font-weight: 700; color: var(--ink); }
-    .tc-meta-val.fire-val { color: var(--fire-bright); }
+    .tc-fee-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      background: rgba(255,107,0,.1);
+      border: 1px solid rgba(255,107,0,.2);
+      border-radius: var(--r-pill);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--fire-bright);
+    }
+    .tc-fee-chip.unknown {
+      background: var(--surface-2);
+      border-color: var(--hairline);
+      color: var(--ink-tertiary);
+      font-weight: 500;
+    }
+    .tc-fee-label {
+      font-size: 10px;
+      color: var(--ink-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .tc-source {
+      font-size: 11px;
+      color: var(--ink-tertiary);
+      margin-left: auto;
+    }
+
+    /* 세부설명 — 메인 본문처럼 크게 */
+    .tc-detail {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--ink-muted);
+      white-space: pre-line;
+      word-break: break-word;
+    }
+    .tc-detail-empty {
+      font-size: 13px;
+      color: var(--ink-tertiary);
+      font-style: italic;
+    }
 
     .tc-footer {
       padding: 12px 20px;
@@ -1299,7 +1334,7 @@ function renderStats() {
   const official = all.filter(t => t.badge === 'official').length;
   const rumors   = all.filter(t => t.badge === 'rumor').length;
   const done     = all.filter(t => t.badge === 'done').length;
-  const news     = (_data.news || []).filter(n => n.badge === 'transfer').length;
+  const news     = ((_data.news||[]).filter(n=>n.badge==='transfer').length) + ((_data.articles||[]).length);
 
   document.getElementById('burnStats').innerHTML = `
     <div class="burn-stat">
@@ -1376,8 +1411,8 @@ function renderTransfers() {
   }
 
   grid.innerHTML = filtered.map(t => {
-    const bm      = BADGE_MAP[t.badge] || { cls:'badge-result', label:t.badge, accent:'' };
-    const feeColor = t.fee && t.fee !== '미공개' && t.fee !== '-' ? ' fire-val' : '';
+    const bm  = BADGE_MAP[t.badge] || { cls:'badge-result', label:t.badge, accent:'' };
+    const fee = t.fee && t.fee !== '-' ? t.fee : null;
     return `
       <div class="tc">
         <div class="tc-accent ${bm.accent}"></div>
@@ -1402,21 +1437,20 @@ function renderTransfers() {
               <div class="tc-club-name">${t.to}</div>
             </div>
           </div>
-          <div class="tc-meta">
-            <div class="tc-meta-item">
-              <div class="tc-meta-label">이적료</div>
-              <div class="tc-meta-val${feeColor}">${t.fee || '미공개'}</div>
-            </div>
-            ${t.detail ? `
-            <div class="tc-meta-item">
-              <div class="tc-meta-label">세부사항</div>
-              <div class="tc-meta-val" style="font-size:12px;">${t.detail}</div>
-            </div>` : ''}
+          <!-- 이적료 — 작은 뱃지 -->
+          <div class="tc-fee-row">
+            <span class="tc-fee-label">이적료</span>
+            <span class="tc-fee-chip${fee ? '' : ' unknown'}">${fee || '미공개'}</span>
+            ${t.source ? `<span class="tc-source">via ${t.source}</span>` : ''}
           </div>
+          <!-- 세부설명 — 메인 본문 -->
+          ${t.detail
+            ? `<div class="tc-detail">${t.detail}</div>`
+            : `<div class="tc-detail-empty">세부 정보 없음</div>`}
         </div>
         <div class="tc-footer">
           <span>${t.type || ''}</span>
-          <span style="color:var(--ink-tertiary);">${t.source || ''}</span>
+          <span style="color:var(--ink-tertiary);">${t.date || ''}</span>
         </div>
       </div>`;
   }).join('');
@@ -1426,11 +1460,15 @@ function renderTransfers() {
    NEWS GRID
 ════════════════════════════════════════ */
 function renderNews() {
-  let news = (_data.news || []).filter(n => n.badge === 'transfer');
+  // 관련 기사(articles)와 badge=transfer 뉴스를 합쳐 표시
+  const fromNews     = (_data.news     || []).filter(n => n.badge === 'transfer');
+  const fromArticles = (_data.articles || []);
+  let news = [...fromArticles, ...fromNews];
   if (activeTeam) {
+    const kw = activeTeam.name.toLowerCase();
     news = news.filter(n => {
-      const txt = ((n.title || '') + ' ' + (n.desc || '')).toLowerCase();
-      return txt.includes(activeTeam.name.toLowerCase());
+      const txt = ((n.title||'') + ' ' + (n.desc||'') + ' ' + (n.content||'')).toLowerCase();
+      return txt.includes(kw);
     });
   }
   const grid = document.getElementById('newsGrid');
@@ -1473,7 +1511,9 @@ function renderNews() {
    ARTICLE MODAL
 ════════════════════════════════════════ */
 function openArticle(idx) {
-  const news = (_data.news || []).filter(n => n.badge === 'transfer');
+  const fromNews     = (_data.news     || []).filter(n => n.badge === 'transfer');
+  const fromArticles = (_data.articles || []);
+  const news = [...fromArticles, ...fromNews];
   const n = news[idx];
   if (!n) return;
 

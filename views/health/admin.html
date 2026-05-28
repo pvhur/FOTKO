@@ -387,6 +387,172 @@
       border-top:1px solid var(--hairline);
     }
 
+    /* ── Team Picker ── */
+    .tp-wrap { position:relative; }
+    .tp-input-row { display:flex; gap:6px; align-items:center; }
+    .tp-input-row input { flex:1; }
+    .tp-btn {
+      flex-shrink:0;
+      background:var(--surface-3);
+      border:1px solid var(--hairline);
+      border-radius:var(--r-sm);
+      padding:5px 10px;
+      color:var(--ink-subtle);
+      font-size:11px;
+      font-weight:600;
+      cursor:pointer;
+      transition:background .12s, color .12s;
+      white-space:nowrap;
+    }
+    .tp-btn:hover { background:rgba(94,106,210,.15); color:var(--primary-hover); border-color:rgba(94,106,210,.3); }
+    .tp-dropdown {
+      position:absolute;
+      top:calc(100% + 6px);
+      left:0;
+      right:0;
+      z-index:999;
+      background:var(--surface-2);
+      border:1px solid var(--hairline-strong);
+      border-radius:var(--r-lg);
+      box-shadow:0 12px 40px rgba(0,0,0,.6);
+      display:none;
+      min-width:280px;
+    }
+    .tp-dropdown.open { display:block; }
+    .tp-league-tabs {
+      display:flex;
+      gap:0;
+      border-bottom:1px solid var(--hairline);
+      overflow-x:auto;
+      scrollbar-width:none;
+    }
+    .tp-league-tabs::-webkit-scrollbar { display:none; }
+    .tp-ltab {
+      flex-shrink:0;
+      padding:7px 10px;
+      font-size:10px;
+      font-weight:700;
+      color:var(--ink-tertiary);
+      cursor:pointer;
+      border-bottom:2px solid transparent;
+      transition:color .12s;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+    }
+    .tp-ltab:hover { color:var(--ink-muted); }
+    .tp-ltab.active { color:var(--primary-hover); border-bottom-color:var(--primary); }
+    .tp-team-grid {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:4px;
+      padding:8px;
+      max-height:200px;
+      overflow-y:auto;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(255,255,255,.08) transparent;
+    }
+    .tp-team-btn {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      padding:5px 7px;
+      border-radius:var(--r-sm);
+      border:1px solid var(--hairline);
+      background:var(--surface-3);
+      color:var(--ink-subtle);
+      font-size:11px;
+      font-weight:500;
+      cursor:pointer;
+      transition:background .1s, color .1s, border-color .1s;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .tp-team-btn:hover { background:rgba(94,106,210,.15); color:var(--primary-hover); border-color:rgba(94,106,210,.3); }
+    .tp-team-logo { width:14px; height:14px; object-fit:contain; flex-shrink:0; }
+    .tp-team-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    /* ── 관련 기사 (Transfer Article) ── */
+    .art-card {
+      background:var(--surface-1);
+      border:1px solid var(--hairline);
+      border-radius:var(--r-lg);
+      overflow:hidden;
+      margin-bottom:10px;
+      transition:border-color .15s;
+    }
+    .art-card:hover { border-color:var(--hairline-strong); }
+    .art-card.open { border-color:var(--primary-focus); }
+    .art-card-head {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:11px 14px;
+      cursor:pointer;
+      user-select:none;
+      transition:background .1s;
+    }
+    .art-card.open .art-card-head { background:var(--surface-2); }
+    .art-card-head:hover { background:var(--surface-2); }
+    .art-title-preview {
+      flex:1;
+      font-size:13px;
+      font-weight:600;
+      color:var(--ink-muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .art-chevron {
+      color:var(--ink-tertiary);
+      transition:transform .2s;
+      flex-shrink:0;
+    }
+    .art-card.open .art-chevron { transform:rotate(180deg); }
+    .art-body {
+      display:none;
+      padding:16px;
+      border-top:1px solid var(--hairline);
+      background:var(--canvas);
+    }
+    .art-card.open .art-body { display:block; }
+    .art-form-row {
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .art-content-wrap { margin-top:2px; }
+    .art-content-wrap label {
+      font-size:10px;
+      font-weight:600;
+      color:var(--ink-tertiary);
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      display:block;
+      margin-bottom:6px;
+    }
+    .art-content-textarea {
+      width:100%;
+      min-height:140px;
+      background:var(--surface-2);
+      border:1px solid var(--hairline);
+      border-radius:var(--r-md);
+      padding:10px 12px;
+      color:var(--ink-muted);
+      font-size:13px;
+      font-family:inherit;
+      line-height:1.7;
+      resize:vertical;
+      outline:none;
+      transition:border-color .12s, box-shadow .12s;
+    }
+    .art-content-textarea:focus {
+      border-color:var(--primary-focus);
+      box-shadow:0 0 0 2px rgba(94,106,210,.15);
+    }
+    .art-content-textarea::placeholder { color:var(--ink-tertiary); }
+
     /* ── ⑤ USERS SECTION ── */
     .user-list { display:flex; flex-direction:column; gap:8px; }
     .user-row { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px 16px; display:flex; align-items:center; gap:14px; transition:border-color .12s; }
@@ -524,6 +690,10 @@
       <div class="sidebar-item" onclick="switchSection('transfers')">
         <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 4.5h9M8 2l3 2.5L8 7M11 8.5H2M5 6.5l-3 2 3 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         이적 시장 <span class="si-count" id="cnt-transfers">0</span>
+      </div>
+      <div class="sidebar-item" onclick="switchSection('articles')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 2h8v1.5H2.5zM2.5 5h8v1H2.5zM2.5 7.5h5.5v1H2.5zM2.5 10h4v1H2.5z" fill="currentColor" opacity=".7"/></svg></span>
+        관련 기사 <span class="si-count" id="cnt-articles">0</span>
       </div>
 
       <div class="sidebar-group-label admin-only hidden">관리</div>
@@ -715,6 +885,23 @@
         </div>
       </div>
 
+      <!-- ── 관련 기사 ── -->
+      <div class="section-page" id="sec-articles">
+        <div class="main-header">
+          <div class="main-title">관련 기사</div>
+          <div class="main-desc">이적 페이지 하단 뉴스 그리드에 표시되는 기사입니다. 제목·요약·본문·출처를 입력하세요.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>기사 목록</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addArticle()">+ 기사 추가</button>
+          </div>
+          <div class="panel-body">
+            <div class="edit-list" id="articlesList"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── 사용자 관리 (admin only) ── -->
       <div class="section-page admin-only hidden" id="sec-users">
         <div class="main-header">
@@ -747,6 +934,118 @@ const LEAGUES = { pl:'프리미어리그', laliga:'라 리가', bundesliga:'분�
 const BADGE_OPTS = ['new','transfer','analysis','result','national','official','rumor','done'];
 const BADGE_LABEL = { new:'새 기사', transfer:'이적', analysis:'분석', result:'결과', national:'대표팀', official:'공식', rumor:'루머', done:'완료' };
 const TIER_OPTS = ['cl','uel','rel','def'];
+
+/* ════════════════════════════════════════
+   빅 5 리그 팀 데이터 (팀 피커용)
+════════════════════════════════════════ */
+const LOGO = id => `https://media.api-sports.io/football/teams/${id}.png`;
+const BIG5 = [
+  { id:'pl', label:'PL', teams:[
+    {id:42,n:'Arsenal'},{id:66,n:'Aston Villa'},{id:35,n:'Bournemouth'},{id:55,n:'Brentford'},
+    {id:51,n:'Brighton'},{id:49,n:'Chelsea'},{id:52,n:'Crystal Palace'},{id:45,n:'Everton'},
+    {id:36,n:'Fulham'},{id:46,n:'Leicester'},{id:40,n:'Liverpool'},{id:50,n:'Man City'},
+    {id:33,n:'Man United'},{id:34,n:'Newcastle'},{id:65,n:'Nottm Forest'},{id:47,n:'Tottenham'},
+    {id:48,n:'West Ham'},{id:39,n:'Wolves'},
+  ]},
+  { id:'ll', label:'La Liga', teams:[
+    {id:541,n:'Real Madrid'},{id:529,n:'Barcelona'},{id:530,n:'Atlético'},{id:536,n:'Sevilla'},
+    {id:548,n:'Real Sociedad'},{id:531,n:'Athletic'},{id:532,n:'Valencia'},{id:533,n:'Villarreal'},
+    {id:543,n:'Real Betis'},{id:547,n:'Girona'},{id:537,n:'Osasuna'},{id:538,n:'Celta Vigo'},
+    {id:540,n:'Espanyol'},{id:544,n:'Alavés'},{id:546,n:'Getafe'},
+  ]},
+  { id:'bl', label:'BL', teams:[
+    {id:157,n:'Bayern'},{id:165,n:'Dortmund'},{id:173,n:'RB Leipzig'},{id:168,n:'Leverkusen'},
+    {id:169,n:'Frankfurt'},{id:163,n:'Gladbach'},{id:172,n:'Stuttgart'},{id:161,n:'Wolfsburg'},
+    {id:160,n:'Freiburg'},{id:164,n:'Mainz'},{id:167,n:'Hoffenheim'},{id:170,n:'Werder'},
+    {id:162,n:'Union Berlin'},
+  ]},
+  { id:'sa', label:'Serie A', teams:[
+    {id:505,n:'Inter'},{id:489,n:'AC Milan'},{id:496,n:'Juventus'},{id:492,n:'Napoli'},
+    {id:497,n:'Roma'},{id:487,n:'Lazio'},{id:499,n:'Atalanta'},{id:502,n:'Fiorentina'},
+    {id:500,n:'Bologna'},{id:503,n:'Torino'},{id:504,n:'Udinese'},{id:490,n:'Genoa'},
+  ]},
+  { id:'l1', label:'Ligue 1', teams:[
+    {id:85,n:'PSG'},{id:91,n:'Monaco'},{id:81,n:'Marseille'},{id:80,n:'Lyon'},
+    {id:84,n:'Nice'},{id:94,n:'Rennes'},{id:116,n:'Lens'},{id:79,n:'Lille'},
+    {id:95,n:'Strasbourg'},{id:83,n:'Nantes'},{id:93,n:'Reims'},
+  ]},
+];
+
+/* ─ active tab per picker instance ─ */
+const _tpTab = {};
+
+function tpRender(uid) {
+  const tab   = _tpTab[uid] || BIG5[0].id;
+  const league = BIG5.find(l => l.id === tab) || BIG5[0];
+  const dd    = document.getElementById('tp-dd-' + uid);
+  if (!dd) return;
+  dd.querySelector('.tp-team-grid').innerHTML = league.teams.map(t => `
+    <button class="tp-team-btn" onclick="tpSelect('${uid}','${t.n.replace(/'/g,"\\'")}')">
+      <img class="tp-team-logo" src="${LOGO(t.id)}" alt="${t.n}" onerror="this.style.display='none'" />
+      <span class="tp-team-name">${t.n}</span>
+    </button>`).join('');
+}
+
+function tpOpen(uid) {
+  document.querySelectorAll('.tp-dropdown.open').forEach(d => {
+    if (d.id !== 'tp-dd-' + uid) d.classList.remove('open');
+  });
+  const dd = document.getElementById('tp-dd-' + uid);
+  if (!dd) return;
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) tpRender(uid);
+}
+
+function tpTab(uid, lid) {
+  _tpTab[uid] = lid;
+  const dd = document.getElementById('tp-dd-' + uid);
+  if (!dd) return;
+  dd.querySelectorAll('.tp-ltab').forEach(el => {
+    el.classList.toggle('active', el.dataset.lid === lid);
+  });
+  tpRender(uid);
+}
+
+function tpSelect(uid, name) {
+  const inp = document.getElementById('tp-inp-' + uid);
+  if (inp) {
+    inp.value = name;
+    inp.dispatchEvent(new Event('input', { bubbles:true }));
+  }
+  const dd = document.getElementById('tp-dd-' + uid);
+  if (dd) dd.classList.remove('open');
+}
+
+/* close dropdowns on outside click */
+document.addEventListener('click', e => {
+  if (!e.target.closest('.tp-wrap')) {
+    document.querySelectorAll('.tp-dropdown.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+function mkTeamPicker(uid, value, syncField) {
+  const tabsHtml = BIG5.map((l,i) => `
+    <div class="tp-ltab${i===0?' active':''}" data-lid="${l.id}" onclick="tpTab('${uid}','${l.id}')">${l.label}</div>
+  `).join('');
+  return `
+    <div class="tp-wrap">
+      <div class="tp-input-row">
+        <input id="tp-inp-${uid}" class="tf-field-input" type="text"
+          value="${ESC(value)}" placeholder="팀 이름 입력"
+          data-field="${syncField}"
+          oninput="tfSyncHead(this)"
+          style="background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:7px 10px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;transition:border-color .12s;width:100%;"
+          onfocus="this.style.borderColor='var(--primary-focus)';this.style.boxShadow='0 0 0 2px rgba(94,106,210,.15)'"
+          onblur="this.style.borderColor='';this.style.boxShadow=''"
+        />
+        <button class="tp-btn" type="button" onclick="tpOpen('${uid}')">팀 선택 ▾</button>
+      </div>
+      <div class="tp-dropdown" id="tp-dd-${uid}">
+        <div class="tp-league-tabs">${tabsHtml}</div>
+        <div class="tp-team-grid"></div>
+      </div>
+    </div>`;
+}
 
 /* ── Init ── */
 (async function init() {
@@ -834,7 +1133,7 @@ function setIndicator(msg, type) {
 function collectAll() {
   collectBreaking(); collectFeatured(); collectScores();
   collectPopular(); collectNews(); collectStandings();
-  collectFixtures(); collectTransfers();
+  collectFixtures(); collectTransfers(); collectArticles();
 }
 
 /* ── Render all ── */
@@ -843,6 +1142,7 @@ function renderAllSections() {
   renderBreaking(); renderFeatured(); renderScores();
   renderPopular(); renderNews(); renderLeagueTabs();
   renderStandingsEditor(activeLeague); renderFixtures(); renderTransfers();
+  renderArticles();
   updateCounts();
   if (ME.role === 'admin') renderUsers();
 }
@@ -855,6 +1155,7 @@ function updateCounts() {
   set('cnt-news',      D.news?.length      || 0);
   set('cnt-fixtures',  D.fixtures?.length  || 0);
   set('cnt-transfers', D.transfers?.length || 0);
+  set('cnt-articles',  D.articles?.length  || 0);
 }
 
 /* ── DASHBOARD ── */
@@ -1103,7 +1404,9 @@ function renderTransfers() {
   (D.transfers||[]).forEach(t => list.appendChild(mkTransferRow(t)));
 }
 
+let _tfRowSeq = 0;
 function mkTransferRow(t={}, autoOpen=false) {
+  const rowId = 'tf' + (++_tfRowSeq);
   const d = document.createElement('div');
   d.className = 'tf-card' + (autoOpen ? ' open' : '');
   d.dataset.row = '1';
@@ -1140,17 +1443,18 @@ function mkTransferRow(t={}, autoOpen=false) {
         <div class="tf-field">
           <label>선수명</label>
           <input data-field="player" type="text" value="${ESC(t.player)}" placeholder="예) 앤서니 고든"
+            style="background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:7px 10px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;transition:border-color .12s;width:100%;"
+            onfocus="this.style.borderColor='var(--primary-focus)'"
+            onblur="this.style.borderColor=''"
             oninput="tfSyncHead(this)" />
         </div>
         <div class="tf-field">
           <label>이전 팀 (From)</label>
-          <input data-field="from" type="text" value="${ESC(t.from)}" placeholder="예) 뉴캐슬"
-            oninput="tfSyncHead(this)" />
+          ${mkTeamPicker(rowId+'-from', t.from||'', 'from')}
         </div>
         <div class="tf-field">
           <label>이적 팀 (To)</label>
-          <input data-field="to" type="text" value="${ESC(t.to)}" placeholder="예) 바르셀로나"
-            oninput="tfSyncHead(this)" />
+          ${mkTeamPicker(rowId+'-to', t.to||'', 'to')}
         </div>
       </div>
 
@@ -1224,6 +1528,94 @@ function addTransfer() {
 
 function collectTransfers() {
   D.transfers = [...document.querySelectorAll('#transfersList [data-row]')].map(r => {
+    const obj = {};
+    r.querySelectorAll('[data-field]').forEach(el => {
+      obj[el.dataset.field] = el.value.trim();
+    });
+    return obj;
+  });
+}
+
+/* ── ARTICLES (관련 기사) ── */
+let _artSeq = 0;
+
+function renderArticles() {
+  const list = document.getElementById('articlesList');
+  if (!list) return;
+  list.innerHTML = '';
+  (D.articles||[]).forEach(a => list.appendChild(mkArticleRow(a)));
+}
+
+function mkArticleRow(a={}, autoOpen=false) {
+  const artId = 'art' + (++_artSeq);
+  const d = document.createElement('div');
+  d.className = 'art-card' + (autoOpen ? ' open' : '');
+  d.dataset.row = '1';
+
+  d.innerHTML = `
+    <div class="art-card-head" onclick="toggleArtCard(this.parentElement)">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="color:var(--primary);flex-shrink:0;">
+        <path d="M1 3h10M1 6h7M1 9h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <span class="art-title-preview" id="art-preview-${artId}">${ESC(a.title)||'새 기사'}</span>
+      <svg class="art-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <button class="del-btn" onclick="event.stopPropagation();this.closest('[data-row]').remove();updateCounts();" title="삭제" style="margin-left:4px;">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="art-body">
+      <div class="art-form-row">
+        <div class="tf-field">
+          <label>제목</label>
+          <input data-field="title" type="text" value="${ESC(a.title)}" placeholder="기사 제목"
+            style="background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:7px 10px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;width:100%;"
+            oninput="document.getElementById('art-preview-${artId}').textContent=this.value||'새 기사'" />
+        </div>
+        <div class="tf-field">
+          <label>카테고리</label>
+          <input data-field="category" type="text" value="${ESC(a.category||'이적 뉴스')}" placeholder="이적 뉴스"
+            style="background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:7px 10px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;width:100%;" />
+        </div>
+        <div class="tf-field">
+          <label>출처 · 시간</label>
+          <div style="display:grid;grid-template-columns:1fr 90px;gap:6px;">
+            <input data-field="source" type="text" value="${ESC(a.source)}" placeholder="출처 (Fabrizio Romano)"
+              style="background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:7px 10px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;width:100%;" />
+            <input data-field="time" type="text" value="${ESC(a.time)}" placeholder="1시간 전"
+              style="background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:7px 10px;color:var(--ink-subtle);font-size:12px;font-family:inherit;outline:none;width:100%;" />
+          </div>
+        </div>
+      </div>
+      <div class="tf-field" style="margin-bottom:10px;">
+        <label>요약 (카드에 표시)</label>
+        <input data-field="desc" type="text" value="${ESC(a.desc)}" placeholder="기사 요약 한 줄"
+          style="background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:7px 10px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;width:100%;" />
+      </div>
+      <div class="art-content-wrap">
+        <label>본문 전문 (클릭 시 모달에서 표시)</label>
+        <textarea data-field="content" class="art-content-textarea"
+          placeholder="기사 본문을 여기에 입력하세요. 단락은 빈 줄로 구분됩니다."
+        >${ESC(a.content)}</textarea>
+      </div>
+      <!-- hidden: badge always = transfer -->
+      <input type="hidden" data-field="badge" value="transfer" />
+    </div>
+  `;
+  return d;
+}
+
+function toggleArtCard(card) { card.classList.toggle('open'); }
+
+function addArticle() {
+  const list = document.getElementById('articlesList');
+  list.prepend(mkArticleRow({}, true));
+  updateCounts();
+}
+
+function collectArticles() {
+  D.articles = [...document.querySelectorAll('#articlesList [data-row]')].map(r => {
     const obj = {};
     r.querySelectorAll('[data-field]').forEach(el => {
       obj[el.dataset.field] = el.value.trim();
