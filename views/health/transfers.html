@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27><path d=%27M10 2L17.32 6V14L10 18L2.68 14V6Z%27 stroke=%27%235e6ad2%27 stroke-width=%271.5%27 fill=%27none%27/></svg>" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google-adsense-account" content="ca-pub-5886476101959679">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5886476101959679" crossorigin="anonymous"></script>
   <title>이적 시장 — Kickoff</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -1240,21 +1242,11 @@ function applySettings() {
   const dot2 = document.getElementById('heroEyebrowDot');
   if (dot2) dot2.style.animation = isOpen ? '' : 'none';
 
-  /* ── Google AdSense ── */
-  const pubId = (ad.pubId || '').trim();
-  if (!pubId) return; // pub ID 없으면 광고 비활성
+  /* ── Google AdSense 슬롯 주입 ── */
+  // pub ID: 어드민 설정 우선, 없으면 하드코딩 값 사용
+  const PUB_ID = 'ca-pub-5886476101959679';
+  const pubId  = (ad.pubId || '').trim() || PUB_ID;
 
-  // AdSense 스크립트 한 번만 주입
-  if (!document.querySelector('script[data-adsense]')) {
-    const s = document.createElement('script');
-    s.async = true;
-    s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${pubId}`;
-    s.crossOrigin = 'anonymous';
-    s.setAttribute('data-adsense', '1');
-    document.head.appendChild(s);
-  }
-
-  /* 슬롯 주입 헬퍼 */
   function injectSlot(containerId, slotId) {
     const wrap = document.getElementById(containerId);
     if (!wrap || !slotId) return;
