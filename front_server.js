@@ -500,6 +500,75 @@ app.post('/api/data', requireEditor, async (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════
+   포스트 API (X 스타일 게시글)
+═══════════════════════════════════════════════════════ */
+
+// 전체 조회
+app.get('/api/posts', async (req, res) => {
+  try {
+    await initDB();
+    const { rows } = await pool.query(
+      'SELECT * FROM posts ORDER BY created_at DESC LIMIT 100'
+    );
+    res.json(rows);
+  } catch (e) {
+    console.error('[Posts GET]', e.message);
+    res.json([]);
+  }
+});
+
+// 작성 (editor 이상)
+app.post('/api/posts', requireEditor, async (req, res) => {
+  const content   = (req.body.content   || '').trim();
+  const title     = (req.body.title     || '').trim().slice(0, 100);
+  const category  = sanitize(req.body.category  || '이적');
+  const image_url = sanitize(req.body.image_url || '');
+
+  if (!content || content.length < 1)
+    return res.status(400).json({ error: '내용을 입력하세요.' });
+  if (content.length > 2000)
+    return res.status(400).json({ error: '내용은 2000자 이하입니다.' });
+
+  try {
+    await initDB();
+    const id = Date.now().toString();
+    await pool.query(
+      `INSERT INTO posts (id, title, content, category, image_url, author, created_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      [id, title || null, content, category, image_url || null,
+       req.session.username || 'admin', new Date().toISOString()]
+    );
+    const { rows } = await pool.query('SELECT * FROM posts WHERE id=$1', [id]);
+    res.json({ ok: true, post: rows[0] });
+  } catch (e) {
+    console.error('[Posts POST]', e.message);
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+// 좋아요
+app.post('/api/posts/:id/like', async (req, res) => {
+  try {
+    await pool.query('UPDATE posts SET likes = likes + 1 WHERE id=$1', [req.params.id]);
+    const { rows } = await pool.query('SELECT likes FROM posts WHERE id=$1', [req.params.id]);
+    res.json({ ok: true, likes: rows[0]?.likes ?? 0 });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+// 삭제 (admin)
+app.delete('/api/posts/:id', requireAdmin, async (req, res) => {
+  try {
+    const { rowCount } = await pool.query('DELETE FROM posts WHERE id=$1', [req.params.id]);
+    if (rowCount === 0) return res.status(404).json({ error: '포스트를 찾을 수 없습니다.' });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+/* ══════════════════════════════════════════════════════
    헬스체크 (호스팅 플랫폼용)
 ═══════════════════════════════════════════════════════ */
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
@@ -530,6 +599,8 @@ app.get('/kickoff/analysis',  MAINTENANCE);
 app.get('/kickoff/login',     (req, res) => sendHTML(res, V('health/login.html')));
 app.get('/kickoff/signup',    (req, res) => sendHTML(res, V('health/signup.html')));
 app.get('/kickoff/admin',     (req, res) => sendHTML(res, V('health/admin.html')));
+app.get('/kickoff/feed',      (req, res) => sendHTML(res, V('health/feed.html')));
+app.get('/kickoff/write',     (req, res) => sendHTML(res, V('health/write.html')));
 
 if (process.env.VERCEL !== '1') {
   app.listen(PORT, () =>

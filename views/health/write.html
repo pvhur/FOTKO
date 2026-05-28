@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>글쓰기 — Kickoff</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/kickoff.css" />
+  <style>
+    body { background: var(--canvas); }
+
+    /* ── 헤더 바 (펨코 스타일) ── */
+    .write-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      background: var(--surface-1);
+      border-bottom: 1px solid var(--hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+    .write-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .wh-back {
+      width: 32px; height: 32px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--hairline);
+      background: transparent;
+      color: var(--ink-subtle);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all .14s;
+    }
+    .wh-back:hover { background: var(--surface-2); color: var(--ink); }
+    .wh-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+    .wh-actions { display: flex; align-items: center; gap: 8px; }
+    .btn-draft {
+      padding: 6px 14px;
+      border-radius: var(--r-md);
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--surface-2);
+      border: 1px solid var(--hairline);
+      color: var(--ink-subtle);
+      cursor: pointer;
+      transition: all .14s;
+    }
+    .btn-draft:hover { color: var(--ink); border-color: var(--hairline-strong); }
+    .btn-post {
+      padding: 7px 18px;
+      border-radius: var(--r-md);
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      transition: background .14s;
+    }
+    .btn-post:hover { background: var(--primary-hover); }
+    .btn-post:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── 메인 레이아웃 ── */
+    .write-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 0;
+      min-height: 100vh;
+      padding-top: 56px;
+    }
+
+    /* ── 에디터 영역 ── */
+    .write-editor {
+      border-right: 1px solid var(--hairline);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 카테고리 탭 (펨코 게시판 선택처럼) */
+    .cat-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--hairline);
+      padding: 0 24px;
+      background: var(--surface-1);
+      overflow-x: auto;
+    }
+    .cat-tab {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-subtle);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color .12s, border-color .12s;
+      user-select: none;
+    }
+    .cat-tab:hover { color: var(--ink-muted); }
+    .cat-tab.active { color: var(--ink); border-bottom-color: var(--primary); }
+
+    /* 제목 */
+    .title-wrap {
+      padding: 20px 24px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .title-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -.5px;
+      padding: 4px 0 16px;
+      resize: none;
+      line-height: 1.3;
+    }
+    .title-input::placeholder { color: var(--ink-tertiary); }
+
+    /* 툴바 (펨코 서식 툴바) */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 8px 20px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--surface-1);
+      flex-wrap: wrap;
+    }
+    .tb-btn {
+      width: 30px; height: 30px;
+      border-radius: var(--r-sm);
+      border: none;
+      background: transparent;
+      color: var(--ink-subtle);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      transition: background .12s, color .12s;
+    }
+    .tb-btn:hover { background: var(--surface-2); color: var(--ink); }
+    .tb-sep { width: 1px; height: 18px; background: var(--hairline); margin: 0 4px; }
+    .tb-btn.active { background: var(--surface-3); color: var(--primary-hover); }
+
+    /* 이미지 첨부 */
+    .img-attach-bar {
+      padding: 10px 24px;
+      border-bottom: 1px solid var(--hairline);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .img-attach-bar label {
+      font-size: 12px;
+      color: var(--ink-tertiary);
+      flex-shrink: 0;
+    }
+    .img-url-input {
+      flex: 1;
+      background: var(--surface-2);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color .12s;
+    }
+    .img-url-input:focus { border-color: var(--primary); }
+    .img-url-input::placeholder { color: var(--ink-tertiary); }
+    .img-preview {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: var(--r-md);
+      margin: 0 24px;
+      width: calc(100% - 48px);
+      display: none;
+      border: 1px solid var(--hairline);
+    }
+
+    /* 본문 */
+    .content-input {
+      flex: 1;
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink-muted);
+      font-family: 'Inter', sans-serif;
+      padding: 20px 24px;
+      resize: none;
+      min-height: 320px;
+    }
+    .content-input::placeholder { color: var(--ink-tertiary); }
+
+    /* 글자수 */
+    .char-count {
+      padding: 8px 24px;
+      font-size: 12px;
+      color: var(--ink-tertiary);
+      text-align: right;
+      border-top: 1px solid var(--hairline);
+    }
+    .char-count.warn { color: var(--warn); }
+    .char-count.over { color: var(--danger); }
+
+    /* ── 사이드바 ── */
+    .write-sidebar {
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-section h4 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 10px;
+    }
+
+    /* 미리보기 카드 (X 스타일) */
+    .preview-card {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      padding: 14px;
+      position: relative;
+    }
+    .preview-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.05), transparent);
+      pointer-events: none;
+      border-radius: 12px 12px 0 0;
+    }
+    .pc-header {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .pc-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .pc-meta { display: flex; flex-direction: column; gap: 1px; }
+    .pc-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .pc-handle { font-size: 12px; color: var(--ink-tertiary); }
+    .pc-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 5px;
+      line-height: 1.4;
+    }
+    .pc-content {
+      font-size: 13px;
+      color: var(--ink-muted);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .pc-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 10px;
+      border: 1px solid var(--hairline);
+      display: none;
+    }
+    .pc-footer {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--hairline);
+    }
+    .pc-action {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--ink-tertiary);
+    }
+
+    /* 카테고리 선택 버튼들 */
+    .cat-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .cat-btn {
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--hairline);
+      background: var(--surface-1);
+      color: var(--ink-subtle);
+      cursor: pointer;
+      transition: all .12s;
+    }
+    .cat-btn:hover { border-color: var(--hairline-strong); color: var(--ink-muted); }
+    .cat-btn.active {
+      background: rgba(94,106,210,.14);
+      border-color: rgba(94,106,210,.3);
+      color: var(--primary-hover);
+    }
+
+    /* 로그인 게이트 */
+    .gate {
+      position: fixed; inset: 0;
+      background: var(--canvas);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+    .gate h2 { font-size: 20px; font-weight: 700; }
+    .gate p { color: var(--ink-subtle); font-size: 14px; }
+
+    /* 성공 토스트 */
+    .toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: var(--surface-3);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-lg);
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      z-index: 500;
+      transition: transform .25s;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media(max-width: 768px) {
+      .write-layout { grid-template-columns: 1fr; }
+      .write-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 로그인 게이트 -->
+<div class="gate" id="gate">
+  <svg width="40" height="40" viewBox="0 0 20 20" fill="none">
+    <path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="#5e6ad2" stroke-width="1.5"/>
+    <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="#5e6ad2" opacity=".4"/>
+  </svg>
+  <h2>로그인이 필요합니다</h2>
+  <p>글쓰기는 로그인 후 이용할 수 있어요.</p>
+  <a href="/kickoff/login?redirect=/kickoff/write" class="btn-post" style="text-decoration:none;">로그인하기</a>
+</div>
+
+<!-- 헤더 -->
+<div class="write-header" id="writeHeader" style="display:none;">
+  <div class="write-header-left">
+    <button class="wh-back" onclick="history.back()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="wh-title">글쓰기</span>
+  </div>
+  <div class="wh-actions">
+    <button class="btn-draft" onclick="saveDraft()">임시저장</button>
+    <button class="btn-post" id="submitBtn" onclick="submitPost()">게시하기</button>
+  </div>
+</div>
+
+<!-- 레이아웃 -->
+<div class="write-layout" id="writeLayout" style="display:none;">
+
+  <!-- 에디터 -->
+  <div class="write-editor">
+    <!-- 카테고리 탭 -->
+    <div class="cat-bar">
+      <div class="cat-tab active" onclick="selectCat(this,'이적')">⚡ 이적 소식</div>
+      <div class="cat-tab" onclick="selectCat(this,'경기')">⚽ 경기 리뷰</div>
+      <div class="cat-tab" onclick="selectCat(this,'루머')">👀 루머</div>
+      <div class="cat-tab" onclick="selectCat(this,'분석')">📊 분석</div>
+      <div class="cat-tab" onclick="selectCat(this,'뉴스')">📰 뉴스</div>
+      <div class="cat-tab" onclick="selectCat(this,'잡담')">💬 잡담</div>
+    </div>
+
+    <!-- 제목 -->
+    <div class="title-wrap">
+      <textarea
+        class="title-input"
+        id="titleInput"
+        placeholder="제목을 입력하세요 (선택)"
+        rows="1"
+        maxlength="100"
+        oninput="autoResize(this); updatePreview()"
+      ></textarea>
+    </div>
+
+    <!-- 툴바 -->
+    <div class="toolbar">
+      <button class="tb-btn" title="굵게" onclick="insertFormat('**','**')"><b>B</b></button>
+      <button class="tb-btn" title="기울임" onclick="insertFormat('*','*')"><i>I</i></button>
+      <button class="tb-btn" title="취소선" onclick="insertFormat('~~','~~')">
+        <span style="text-decoration:line-through;">S</span>
+      </button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" title="인용" onclick="insertFormat('&gt; ','')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3 4h2v4H3V4zm5 0h2v4H8V4zM3 10h2v2H3v-2zm5 0h2v2H8v-2z"/></svg>
+      </button>
+      <button class="tb-btn" title="링크" onclick="insertLink()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 9.5a3.5 3.5 0 005 0l2-2a3.5 3.5 0 00-5-5L7 4"/><path d="M9.5 6.5a3.5 3.5 0 00-5 0l-2 2a3.5 3.5 0 005 5L9 12"/></svg>
+      </button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" title="해시태그" onclick="insertText('#')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6h10M3 10h10M6 2l-1.5 12M11.5 2L10 14"/></svg>
+      </button>
+      <button class="tb-btn" title="이모지" onclick="toggleEmoji()" id="emojiBtn">😊</button>
+    </div>
+
+    <!-- 이모지 팔레트 -->
+    <div id="emojiPalette" style="display:none; padding:10px 24px; border-bottom:1px solid var(--hairline); background:var(--surface-1); display:none;">
+      <div style="display:flex; flex-wrap:wrap; gap:4px;">
+        ⚽🔥💥😤👀🏆🎯🤣😂💪🔝🏃⚡🎉🙌👏💯🔴🔵⚪🟡🤔😮🫡🤩😭🥹👍👎🫶
+      </div>
+    </div>
+
+    <!-- 이미지 URL -->
+    <div class="img-attach-bar">
+      <label>🖼 이미지 URL</label>
+      <input
+        type="url"
+        class="img-url-input"
+        id="imgUrlInput"
+        placeholder="https://... 이미지 주소 붙여넣기"
+        oninput="updateImagePreview()"
+      />
+    </div>
+    <img id="imgPreview" class="img-preview" alt="미리보기" />
+
+    <!-- 본문 -->
+    <textarea
+      class="content-input"
+      id="contentInput"
+      placeholder="무슨 소식인가요? 이적 루머, 경기 리뷰, 분석 등 자유롭게 작성해보세요."
+      oninput="updateCharCount(); updatePreview()"
+      maxlength="2000"
+    ></textarea>
+
+    <div class="char-count" id="charCount">0 / 2000</div>
+  </div>
+
+  <!-- 사이드바 -->
+  <div class="write-sidebar">
+    <!-- X 스타일 미리보기 -->
+    <div class="sidebar-section">
+      <h4>미리보기</h4>
+      <div class="preview-card">
+        <div class="pc-header">
+          <div class="pc-avatar" id="pcAvatar">A</div>
+          <div class="pc-meta">
+            <div class="pc-name" id="pcName">admin</div>
+            <div class="pc-handle">@kickoff_news</div>
+          </div>
+        </div>
+        <div class="pc-title" id="pcTitle" style="display:none;"></div>
+        <div class="pc-content" id="pcContent">내용을 입력하면 여기서 미리볼 수 있어요.</div>
+        <img class="pc-img" id="pcImg" alt="" />
+        <div class="pc-footer">
+          <div class="pc-action">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M8 2C4.686 2 2 4.238 2 7c0 1.584.79 3 2 4l-.5 3 3-1.5c.46.1.952.16 1.5.16 3.314 0 6-2.238 6-5S11.314 2 8 2z"/></svg>
+            댓글
+          </div>
+          <div class="pc-action">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 8l4-4v2.5h8V10H6v2.5L2 8z"/></svg>
+            리포스트
+          </div>
+          <div class="pc-action" id="pcLikeBtn">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M8 13s-6-3.5-6-7a4 4 0 018 0 4 4 0 018 0c0 3.5-6 7-6 7z"/></svg>
+            좋아요
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 카테고리 -->
+    <div class="sidebar-section">
+      <h4>카테고리</h4>
+      <div class="cat-btns" id="catBtns">
+        <div class="cat-btn active" onclick="selectCatBtn(this,'이적')">이적</div>
+        <div class="cat-btn" onclick="selectCatBtn(this,'경기')">경기</div>
+        <div class="cat-btn" onclick="selectCatBtn(this,'루머')">루머</div>
+        <div class="cat-btn" onclick="selectCatBtn(this,'분석')">분석</div>
+        <div class="cat-btn" onclick="selectCatBtn(this,'뉴스')">뉴스</div>
+        <div class="cat-btn" onclick="selectCatBtn(this,'잡담')">잡담</div>
+      </div>
+    </div>
+
+    <!-- 작성 팁 -->
+    <div class="sidebar-section">
+      <h4>작성 팁</h4>
+      <div style="font-size:12px; color:var(--ink-tertiary); line-height:1.7; background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px;">
+        <div>• **굵게**, *기울임* 서식 지원</div>
+        <div>• 이미지 URL 붙여넣기로 첨부</div>
+        <div>• #해시태그 사용 가능</div>
+        <div>• 최대 2,000자</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let ME = null;
+let selectedCat = '이적';
+let emojiOpen = false;
+
+(async function init() {
+  try {
+    const r = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!r.ok) return; // 게이트 유지
+    ME = await r.json();
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('writeHeader').style.display = 'flex';
+    document.getElementById('writeLayout').style.display = 'grid';
+    document.getElementById('pcAvatar').textContent = ME.username[0].toUpperCase();
+    document.getElementById('pcName').textContent = ME.username;
+    loadDraft();
+  } catch (_) {}
+})();
+
+// ── 카테고리
+function selectCat(el, cat) {
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  selectedCat = cat;
+  syncCatBtns(cat);
+}
+function selectCatBtn(el, cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedCat = cat;
+  syncCatTabs(cat);
+}
+const CAT_MAP = { '이적':'⚡ 이적 소식','경기':'⚽ 경기 리뷰','루머':'👀 루머','분석':'📊 분석','뉴스':'📰 뉴스','잡담':'💬 잡담' };
+function syncCatTabs(cat) {
+  document.querySelectorAll('.cat-tab').forEach(t => {
+    t.classList.toggle('active', t.textContent.trim() === (CAT_MAP[cat] || cat));
+  });
+}
+function syncCatBtns(cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === cat);
+  });
+}
+
+// ── 미리보기
+function updatePreview() {
+  const title = document.getElementById('titleInput').value.trim();
+  const content = document.getElementById('contentInput').value;
+  const titleEl = document.getElementById('pcTitle');
+  titleEl.textContent = title;
+  titleEl.style.display = title ? 'block' : 'none';
+  document.getElementById('pcContent').textContent = content || '내용을 입력하면 여기서 미리볼 수 있어요.';
+}
+
+function updateImagePreview() {
+  const url = document.getElementById('imgUrlInput').value.trim();
+  const preview = document.getElementById('imgPreview');
+  const pcImg = document.getElementById('pcImg');
+  if (url) {
+    preview.src = url;
+    preview.style.display = 'block';
+    pcImg.src = url;
+    pcImg.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+    pcImg.style.display = 'none';
+  }
+}
+
+// ── 글자수
+function updateCharCount() {
+  const len = document.getElementById('contentInput').value.length;
+  const el = document.getElementById('charCount');
+  el.textContent = `${len.toLocaleString()} / 2,000`;
+  el.className = 'char-count' + (len > 1800 ? ' warn' : '') + (len >= 2000 ? ' over' : '');
+}
+
+// ── textarea 자동 높이
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+// ── 텍스트 서식
+function insertFormat(before, after) {
+  const ta = document.getElementById('contentInput');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const selected = ta.value.substring(s, e);
+  const replacement = before + (selected || '텍스트') + after;
+  ta.value = ta.value.substring(0, s) + replacement + ta.value.substring(e);
+  ta.focus();
+  ta.setSelectionRange(s + before.length, s + before.length + (selected || '텍스트').length);
+  updateCharCount(); updatePreview();
+}
+function insertText(text) {
+  const ta = document.getElementById('contentInput');
+  const s = ta.selectionStart;
+  ta.value = ta.value.substring(0, s) + text + ta.value.substring(s);
+  ta.focus();
+  ta.setSelectionRange(s + text.length, s + text.length);
+  updateCharCount(); updatePreview();
+}
+function insertLink() {
+  const url = prompt('링크 URL을 입력하세요:');
+  if (url) insertFormat('[', `](${url})`);
+}
+
+// ── 이모지
+function toggleEmoji() {
+  const p = document.getElementById('emojiPalette');
+  emojiOpen = !emojiOpen;
+  p.style.display = emojiOpen ? 'block' : 'none';
+  document.getElementById('emojiBtn').classList.toggle('active', emojiOpen);
+}
+document.addEventListener('click', (e) => {
+  if (emojiOpen && !e.target.closest('#emojiPalette') && !e.target.closest('#emojiBtn')) {
+    document.getElementById('emojiPalette').style.display = 'none';
+    document.getElementById('emojiBtn').classList.remove('active');
+    emojiOpen = false;
+  }
+});
+// 이모지 클릭
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#emojiPalette span, #emojiPalette div').forEach(el => {
+    el.style.cursor = 'pointer';
+  });
+});
+document.getElementById('emojiPalette')?.addEventListener('click', (e) => {
+  const txt = e.target.textContent;
+  if (txt && [...txt].length === 1) insertText(txt);
+});
+
+// ── 제출
+async function submitPost() {
+  const content = document.getElementById('contentInput').value.trim();
+  if (!content) { showToast('내용을 입력하세요.', true); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '게시 중...';
+
+  try {
+    const r = await fetch('/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        title:     document.getElementById('titleInput').value.trim(),
+        content,
+        category:  selectedCat,
+        image_url: document.getElementById('imgUrlInput').value.trim(),
+      }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+
+    localStorage.removeItem('kickoff_draft');
+    showToast('게시되었습니다! 🎉');
+    setTimeout(() => { window.location.href = '/kickoff/feed'; }, 1000);
+  } catch (e) {
+    showToast(e.message || '오류가 발생했습니다.', true);
+    btn.disabled = false;
+    btn.textContent = '게시하기';
+  }
+}
+
+// ── 임시저장
+function saveDraft() {
+  const draft = {
+    title:    document.getElementById('titleInput').value,
+    content:  document.getElementById('contentInput').value,
+    category: selectedCat,
+    img:      document.getElementById('imgUrlInput').value,
+  };
+  localStorage.setItem('kickoff_draft', JSON.stringify(draft));
+  showToast('임시저장 되었습니다.');
+}
+function loadDraft() {
+  try {
+    const d = JSON.parse(localStorage.getItem('kickoff_draft') || 'null');
+    if (!d) return;
+    if (d.title)   { document.getElementById('titleInput').value = d.title; autoResize(document.getElementById('titleInput')); }
+    if (d.content) { document.getElementById('contentInput').value = d.content; }
+    if (d.img)     { document.getElementById('imgUrlInput').value = d.img; updateImagePreview(); }
+    if (d.category) { selectedCat = d.category; syncCatTabs(d.category); syncCatBtns(d.category); }
+    updateCharCount(); updatePreview();
+  } catch(_) {}
+}
+
+// ── 토스트
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isError ? 'rgba(239,68,68,.15)' : 'var(--surface-3)';
+  t.style.color = isError ? '#f87171' : 'var(--ink)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Ctrl+Enter 제출
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') submitPost();
+});
+</script>
+</body>
+</html>

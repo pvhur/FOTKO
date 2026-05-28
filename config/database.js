@@ -56,6 +56,21 @@ async function initDB() {
     await _sql`
       CREATE INDEX IF NOT EXISTS idx_sess_expired ON sessions(expired)
     `;
+    await _sql`
+      CREATE TABLE IF NOT EXISTS posts (
+        id         TEXT PRIMARY KEY,
+        title      TEXT,
+        content    TEXT NOT NULL,
+        category   TEXT NOT NULL DEFAULT '이적',
+        image_url  TEXT,
+        author     TEXT NOT NULL DEFAULT 'admin',
+        likes      INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+      )
+    `;
+    await _sql`
+      CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC)
+    `;
 
     const [row] = await _sql`SELECT COUNT(*)::int AS c FROM users`;
     if (row.c === 0) {
