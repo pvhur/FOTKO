@@ -635,14 +635,8 @@
     </div>
     <div class="topbar-right">
       <span class="save-indicator" id="saveIndicator"></span>
-      <div class="topbar-user">
-        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="var(--ink-subtle)" stroke-width="1.2"/><path d="M2.5 12c0-2.49 2.02-4.5 4.5-4.5s4.5 2.01 4.5 4.5" stroke="var(--ink-subtle)" stroke-width="1.2" stroke-linecap="round"/></svg>
-        <span class="topbar-username" id="topbarUsername">—</span>
-        <span id="topbarRoleBadge"></span>
-      </div>
       <button class="btn btn-secondary btn-sm" onclick="window.open('/kickoff','_blank')">사이트 보기</button>
       <button class="btn btn-primary btn-sm" onclick="saveAll()" id="saveBtn">저장</button>
-      <button class="btn btn-ghost btn-sm" onclick="doLogout()">로그아웃</button>
     </div>
   </div>
 
@@ -702,11 +696,6 @@
         사이트 설정
       </div>
 
-      <div class="sidebar-group-label admin-only hidden">관리</div>
-      <div class="sidebar-item admin-only hidden" onclick="switchSection('users')">
-        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5" cy="4.5" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M1 11c0-2.21 1.79-4 4-4s4 1.79 4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9.5 2v4M7.5 4h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
-        사용자 관리
-      </div>
     </nav>
 
     <!-- Main -->
@@ -979,19 +968,6 @@
         </div>
       </div>
 
-      <!-- ── 사용자 관리 (admin only) ── -->
-      <div class="section-page admin-only hidden" id="sec-users">
-        <div class="main-header">
-          <div class="main-title">사용자 관리</div>
-          <div class="main-desc">등록된 사용자 목록입니다. 역할을 변경하거나 계정을 삭제할 수 있습니다.</div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>사용자 목록</h3></div>
-          <div class="panel-body">
-            <div class="user-list" id="userList"></div>
-          </div>
-        </div>
-      </div>
 
     </main>
   </div>
@@ -1124,51 +1100,18 @@ function mkTeamPicker(uid, value, syncField) {
     </div>`;
 }
 
-/* ── Init ── */
+/* ── Init (인증 없음 — 직접 접근) ── */
 (async function init() {
   try {
-    const r = await fetch('/api/auth/me', { credentials: 'include' });
-    if (r.ok) {
-      ME = await r.json();
-      if (ME.role !== 'admin') {
-        // Editor: no admin access
-        window.location.href = '/kickoff';
-        return;
-      }
-      const dr = await fetch('/api/data');
-      D = await dr.json();
-      enterAdmin();
-    } else {
-      // Not logged in → redirect to login
-      window.location.href = '/kickoff/login?redirect=/kickoff/admin';
-    }
-  } catch {
-    window.location.href = '/kickoff/login?redirect=/kickoff/admin';
-  }
-})();
-
-function enterAdmin() {
+    const dr = await fetch('/api/data');
+    D = dr.ok ? await dr.json() : {};
+  } catch { D = {}; }
   document.getElementById('gateScreen').style.display = 'none';
   document.getElementById('adminScreen').style.display = 'block';
-
-  // Topbar user info
-  document.getElementById('topbarUsername').textContent = ME.username;
-  document.getElementById('topbarRoleBadge').innerHTML =
-    `<span class="role-badge role-${ME.role}">${ME.role === 'admin' ? '관리자' : '편집자'}</span>`;
-
-  // Show admin-only elements
-  if (ME.role === 'admin') {
-    document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
-  }
-
+  document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
   renderAllSections();
   switchSection('dashboard');
-}
-
-async function doLogout() {
-  try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) {}
-  window.location.href = '/kickoff';
-}
+})();
 
 /* ── Section nav ── */
 function switchSection(name) {
@@ -1222,7 +1165,7 @@ function renderAllSections() {
   renderStandingsEditor(activeLeague); renderFixtures(); renderTransfers();
   renderArticles(); renderSettings();
   updateCounts();
-  if (ME.role === 'admin') renderUsers();
+  renderUsers();
 }
 
 function updateCounts() {

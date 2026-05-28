@@ -350,8 +350,8 @@ app.get('/api/data', async (req, res) => {
   }
 });
 
-// 저장 (editor 이상)
-app.post('/api/data', requireEditor, async (req, res) => {
+// 저장
+app.post('/api/data', async (req, res) => {
   let payload;
   try {
     payload = JSON.stringify(req.body);

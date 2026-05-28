@@ -1294,7 +1294,7 @@ function renderSidebar() {
   container.innerHTML = LEAGUES.map(league => {
     const leagueCount = league.teams.reduce((s, t) => s + getCount(t.name), 0);
     return `
-    <div class="ts-league" id="league-${league.id}">
+    <div class="ts-league collapsed" id="league-${league.id}">
       <div class="ts-league-header" onclick="toggleLeague('${league.id}')">
         <img class="ts-league-logo"
           src="${LEAGUE_LOGO(league.leagueId)}"
