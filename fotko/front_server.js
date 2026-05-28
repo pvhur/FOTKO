@@ -450,10 +450,10 @@ app.delete('/api/users/:id', requireAdmin, async (req, res) => {
 app.get('/api/data', async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT data FROM content WHERE key='football'");
-    if (!rows[0]) return res.status(404).json({ error: 'data not found' });
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=30');
-    res.send(rows[0].data);
+    // 데이터 없으면 빈 구조 반환 (404 대신) — 프론트에서 graceful하게 처리
+    res.send(rows[0] ? rows[0].data : '{"transfers":[],"news":[],"matches":[],"standings":{}}');
   } catch (e) {
     res.status(500).json({ error: '서버 오류' });
   }

@@ -151,8 +151,10 @@ async function load() {
   document.getElementById('todayDate').textContent =
     now.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
 
-  const r = await fetch('/api/data');
-  _data = await r.json();
+  try {
+    const r = await fetch('/api/data');
+    if (r.ok) _data = await r.json();
+  } catch (_) {}
   renderFilterBar();
   renderMatches();
   renderSidebar();

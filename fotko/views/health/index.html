@@ -259,8 +259,12 @@ const NEWS_SVG  = `<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><
 let activeLeague = 'pl';
 
 async function loadData() {
-  const res = await fetch('/api/data');
-  const d   = await res.json();
+  let d = {};
+  try {
+    const res = await fetch('/api/data');
+    if (res.ok) d = await res.json();
+  } catch (_) {}
+
   renderTicker(d.breaking);
   renderFeatured(d.featured);
   renderScoreboard(d.scores);

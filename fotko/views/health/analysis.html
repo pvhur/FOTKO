@@ -182,8 +182,10 @@ let activeFilter = '전체';
 let _data = null;
 
 async function load() {
-  const r = await fetch('/api/data');
-  _data = await r.json();
+  try {
+    const r = await fetch('/api/data');
+    if (r.ok) _data = await r.json();
+  } catch (_) {}
   renderFeatured();
   renderLeagueStats();
   renderInsights();
