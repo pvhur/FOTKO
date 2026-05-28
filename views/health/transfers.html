@@ -839,6 +839,23 @@
     }
     .atb-clear:hover { background: var(--surface-2); color: var(--ink); }
 
+    /* ── AD SLOTS ── */
+    .ad-slot {
+      width: 100%;
+      margin: 20px 0;
+      text-align: center;
+      min-height: 90px;
+      background: var(--surface-1);
+      border: 1px dashed var(--hairline);
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .ad-slot:empty { display: none; }
+    .ad-slot ins { display: block; width: 100%; }
+
     @media(max-width:1100px) {
       .transfers-layout { grid-template-columns: 200px 1fr; }
     }
@@ -906,17 +923,17 @@
 <div class="burn-hero">
   <div class="wrap">
     <div class="burn-eyebrow">
-      <div class="burn-eyebrow-dot"></div>
-      2026 SUMMER WINDOW · LIVE
+      <div class="burn-eyebrow-dot" id="heroEyebrowDot"></div>
+      <span id="heroEyebrow">2026 SUMMER WINDOW · LIVE</span>
     </div>
     <h1 class="burn-title">이적시장<br>버닝 🔥</h1>
-    <p class="burn-sub">공식 발표부터 최신 루머까지. 이번 여름 이적시장의 모든 소식을 실시간으로 전합니다.</p>
+    <p class="burn-sub" id="heroSub">공식 발표부터 최신 루머까지. 이번 여름 이적시장의 모든 소식을 실시간으로 전합니다.</p>
 
-    <div class="window-status">
-      <div class="window-status-dot"></div>
-      <span class="window-status-text">이적 창구 열림</span>
+    <div class="window-status" id="windowStatusBar">
+      <div class="window-status-dot" id="windowDot"></div>
+      <span class="window-status-text" id="windowStatusText">이적 창구 열림</span>
       <span class="window-status-sep">·</span>
-      <span class="window-status-date">2026.06.01 개막 · 2026.09.01 마감</span>
+      <span class="window-status-date" id="windowDates">2026.06.01 개막 · 2026.09.01 마감</span>
     </div>
 
     <div class="burn-stats" id="burnStats">
@@ -952,11 +969,16 @@
         <!-- FILTER -->
         <div class="fire-filter" id="filterBar"></div>
 
+        <!-- AD SLOT 1: 이적 카드 상단 -->
+        <div class="ad-slot" id="adSlot1"></div>
+
         <!-- TRANSFERS GRID -->
         <div class="transfers-grid" id="transfersGrid"></div>
 
         <!-- NEWS SECTION -->
         <div class="news-section">
+          <!-- AD SLOT 2: 뉴스 섹션 상단 -->
+          <div class="ad-slot" id="adSlot2" style="margin-bottom:28px;"></div>
           <div class="news-section-header">
             <div>
               <div class="news-eyebrow">
@@ -1187,12 +1209,67 @@ async function load() {
     _data = r.ok ? await r.json() : {};
   } catch { _data = {}; }
 
+  applySettings();
   renderSidebar();
   renderTicker();
   renderStats();
   renderFilterBar();
   renderTransfers();
   renderNews();
+}
+
+/* ════════════════════════════════════════
+   SETTINGS 적용 (창구 상태 + AdSense)
+════════════════════════════════════════ */
+function applySettings() {
+  const s  = _data.settings || {};
+  const w  = s.window || {};
+  const ad = s.ads    || {};
+
+  /* ── 이적 창구 텍스트 ── */
+  const setTxt = (id, val) => { const el = document.getElementById(id); if(el && val) el.textContent = val; };
+  setTxt('heroEyebrow',      w.eyebrow    || '2026 SUMMER WINDOW · LIVE');
+  setTxt('heroSub',          w.sub);
+  setTxt('windowStatusText', w.statusText || '이적 창구 열림');
+  setTxt('windowDates',      w.dates      || '2026.06.01 개막 · 2026.09.01 마감');
+
+  /* 열림/닫힘 — dot 애니메이션 */
+  const isOpen = w.isOpen !== false;
+  const dot = document.getElementById('windowDot');
+  if (dot) dot.style.animation = isOpen ? '' : 'none';
+  const dot2 = document.getElementById('heroEyebrowDot');
+  if (dot2) dot2.style.animation = isOpen ? '' : 'none';
+
+  /* ── Google AdSense ── */
+  const pubId = (ad.pubId || '').trim();
+  if (!pubId) return; // pub ID 없으면 광고 비활성
+
+  // AdSense 스크립트 한 번만 주입
+  if (!document.querySelector('script[data-adsense]')) {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${pubId}`;
+    s.crossOrigin = 'anonymous';
+    s.setAttribute('data-adsense', '1');
+    document.head.appendChild(s);
+  }
+
+  /* 슬롯 주입 헬퍼 */
+  function injectSlot(containerId, slotId) {
+    const wrap = document.getElementById(containerId);
+    if (!wrap || !slotId) return;
+    wrap.innerHTML = `
+      <ins class="adsbygoogle"
+           style="display:block;width:100%;"
+           data-ad-client="${pubId}"
+           data-ad-slot="${slotId}"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>`;
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(_) {}
+  }
+
+  injectSlot('adSlot1', ad.slot1);
+  injectSlot('adSlot2', ad.slot2);
 }
 
 /* ════════════════════════════════════════

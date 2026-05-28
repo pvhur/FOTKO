@@ -696,6 +696,12 @@
         관련 기사 <span class="si-count" id="cnt-articles">0</span>
       </div>
 
+      <div class="sidebar-group-label">설정</div>
+      <div class="sidebar-item" onclick="switchSection('settings')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 1v1M6.5 11v1M1 6.5h1M11 6.5h1M2.4 2.4l.7.7M9.9 9.9l.7.7M9.9 3.1l-.7.7M3.1 9.9l-.7.7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+        사이트 설정
+      </div>
+
       <div class="sidebar-group-label admin-only hidden">관리</div>
       <div class="sidebar-item admin-only hidden" onclick="switchSection('users')">
         <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5" cy="4.5" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M1 11c0-2.21 1.79-4 4-4s4 1.79 4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9.5 2v4M7.5 4h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
@@ -881,6 +887,77 @@
           </div>
           <div class="panel-body">
             <div class="edit-list" id="transfersList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 사이트 설정 ── -->
+      <div class="section-page" id="sec-settings">
+        <div class="main-header">
+          <div class="main-title">사이트 설정</div>
+          <div class="main-desc">이적 창구 상태와 Google AdSense를 설정합니다.</div>
+        </div>
+
+        <!-- 이적 창구 -->
+        <div class="panel" style="margin-bottom:16px;">
+          <div class="panel-head"><h3>🔥 이적 창구 설정</h3></div>
+          <div class="panel-body">
+            <div class="form-row-2" style="margin-bottom:12px;">
+              <div class="field">
+                <label>상태 텍스트</label>
+                <input class="inp inp-sm" id="set-winStatus" placeholder="이적 창구 열림" />
+              </div>
+              <div class="field">
+                <label>날짜 표시</label>
+                <input class="inp inp-sm" id="set-winDates" placeholder="2026.06.01 개막 · 2026.09.01 마감" />
+              </div>
+            </div>
+            <div class="form-row-2" style="margin-bottom:12px;">
+              <div class="field">
+                <label>상단 눈썹 텍스트 (EYEBROW)</label>
+                <input class="inp inp-sm" id="set-winEyebrow" placeholder="2026 SUMMER WINDOW · LIVE" />
+              </div>
+              <div class="field">
+                <label>영웅 부제목</label>
+                <input class="inp inp-sm" id="set-winSub" placeholder="공식 발표부터 최신 루머까지..." />
+              </div>
+            </div>
+            <div class="field" style="flex-direction:row;align-items:center;gap:10px;">
+              <label style="text-transform:none;font-size:13px;color:var(--ink-muted);margin:0;">이적 창구 열림</label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;">
+                <input type="checkbox" id="set-winOpen" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer;" />
+                <span style="font-size:12px;color:var(--ink-tertiary);">체크 = 열림 (점 애니메이션 활성화)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google AdSense -->
+        <div class="panel">
+          <div class="panel-head"><h3>📢 Google AdSense</h3></div>
+          <div class="panel-body">
+            <div class="field" style="margin-bottom:12px;">
+              <label>Publisher ID <span style="font-weight:400;color:var(--ink-tertiary);">(ca-pub-XXXXXXXXXX)</span></label>
+              <input class="inp inp-sm" id="set-adsPubId" placeholder="ca-pub-0000000000000000"
+                style="font-family:monospace;" />
+              <p style="font-size:11px;color:var(--ink-tertiary);margin-top:6px;">
+                비워두면 광고가 표시되지 않습니다. AdSense 계정에서 확인하세요.
+              </p>
+            </div>
+            <div class="form-row-2" style="margin-bottom:12px;">
+              <div class="field">
+                <label>광고 슬롯 1 ID <span style="font-weight:400;color:var(--ink-tertiary);">(이적 카드 상단)</span></label>
+                <input class="inp inp-sm" id="set-adsSlot1" placeholder="0000000000" style="font-family:monospace;" />
+              </div>
+              <div class="field">
+                <label>광고 슬롯 2 ID <span style="font-weight:400;color:var(--ink-tertiary);">(뉴스 섹션 상단)</span></label>
+                <input class="inp inp-sm" id="set-adsSlot2" placeholder="0000000000" style="font-family:monospace;" />
+              </div>
+            </div>
+            <div class="field">
+              <label>광고 슬롯 3 ID <span style="font-weight:400;color:var(--ink-tertiary);">(사이드바 하단 — 선택)</span></label>
+              <input class="inp inp-sm" id="set-adsSlot3" placeholder="0000000000" style="font-family:monospace;max-width:320px;" />
+            </div>
           </div>
         </div>
       </div>
@@ -1134,6 +1211,7 @@ function collectAll() {
   collectBreaking(); collectFeatured(); collectScores();
   collectPopular(); collectNews(); collectStandings();
   collectFixtures(); collectTransfers(); collectArticles();
+  collectSettings();
 }
 
 /* ── Render all ── */
@@ -1142,7 +1220,7 @@ function renderAllSections() {
   renderBreaking(); renderFeatured(); renderScores();
   renderPopular(); renderNews(); renderLeagueTabs();
   renderStandingsEditor(activeLeague); renderFixtures(); renderTransfers();
-  renderArticles();
+  renderArticles(); renderSettings();
   updateCounts();
   if (ME.role === 'admin') renderUsers();
 }
@@ -1622,6 +1700,43 @@ function collectArticles() {
     });
     return obj;
   });
+}
+
+/* ── SETTINGS ── */
+function renderSettings() {
+  const s  = D.settings || {};
+  const w  = s.window   || {};
+  const ad = s.ads      || {};
+  const g = (id, val) => { const el = document.getElementById(id); if(el) el.value = val||''; };
+  const gc = (id, val) => { const el = document.getElementById(id); if(el) el.checked = !!val; };
+  g('set-winStatus',  w.statusText || '이적 창구 열림');
+  g('set-winDates',   w.dates      || '2026.06.01 개막 · 2026.09.01 마감');
+  g('set-winEyebrow', w.eyebrow    || '2026 SUMMER WINDOW · LIVE');
+  g('set-winSub',     w.sub        || '공식 발표부터 최신 루머까지. 이번 여름 이적시장의 모든 소식을 실시간으로 전합니다.');
+  gc('set-winOpen',   w.isOpen !== false); // 기본값 true
+  g('set-adsPubId',  ad.pubId  || '');
+  g('set-adsSlot1',  ad.slot1  || '');
+  g('set-adsSlot2',  ad.slot2  || '');
+  g('set-adsSlot3',  ad.slot3  || '');
+}
+function collectSettings() {
+  const g  = id => document.getElementById(id)?.value.trim() || '';
+  const gc = id => document.getElementById(id)?.checked ?? true;
+  D.settings = {
+    window: {
+      statusText: g('set-winStatus')  || '이적 창구 열림',
+      dates:      g('set-winDates')   || '2026.06.01 개막 · 2026.09.01 마감',
+      eyebrow:    g('set-winEyebrow') || '2026 SUMMER WINDOW · LIVE',
+      sub:        g('set-winSub'),
+      isOpen:     gc('set-winOpen'),
+    },
+    ads: {
+      pubId: g('set-adsPubId'),
+      slot1: g('set-adsSlot1'),
+      slot2: g('set-adsSlot2'),
+      slot3: g('set-adsSlot3'),
+    },
+  };
 }
 
 /* ── USERS ── */
