@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kickoff — 축구 뉴스</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -259,8 +260,8 @@ const NEWS_SVG  = `<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><
 let activeLeague = 'pl';
 
 async function loadData() {
-  const res = await fetch('/api/data');
-  const d   = await res.json();
+  let d = {};
+  try { const r = await fetch('/api/data'); if (r.ok) d = await r.json(); } catch(_) {}
   renderTicker(d.breaking);
   renderFeatured(d.featured);
   renderScoreboard(d.scores);

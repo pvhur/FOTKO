@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>경기 결과 — Kickoff</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -151,8 +152,7 @@ async function load() {
   document.getElementById('todayDate').textContent =
     now.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
 
-  const r = await fetch('/api/data');
-  _data = await r.json();
+  try { const r = await fetch('/api/data'); if (r.ok) _data = await r.json(); } catch(_) {}
   renderFilterBar();
   renderMatches();
   renderSidebar();

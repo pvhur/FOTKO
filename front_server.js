@@ -466,7 +466,11 @@ app.delete('/api/users/:id', requireAdmin, async (req, res) => {
 app.get('/api/data', async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT data FROM content WHERE key='football'");
-    if (!rows[0]) return res.status(404).json({ error: 'data not found' });
+    // 데이터 없으면 빈 구조 반환 (404 대신) — 프론트 graceful 처리
+    if (!rows[0]) {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      return res.send('{"transfers":[],"news":[],"matches":[],"standings":{}}');
+    }
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=30');
     res.send(rows[0].data);
@@ -499,6 +503,7 @@ app.post('/api/data', requireEditor, async (req, res) => {
    헬스체크 (호스팅 플랫폼용)
 ═══════════════════════════════════════════════════════ */
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.json({}));
 
 /* ══════════════════════════════════════════════════════
