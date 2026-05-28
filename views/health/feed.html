@@ -260,7 +260,6 @@
       font-size: 14px;
       color: var(--text2);
       line-height: 1.65;
-      white-space: pre-wrap;
       word-break: break-word;
     }
     .post-content.clamped {
@@ -269,6 +268,36 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+    /* Rich text formatting inside posts */
+    .post-content b, .post-content strong { font-weight: 700; color: var(--text); }
+    .post-content i, .post-content em { font-style: italic; }
+    .post-content u { text-decoration: underline; }
+    .post-content s, .post-content del { text-decoration: line-through; }
+    .post-content a { color: var(--accent2); text-decoration: underline; }
+    .post-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 4px 12px;
+      background: rgba(94,106,210,.06);
+      border-radius: 0 4px 4px 0;
+      margin: 6px 0;
+      color: var(--text2);
+    }
+    .post-content img { max-width: 100%; border-radius: 8px; margin: 4px 0; }
+    .post-content h1 { font-size: 20px; font-weight: 800; margin: 8px 0 4px; color: var(--text); }
+    .post-content h2 { font-size: 16px; font-weight: 700; margin: 6px 0 3px; color: var(--text); }
+    .post-content h3 { font-size: 14px; font-weight: 600; margin: 4px 0 2px; color: var(--text); }
+    .post-content ul, .post-content ol { padding-left: 20px; }
+    .post-content li { margin: 2px 0; }
+    .post-content code {
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #f87171;
+    }
+    .post-content hr { border: none; border-top: 1px solid var(--border2); margin: 8px 0; }
 
     /* Image */
     .post-img {
@@ -566,9 +595,36 @@
       font-size: 15px;
       color: var(--text2);
       line-height: 1.7;
-      white-space: pre-wrap;
       word-break: break-word;
     }
+    .detail-content b, .detail-content strong { font-weight: 700; color: var(--text); }
+    .detail-content i, .detail-content em { font-style: italic; }
+    .detail-content u { text-decoration: underline; }
+    .detail-content s { text-decoration: line-through; }
+    .detail-content a { color: var(--accent2); text-decoration: underline; }
+    .detail-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 4px 14px;
+      background: rgba(94,106,210,.06);
+      border-radius: 0 4px 4px 0;
+      margin: 8px 0;
+    }
+    .detail-content img { max-width: 100%; border-radius: 8px; margin: 6px 0; }
+    .detail-content h1 { font-size: 22px; font-weight: 800; margin: 12px 0 6px; color: var(--text); }
+    .detail-content h2 { font-size: 18px; font-weight: 700; margin: 10px 0 4px; color: var(--text); }
+    .detail-content h3 { font-size: 15px; font-weight: 600; margin: 8px 0 3px; color: var(--text); }
+    .detail-content ul, .detail-content ol { padding-left: 22px; }
+    .detail-content li { margin: 3px 0; }
+    .detail-content code {
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 13px;
+      font-family: monospace;
+      color: #f87171;
+    }
+    .detail-content hr { border: none; border-top: 1px solid var(--border2); margin: 12px 0; }
     .detail-img {
       margin-top: 16px;
       border-radius: 10px;
@@ -815,7 +871,9 @@ function renderCard(p) {
   const catKey = getCatKey(p.category);
   const catIcon = getCatIcon(p.category);
   const timeStr = formatTime(p.created_at);
-  const longContent = p.content && p.content.length > 280;
+  // Strip HTML tags to get plain text length for clamp decision
+  const plainText = p.content ? p.content.replace(/<[^>]*>/g, '') : '';
+  const longContent = plainText.length > 280;
 
   return `
     <div class="post-card" data-id="${p.id}">
@@ -836,7 +894,7 @@ function renderCard(p) {
       </div>
       <span class="post-cat cat-${catKey}">${catIcon} ${p.category}</span>
       ${p.title ? `<div class="post-title">${escHtml(p.title)}</div>` : ''}
-      <div class="post-content${longContent ? ' clamped' : ''}">${escHtml(p.content)}</div>
+      <div class="post-content${longContent ? ' clamped' : ''}">${p.content || ''}</div>
       ${longContent ? `<button class="expand-btn">더 보기 <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>` : ''}
       ${p.image_url ? `<div class="post-img"><img src="${escHtml(p.image_url)}" alt="" loading="lazy" onerror="this.parentElement.remove()"/></div>` : ''}
       <div class="post-actions">
@@ -997,7 +1055,7 @@ function openDetail(p) {
       <span class="post-cat cat-${catKey}" style="margin-left:auto">${catIcon} ${p.category}</span>
     </div>
     ${p.title ? `<div class="detail-title">${escHtml(p.title)}</div>` : ''}
-    <div class="detail-content">${escHtml(p.content)}</div>
+    <div class="detail-content">${p.content || ''}</div>
     ${p.image_url ? `<div class="detail-img"><img src="${escHtml(p.image_url)}" alt="" onerror="this.parentElement.remove()"/></div>` : ''}
   `;
 
