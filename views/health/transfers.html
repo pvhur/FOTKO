@@ -327,10 +327,34 @@
       text-transform: uppercase;
       letter-spacing: .4px;
     }
-    .tc-source {
-      font-size: 11px;
+    .tc-source-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: var(--fire-dim);
+      border-left: 3px solid var(--fire-bright);
+      border-radius: 0 6px 6px 0;
+    }
+    .tc-source-icon {
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .tc-source-label {
+      font-size: 10px;
       color: var(--ink-tertiary);
-      margin-left: auto;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      flex-shrink: 0;
+    }
+    .tc-source-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--fire-bright);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* 세부설명 — 메인 본문처럼 크게 */
@@ -1561,10 +1585,16 @@ function renderTransfers() {
           <div class="tc-fee-row">
             <span class="tc-fee-label">이적료</span>
             <span class="tc-fee-chip${fee ? '' : ' unknown'}">${fee || '미공개'}</span>
-            ${t.source ? `<span class="tc-source">via ${t.source}</span>` : ''}
           </div>
           <!-- 세부설명 — 메인 본문 (길면 접힘) -->
           ${tcDetailHtml(t.detail)}
+          <!-- 출처 -->
+          ${t.source ? `
+          <div class="tc-source-row">
+            <span class="tc-source-icon">📰</span>
+            <span class="tc-source-label">출처</span>
+            <span class="tc-source-name">${t.source}</span>
+          </div>` : ''}
         </div>
         <div class="tc-footer">
           <span>${t.type || ''}</span>
