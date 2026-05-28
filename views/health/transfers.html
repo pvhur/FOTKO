@@ -347,6 +347,24 @@
       font-style: italic;
     }
 
+    /* 더 보기 / 접기 버튼 */
+    .tc-expand-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fire-bright);
+      cursor: pointer;
+      transition: color .14s;
+    }
+    .tc-expand-btn:hover { color: var(--fire); }
+
     .tc-footer {
       padding: 12px 20px;
       border-top: 1px solid var(--hairline);
@@ -1452,6 +1470,39 @@ function setFilter(key) {
 }
 
 /* ════════════════════════════════════════
+   DETAIL COLLAPSE HELPERS
+════════════════════════════════════════ */
+const TC_LIMIT = 140;
+
+function tcDetailHtml(detail) {
+  if (!detail || !detail.trim()) {
+    return `<div class="tc-detail tc-detail-empty">세부 정보 없음</div>`;
+  }
+  const text = detail.trim();
+  if (text.length <= TC_LIMIT) {
+    return `<div class="tc-detail">${text}</div>`;
+  }
+  const head = text.slice(0, TC_LIMIT);
+  const rest = text.slice(TC_LIMIT);
+  return `
+    <div class="tc-detail">
+      <span class="tc-head-text">${head}</span><span class="tc-ellipsis">…</span><span class="tc-rest" style="display:none;">${rest}</span>
+      <br>
+      <button class="tc-expand-btn" onclick="tcToggle(this)">▼ 더 보기</button>
+    </div>`;
+}
+
+function tcToggle(btn) {
+  const detail = btn.closest('.tc-detail');
+  const rest    = detail.querySelector('.tc-rest');
+  const ellipsis = detail.querySelector('.tc-ellipsis');
+  const expanded = rest.style.display !== 'none';
+  rest.style.display    = expanded ? 'none' : 'inline';
+  ellipsis.style.display = expanded ? 'inline' : 'none';
+  btn.textContent       = expanded ? '▼ 더 보기' : '▲ 접기';
+}
+
+/* ════════════════════════════════════════
    TRANSFERS GRID
 ════════════════════════════════════════ */
 function teamMatch(t, name) {
@@ -1512,10 +1563,8 @@ function renderTransfers() {
             <span class="tc-fee-chip${fee ? '' : ' unknown'}">${fee || '미공개'}</span>
             ${t.source ? `<span class="tc-source">via ${t.source}</span>` : ''}
           </div>
-          <!-- 세부설명 — 메인 본문 -->
-          ${t.detail
-            ? `<div class="tc-detail">${t.detail}</div>`
-            : `<div class="tc-detail-empty">세부 정보 없음</div>`}
+          <!-- 세부설명 — 메인 본문 (길면 접힘) -->
+          ${tcDetailHtml(t.detail)}
         </div>
         <div class="tc-footer">
           <span>${t.type || ''}</span>
