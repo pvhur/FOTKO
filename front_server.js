@@ -440,6 +440,64 @@ app.delete('/api/posts/:id', requireAdmin, async (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════
+   방문자 추적
+═══════════════════════════════════════════════════════ */
+
+// 방문 기록 (클라이언트 → 서버)
+app.post('/api/track', async (req, res) => {
+  try {
+    await initDB();
+    const page   = (req.body.page || '/').slice(0, 100);
+    const ip     = req.ip || req.connection.remoteAddress || 'unknown';
+    const ipHash = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16);
+    const now    = Date.now();
+    const date   = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const id     = `${date}_${page.replace(/\//g,'_')}_${ipHash}`;
+    // 하루 한 번만 동일 IP + 페이지 조합 기록 (UPSERT로 중복 방지)
+    await pool.query(
+      `INSERT INTO pageviews (id, page, ip_hash, date, ts)
+       VALUES ($1,$2,$3,$4,$5)
+       ON CONFLICT (id) DO UPDATE SET ts=$5`,
+      [id, page, ipHash, date, now]
+    );
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[Track]', e.message);
+    res.json({ ok: false });
+  }
+});
+
+// 방문자 통계 조회 (어드민용)
+app.get('/api/stats', async (req, res) => {
+  try {
+    await initDB();
+    const today     = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    const week      = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+
+    const [todayR, yesterdayR, weekR, totalR, byPageR] = await Promise.all([
+      pool.query('SELECT COUNT(*) AS c FROM pageviews WHERE date=$1', [today]),
+      pool.query('SELECT COUNT(*) AS c FROM pageviews WHERE date=$1', [yesterday]),
+      pool.query('SELECT COUNT(*) AS c FROM pageviews WHERE date>=$1', [week]),
+      pool.query('SELECT COUNT(*) AS c FROM pageviews'),
+      pool.query(`SELECT page, COUNT(*) AS c FROM pageviews WHERE date>=$1
+                  GROUP BY page ORDER BY c DESC LIMIT 10`, [week]),
+    ]);
+
+    res.json({
+      today:     parseInt(todayR.rows[0]?.c || 0),
+      yesterday: parseInt(yesterdayR.rows[0]?.c || 0),
+      week:      parseInt(weekR.rows[0]?.c || 0),
+      total:     parseInt(totalR.rows[0]?.c || 0),
+      byPage:    byPageR.rows.map(r => ({ page: r.page, count: parseInt(r.c) })),
+    });
+  } catch (e) {
+    console.error('[Stats]', e.message);
+    res.json({ today: 0, yesterday: 0, week: 0, total: 0, byPage: [] });
+  }
+});
+
+/* ══════════════════════════════════════════════════════
    헬스체크 (호스팅 플랫폼용)
 ═══════════════════════════════════════════════════════ */
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));

@@ -69,6 +69,18 @@ async function initDB() {
     await _sql`
       CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC)
     `;
+    await _sql`
+      CREATE TABLE IF NOT EXISTS pageviews (
+        id       TEXT PRIMARY KEY,
+        page     TEXT NOT NULL,
+        ip_hash  TEXT NOT NULL,
+        date     TEXT NOT NULL,
+        ts       BIGINT NOT NULL
+      )
+    `;
+    await _sql`
+      CREATE INDEX IF NOT EXISTS idx_pv_date ON pageviews(date)
+    `;
 
     console.log('[DB] 스키마 확인 완료');
   })().catch(e => {

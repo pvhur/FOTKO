@@ -1248,6 +1248,13 @@ let _data = null;
    로드
 ════════════════════════════════════════ */
 async function load() {
+  // 방문자 추적 (비동기, 실패 무시)
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ page: '/kickoff/transfers' }),
+  }).catch(() => {});
+
   try {
     const r = await fetch('/api/data');
     _data = r.ok ? await r.json() : {};

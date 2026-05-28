@@ -142,6 +142,19 @@
     .dash-recent-text { font-size:13px; font-weight:500; color:var(--ink); flex:1; }
     .dash-recent-time { font-size:12px; color:var(--ink-tertiary); flex-shrink:0; }
 
+    /* 방문자 통계 */
+    .visitor-stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-bottom:4px; }
+    .vs-card { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); padding:18px 20px; }
+    .vs-card-num { font-size:32px; font-weight:800; letter-spacing:-.8px; line-height:1; margin-bottom:6px; }
+    .vs-card-label { font-size:12px; font-weight:500; color:var(--ink-muted); }
+    .vs-card-sub { font-size:11px; color:var(--ink-tertiary); margin-top:3px; }
+    .vs-loading { font-size:13px; color:var(--ink-tertiary); padding:12px 0; }
+    .vs-page-row { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); padding:11px 16px; display:flex; align-items:center; gap:12px; }
+    .vs-page-name { font-size:13px; font-weight:500; color:var(--ink); flex:1; }
+    .vs-page-bar-wrap { width:120px; background:var(--surface-2); border-radius:4px; height:6px; flex-shrink:0; }
+    .vs-page-bar { height:6px; border-radius:4px; background:var(--primary); transition:width .3s; }
+    .vs-page-count { font-size:13px; font-weight:700; color:var(--primary-hover); width:36px; text-align:right; flex-shrink:0; }
+
     /* ── ④ SECTION PANELS ── */
     .panel { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); overflow:hidden; margin-bottom:16px; }
     .panel-head { background:var(--surface-2); border-bottom:1px solid var(--hairline); padding:11px 16px; display:flex; align-items:center; justify-content:space-between; }
@@ -710,7 +723,15 @@
 
         <div class="dash-grid" id="dashGrid"></div>
 
-        <div class="dash-recent-title">최신 뉴스 기사</div>
+        <!-- 방문자 통계 -->
+        <div class="dash-recent-title" style="margin-top:28px;">방문자 통계</div>
+        <div class="visitor-stats-grid" id="visitorStatsGrid">
+          <div class="vs-loading">통계 불러오는 중…</div>
+        </div>
+        <div class="dash-recent-title" style="margin-top:24px;">페이지별 방문 (최근 7일)</div>
+        <div class="dash-recent-list" id="visitorByPage"></div>
+
+        <div class="dash-recent-title" style="margin-top:24px;">최신 뉴스 기사</div>
         <div class="dash-recent-list" id="dashRecentNews"></div>
       </div>
 
@@ -1217,6 +1238,49 @@ function renderDashboard() {
       <span class="dash-recent-text">${n.title||''}</span>
       <span class="dash-recent-time">${n.time||''}</span>
     </div>`).join('') || '<div style="color:var(--ink-tertiary);font-size:13px;padding:8px 0;">뉴스 없음</div>';
+
+  // 방문자 통계 비동기 로드
+  loadVisitorStats();
+}
+
+async function loadVisitorStats() {
+  try {
+    const r = await fetch('/api/stats');
+    if (!r.ok) throw new Error('fetch fail');
+    const s = await r.json();
+
+    const VS_CARDS = [
+      { num: s.today,     label: '오늘 방문자',    sub: '고유 IP 기준',        color: 'var(--primary-hover)' },
+      { num: s.yesterday, label: '어제 방문자',    sub: '전일 기준',           color: '#4ade80' },
+      { num: s.week,      label: '7일 방문자',     sub: '최근 7일 누적',       color: '#fbbf24' },
+      { num: s.total,     label: '전체 방문자',    sub: '서비스 시작 이후',     color: '#f87171' },
+    ];
+
+    document.getElementById('visitorStatsGrid').innerHTML = VS_CARDS.map(c => `
+      <div class="vs-card">
+        <div class="vs-card-num" style="color:${c.color};">${c.num.toLocaleString()}</div>
+        <div class="vs-card-label">${c.label}</div>
+        <div class="vs-card-sub">${c.sub}</div>
+      </div>`).join('');
+
+    const maxCount = s.byPage[0]?.count || 1;
+    document.getElementById('visitorByPage').innerHTML = s.byPage.length
+      ? s.byPage.map(p => {
+          const pct = Math.round((p.count / maxCount) * 100);
+          const label = p.page.replace('/kickoff/', '') || 'home';
+          return `
+          <div class="vs-page-row">
+            <span class="vs-page-name">/${label}</span>
+            <div class="vs-page-bar-wrap"><div class="vs-page-bar" style="width:${pct}%;"></div></div>
+            <span class="vs-page-count">${p.count}</span>
+          </div>`;
+        }).join('')
+      : '<div style="color:var(--ink-tertiary);font-size:13px;padding:8px 0;">아직 방문 데이터가 없습니다.</div>';
+
+  } catch {
+    document.getElementById('visitorStatsGrid').innerHTML =
+      '<div class="vs-loading">통계를 불러올 수 없습니다.</div>';
+  }
 }
 
 /* ── DEL button helper ── */
