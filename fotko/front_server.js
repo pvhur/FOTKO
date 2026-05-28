@@ -521,6 +521,7 @@ app.get('/api/live/fixtures', async (req, res) => {
    헬스체크
 ═══════════════════════════════════════════════════════ */
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.json({}));
 
 /* ══════════════════════════════════════════════════════
