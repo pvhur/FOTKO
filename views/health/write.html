@@ -272,6 +272,47 @@
       color: var(--text3);
     }
 
+    /* ─── Foldable section ─── */
+    .fold-section {
+      margin-top: 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .fold-header {
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      background: var(--bg3);
+      transition: background .1s;
+    }
+    .fold-header:hover { background: var(--bg4); }
+    .fold-section.open .fold-header { border-bottom: 1px solid var(--border); }
+    .fold-header-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      flex: 1;
+    }
+    .fold-header-hint {
+      font-size: 11px;
+      color: var(--text3);
+    }
+    .fold-chevron {
+      color: var(--text3);
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+    .fold-section.open .fold-chevron { transform: rotate(180deg); }
+    .fold-body {
+      display: none;
+    }
+    .fold-section.open .fold-body { display: block; }
+
     /* ─── File attachment section ─── */
     .attach-section {
       margin-top: 12px;
@@ -756,34 +797,80 @@
     </div>
   </div>
 
-  <!-- File / Image Attachment -->
-  <div class="attach-section">
-    <div class="attach-header">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 12V5a2 2 0 012-2h6l3 3v6a2 2 0 01-2 2H4a2 2 0 01-2-2z"/><path d="M10 3v3h3"/></svg>
-      사진, 움짤, 동영상 등 파일 첨부
+  <!-- ─── 파일 첨부 (접기/펼치기) ─── -->
+  <div class="fold-section open" id="foldAttach">
+    <div class="fold-header" onclick="toggleFold('foldAttach')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+        <path d="M2 12V5a2 2 0 012-2h6l3 3v6a2 2 0 01-2 2H4a2 2 0 01-2-2z"/><path d="M10 3v3h3"/>
+      </svg>
+      <span class="fold-header-title">사진 · 파일 첨부</span>
+      <span class="fold-header-hint" id="attachHint"></span>
+      <svg class="fold-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
     </div>
-    <div class="attach-body">
-      <div class="attach-info">
-        허용 확장자: .jpg .jpeg .png .gif .webp .mp4 .webm .mov .pdf .zip<br>
-        파일당 최대 용량: <span>50.00MB</span>, 총 <span>50MB</span><br>
-        <span>.mp4, .webm, .mov, .webp는 총 12개까지 첨부 가능</span>
+    <div class="fold-body">
+      <div class="attach-body">
+        <div class="attach-info">
+          허용 확장자: .jpg .jpeg .png .gif .webp .mp4 .webm .mov .pdf .zip<br>
+          파일당 최대 용량: <span>50.00MB</span>, 총 <span>50MB</span><br>
+          <span>.mp4, .webm, .mov, .webp는 총 12개까지 첨부 가능</span>
+        </div>
+        <div class="attach-drop-zone" id="dropZone">
+          <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.zip,.gif" onchange="handleFiles(this.files)" />
+          <div class="attach-drop-label">여기에 파일을 끌어 놓거나 <b>파일 첨부 버튼</b>을 클릭하세요.</div>
+          <div class="attach-drop-sub">이미지, 움짤, 동영상 등 파일 첨부</div>
+        </div>
+        <div class="file-list" id="fileList"></div>
+        <div class="attach-stat" id="attachStat"></div>
+        <div class="attach-actions" id="attachActions" style="display:none;">
+          <button class="attach-act-btn" onclick="selectAll()">전체 선택</button>
+          <button class="attach-act-btn" onclick="deselectAll()">전체 해제</button>
+          <button class="attach-act-btn" onclick="setThumbnail()">썸네일 지정</button>
+          <button class="attach-act-btn danger-act" onclick="deleteSelected()">선택 삭제</button>
+          <button class="attach-act-btn primary-act" onclick="insertSelected()">본문 삽입</button>
+        </div>
       </div>
+    </div>
+  </div>
 
-      <div class="attach-drop-zone" id="dropZone">
-        <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.zip,.gif" onchange="handleFiles(this.files)" />
-        <div class="attach-drop-label">여기에 파일을 끌어 놓거나 <b>파일 첨부 버튼</b>을 클릭하세요.</div>
-        <div class="attach-drop-sub">이미지, 움짤, 동영상 등 파일 첨부</div>
+  <!-- ─── 게시 설정 (접기/펼치기) ─── -->
+  <div class="fold-section" id="foldOptions">
+    <div class="fold-header" onclick="toggleFold('foldOptions')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+        <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+      </svg>
+      <span class="fold-header-title">게시 설정</span>
+      <span class="fold-header-hint">임시저장 · 카테고리</span>
+      <svg class="fold-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="fold-body" style="padding:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;">카테고리</label>
+          <select id="catSelectOpts" style="width:100%;background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:13px;outline:none;">
+            <option value="이적">⚡ 이적</option>
+            <option value="경기">⚽ 경기</option>
+            <option value="루머">👀 루머</option>
+            <option value="분석">📊 분석</option>
+            <option value="뉴스">📰 뉴스</option>
+            <option value="잡담">💬 잡담</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;">임시저장</label>
+          <button onclick="saveDraft()" style="width:100%;padding:8px;background:var(--bg4);border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;transition:all .1s;">
+            💾 임시저장
+          </button>
+        </div>
       </div>
-
-      <div class="file-list" id="fileList"></div>
-      <div class="attach-stat" id="attachStat"></div>
-
-      <div class="attach-actions" id="attachActions" style="display:none;">
-        <button class="attach-act-btn" onclick="selectAll()">전체 선택</button>
-        <button class="attach-act-btn" onclick="deselectAll()">전체 해제</button>
-        <button class="attach-act-btn" onclick="setThumbnail()">썸네일 지정</button>
-        <button class="attach-act-btn danger-act" onclick="deleteSelected()">선택 삭제</button>
-        <button class="attach-act-btn primary-act" onclick="insertSelected()">본문 삽입</button>
+      <div style="font-size:12px;color:var(--text3);line-height:1.6;background:var(--bg3);border-radius:6px;padding:10px 12px;">
+        <b style="color:var(--text2);">작성 팁</b><br>
+        • Ctrl+Enter 로 바로 게시<br>
+        • Ctrl+S 로 임시저장<br>
+        • HTML 편집기로 직접 마크업 가능
       </div>
     </div>
   </div>
@@ -1022,6 +1109,13 @@ function applyHtml() {
 }
 
 /* ══════════════════════════════════
+   Fold / Unfold sections
+══════════════════════════════════ */
+function toggleFold(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+/* ══════════════════════════════════
    File attachment
 ══════════════════════════════════ */
 function handleFiles(filesList) {
@@ -1048,6 +1142,8 @@ function renderFileList() {
   const list = document.getElementById('fileList');
   const stat = document.getElementById('attachStat');
   const actions = document.getElementById('attachActions');
+  const hint = document.getElementById('attachHint');
+  if (hint) hint.textContent = attachedFiles.length ? `${attachedFiles.length}개 첨부됨` : '';
 
   if (!attachedFiles.length) {
     list.innerHTML = '';

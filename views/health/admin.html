@@ -221,17 +221,171 @@
     .fixture-row-edit input::placeholder { color:var(--ink-tertiary); }
     .fixture-vs { font-size:11px; color:var(--ink-tertiary); text-align:center; }
 
-    /* Transfer rows */
-    .transfer-row-edit { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px 14px; transition:border-color .12s; }
-    .transfer-row-edit:hover { border-color:var(--hairline-strong); }
-    .transfer-top { display:grid; grid-template-columns:1fr 1fr 1fr 80px 70px 36px; gap:8px; align-items:center; margin-bottom:8px; }
-    .transfer-top input, .transfer-top select { background:transparent; border:none; outline:none; color:var(--ink); font-size:13px; width:100%; }
-    .transfer-top input:focus, .transfer-top select:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:2px 6px; }
-    .transfer-top input::placeholder { color:var(--ink-tertiary); }
-    .transfer-bottom { display:grid; grid-template-columns:1fr 80px; gap:8px; align-items:center; padding-top:8px; border-top:1px solid var(--hairline); }
-    .transfer-bottom input { background:transparent; border:none; outline:none; color:var(--ink-subtle); font-size:12px; width:100%; }
-    .transfer-bottom input:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:2px 6px; }
-    .transfer-bottom input::placeholder { color:var(--ink-tertiary); }
+    /* ── Transfer Accordion Cards ── */
+    .tf-card {
+      background:var(--surface-1);
+      border:1px solid var(--hairline);
+      border-radius:var(--r-lg);
+      overflow:hidden;
+      transition:border-color .15s;
+    }
+    .tf-card:hover { border-color:var(--hairline-strong); }
+    .tf-card.open { border-color:var(--primary-focus); }
+
+    /* Card head — always visible summary row */
+    .tf-card-head {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:11px 14px;
+      cursor:pointer;
+      user-select:none;
+      transition:background .1s;
+    }
+    .tf-card.open .tf-card-head { background:var(--surface-2); }
+    .tf-card-head:hover { background:var(--surface-2); }
+
+    .tf-badge-chip {
+      display:inline-flex;
+      align-items:center;
+      padding:2px 8px;
+      border-radius:var(--r-pill);
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+      flex-shrink:0;
+    }
+    .tf-badge-official { background:rgba(255,107,0,.14); color:#ff9500; border:1px solid rgba(255,107,0,.25); }
+    .tf-badge-rumor    { background:rgba(251,191,36,.12); color:#fbbf24; border:1px solid rgba(251,191,36,.22); }
+    .tf-badge-done     { background:rgba(74,222,128,.1);  color:#4ade80; border:1px solid rgba(74,222,128,.2);  }
+
+    .tf-player-name {
+      font-size:13px;
+      font-weight:700;
+      color:var(--ink);
+      min-width:80px;
+    }
+    .tf-head-clubs {
+      display:flex;
+      align-items:center;
+      gap:5px;
+      font-size:12px;
+      color:var(--ink-subtle);
+      flex:1;
+    }
+    .tf-head-arrow { color:#ff6b00; font-size:11px; }
+    .tf-head-fee {
+      font-size:12px;
+      font-weight:600;
+      color:#ff9500;
+      min-width:40px;
+      text-align:right;
+    }
+    .tf-chevron {
+      color:var(--ink-tertiary);
+      transition:transform .2s;
+      flex-shrink:0;
+    }
+    .tf-card.open .tf-chevron { transform:rotate(180deg); }
+
+    /* Card body — form fields */
+    .tf-body {
+      display:none;
+      padding:16px;
+      border-top:1px solid var(--hairline);
+      background:var(--canvas);
+    }
+    .tf-card.open .tf-body { display:block; }
+
+    .tf-form-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .tf-form-row {
+      display:grid;
+      grid-template-columns:repeat(4,1fr) 100px;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .tf-field {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .tf-field label {
+      font-size:10px;
+      font-weight:600;
+      color:var(--ink-tertiary);
+      text-transform:uppercase;
+      letter-spacing:.4px;
+    }
+    .tf-field input,
+    .tf-field select {
+      background:var(--surface-2);
+      border:1px solid var(--hairline);
+      border-radius:var(--r-sm);
+      padding:7px 10px;
+      color:var(--ink);
+      font-size:13px;
+      font-family:inherit;
+      outline:none;
+      transition:border-color .12s, box-shadow .12s;
+      width:100%;
+    }
+    .tf-field input:focus,
+    .tf-field select:focus {
+      border-color:var(--primary-focus);
+      box-shadow:0 0 0 2px rgba(94,106,210,.15);
+    }
+    .tf-field input::placeholder { color:var(--ink-tertiary); }
+    .tf-field select option { background:var(--surface-3); }
+
+    /* Detail textarea */
+    .tf-detail-wrap {
+      margin-top:2px;
+    }
+    .tf-detail-wrap label {
+      font-size:10px;
+      font-weight:600;
+      color:var(--ink-tertiary);
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      display:block;
+      margin-bottom:6px;
+    }
+    .tf-detail-textarea {
+      width:100%;
+      min-height:90px;
+      background:var(--surface-2);
+      border:1px solid var(--hairline);
+      border-radius:var(--r-md);
+      padding:10px 12px;
+      color:var(--ink-muted);
+      font-size:13px;
+      font-family:inherit;
+      line-height:1.65;
+      resize:vertical;
+      outline:none;
+      transition:border-color .12s, box-shadow .12s;
+    }
+    .tf-detail-textarea:focus {
+      border-color:var(--primary-focus);
+      box-shadow:0 0 0 2px rgba(94,106,210,.15);
+    }
+    .tf-detail-textarea::placeholder { color:var(--ink-tertiary); }
+
+    .tf-card-actions {
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:6px;
+      margin-top:12px;
+      padding-top:10px;
+      border-top:1px solid var(--hairline);
+    }
 
     /* ── ⑤ USERS SECTION ── */
     .user-list { display:flex; flex-direction:column; gap:8px; }
@@ -948,32 +1102,133 @@ function renderTransfers() {
   list.innerHTML = '';
   (D.transfers||[]).forEach(t => list.appendChild(mkTransferRow(t)));
 }
-function mkTransferRow(t={}) {
+
+function mkTransferRow(t={}, autoOpen=false) {
   const d = document.createElement('div');
-  d.className = 'transfer-row-edit'; d.dataset.row = '1';
-  const badgeOpts = ['official','rumor','done'].map(b=>`<option value="${b}" ${t.badge===b?'selected':''}>${b}</option>`).join('');
+  d.className = 'tf-card' + (autoOpen ? ' open' : '');
+  d.dataset.row = '1';
+
+  const badge = t.badge || 'rumor';
+  const badgeLabel = { official:'공식', rumor:'루머', done:'완료' };
+  const badgeOpts = ['official','rumor','done'].map(b =>
+    `<option value="${b}" ${badge===b?'selected':''}>${badgeLabel[b]||b}</option>`
+  ).join('');
+
   d.innerHTML = `
-    <div class="transfer-top">
-      <input type="text" value="${ESC(t.player)}" placeholder="선수명" />
-      <input type="text" value="${ESC(t.from)}"   placeholder="이전 팀" />
-      <input type="text" value="${ESC(t.to)}"     placeholder="이적 팀" />
-      <input type="text" value="${ESC(t.fee)}"    placeholder="이적료" />
-      <select>${badgeOpts}</select>
-      ${DEL}
+    <!-- ── 헤더 (항상 표시) ── -->
+    <div class="tf-card-head" onclick="toggleTfCard(this.parentElement)">
+      <span class="tf-badge-chip tf-badge-${badge}" data-badge-chip>${badgeLabel[badge]||badge}</span>
+      <span class="tf-player-name" data-head-player>${ESC(t.player)||'선수명'}</span>
+      <span class="tf-head-clubs">
+        <span data-head-from>${ESC(t.from)||'이전 팀'}</span>
+        <span class="tf-head-arrow">→</span>
+        <span data-head-to>${ESC(t.to)||'이적 팀'}</span>
+      </span>
+      <span class="tf-head-fee" data-head-fee>${ESC(t.fee)||'—'}</span>
+      <svg class="tf-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <button class="del-btn" onclick="event.stopPropagation();this.closest('[data-row]').remove();updateCounts();" title="삭제" style="margin-left:4px;">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
     </div>
-    <div class="transfer-bottom">
-      <input type="text" value="${ESC(t.detail)}" placeholder="상세 (예: 5년 계약)" />
-      <input type="text" value="${ESC(t.type)}"   placeholder="여름 이적" />
-    </div>`;
+
+    <!-- ── 바디 (펼쳐지면 표시) ── -->
+    <div class="tf-body">
+      <!-- Row 1: 선수명 / 이전팀 / 이적팀 -->
+      <div class="tf-form-grid">
+        <div class="tf-field">
+          <label>선수명</label>
+          <input data-field="player" type="text" value="${ESC(t.player)}" placeholder="예) 앤서니 고든"
+            oninput="tfSyncHead(this)" />
+        </div>
+        <div class="tf-field">
+          <label>이전 팀 (From)</label>
+          <input data-field="from" type="text" value="${ESC(t.from)}" placeholder="예) 뉴캐슬"
+            oninput="tfSyncHead(this)" />
+        </div>
+        <div class="tf-field">
+          <label>이적 팀 (To)</label>
+          <input data-field="to" type="text" value="${ESC(t.to)}" placeholder="예) 바르셀로나"
+            oninput="tfSyncHead(this)" />
+        </div>
+      </div>
+
+      <!-- Row 2: 이적료 / 날짜 / 유형 / 소스 / 상태 -->
+      <div class="tf-form-row">
+        <div class="tf-field">
+          <label>이적료</label>
+          <input data-field="fee" type="text" value="${ESC(t.fee)}" placeholder="80M / Unknown"
+            oninput="tfSyncHead(this)" />
+        </div>
+        <div class="tf-field">
+          <label>날짜</label>
+          <input data-field="date" type="text" value="${ESC(t.date)}" placeholder="2026.07.01" />
+        </div>
+        <div class="tf-field">
+          <label>유형</label>
+          <input data-field="type" type="text" value="${ESC(t.type)}" placeholder="여름 이적" />
+        </div>
+        <div class="tf-field">
+          <label>출처 (Source)</label>
+          <input data-field="source" type="text" value="${ESC(t.source)}" placeholder="Fabrizio Romano" />
+        </div>
+        <div class="tf-field">
+          <label>상태</label>
+          <select data-field="badge" onchange="tfSyncBadge(this)">
+            ${badgeOpts}
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 3: 세부사항 textarea -->
+      <div class="tf-detail-wrap">
+        <label>세부 사항</label>
+        <textarea data-field="detail" class="tf-detail-textarea"
+          placeholder="예) 앤서니 고든이 뉴캐슬에서 바르셀로나로 이적합니다. 이적료는 80M이며 부가 조항이 있습니다."
+        >${ESC(t.detail)}</textarea>
+      </div>
+    </div>
+  `;
   return d;
 }
-function addTransfer() { document.getElementById('transfersList').appendChild(mkTransferRow()); updateCounts(); }
+
+/* 헤더 미리보기 실시간 동기화 */
+function tfSyncHead(el) {
+  const card = el.closest('.tf-card');
+  const field = el.dataset.field;
+  if (field === 'player') card.querySelector('[data-head-player]').textContent = el.value || '선수명';
+  if (field === 'from')   card.querySelector('[data-head-from]').textContent   = el.value || '이전 팀';
+  if (field === 'to')     card.querySelector('[data-head-to]').textContent     = el.value || '이적 팀';
+  if (field === 'fee')    card.querySelector('[data-head-fee]').textContent    = el.value || '—';
+}
+function tfSyncBadge(sel) {
+  const card  = sel.closest('.tf-card');
+  const badge = sel.value;
+  const label = { official:'공식', rumor:'루머', done:'완료' };
+  const chip  = card.querySelector('[data-badge-chip]');
+  chip.textContent  = label[badge] || badge;
+  chip.className    = `tf-badge-chip tf-badge-${badge}`;
+}
+
+function toggleTfCard(card) {
+  card.classList.toggle('open');
+}
+
+function addTransfer() {
+  const list = document.getElementById('transfersList');
+  const row = mkTransferRow({}, true);
+  list.prepend(row);   // 맨 위에 추가
+  updateCounts();
+}
+
 function collectTransfers() {
   D.transfers = [...document.querySelectorAll('#transfersList [data-row]')].map(r => {
-    const ins = r.querySelectorAll('input');
-    const sel = r.querySelector('select');
-    return { player:ins[0].value, from:ins[1].value, to:ins[2].value,
-      fee:ins[3].value, badge:sel.value, detail:ins[4].value, type:ins[5].value };
+    const obj = {};
+    r.querySelectorAll('[data-field]').forEach(el => {
+      obj[el.dataset.field] = el.value.trim();
+    });
+    return obj;
   });
 }
 
