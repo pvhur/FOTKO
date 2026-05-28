@@ -519,12 +519,14 @@ app.use((err, req, res, _next) => {
    페이지 라우트
 ═══════════════════════════════════════════════════════ */
 const V = (p) => path.join(__dirname, './views', p);
-app.get('/',                  (req, res) => res.redirect('/kickoff'));
-app.get('/kickoff',           (req, res) => sendHTML(res, V('health/index.html')));
-app.get('/kickoff/league',    (req, res) => sendHTML(res, V('health/league.html')));
-app.get('/kickoff/results',   (req, res) => sendHTML(res, V('health/results.html')));
+const MAINTENANCE = (req, res) => sendHTML(res, V('health/maintenance.html'));
+
+app.get('/',                  (req, res) => res.redirect('/kickoff/transfers'));
+app.get('/kickoff',           MAINTENANCE);
+app.get('/kickoff/league',    MAINTENANCE);
+app.get('/kickoff/results',   MAINTENANCE);
 app.get('/kickoff/transfers', (req, res) => sendHTML(res, V('health/transfers.html')));
-app.get('/kickoff/analysis',  (req, res) => sendHTML(res, V('health/analysis.html')));
+app.get('/kickoff/analysis',  MAINTENANCE);
 app.get('/kickoff/login',     (req, res) => sendHTML(res, V('health/login.html')));
 app.get('/kickoff/signup',    (req, res) => sendHTML(res, V('health/signup.html')));
 app.get('/kickoff/admin',     (req, res) => sendHTML(res, V('health/admin.html')));
