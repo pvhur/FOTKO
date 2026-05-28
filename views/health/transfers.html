@@ -607,9 +607,213 @@
     .empty-state { padding: 64px 0; text-align: center; color: var(--ink-tertiary); }
     .empty-state h3 { font-size: 16px; font-weight: 500; margin-bottom: 8px; color: var(--ink-subtle); }
 
+    /* ══════════════════════════════════
+       TRANSFERS LAYOUT (sidebar + main)
+    ══════════════════════════════════ */
+    .transfers-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ─── TEAM SIDEBAR ─── */
+    .team-sidebar {
+      position: sticky;
+      top: 72px;
+      max-height: calc(100vh - 88px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,107,0,.2) transparent;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-xl);
+      padding-bottom: 8px;
+    }
+    .team-sidebar::-webkit-scrollbar { width: 4px; }
+    .team-sidebar::-webkit-scrollbar-thumb { background: rgba(255,107,0,.2); border-radius: 2px; }
+
+    .ts-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--surface-1);
+      z-index: 2;
+      border-radius: var(--r-xl) var(--r-xl) 0 0;
+    }
+    .ts-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--ink-tertiary);
+    }
+    .ts-reset {
+      font-size: 11px;
+      color: var(--fire);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 0;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    .ts-reset.visible { opacity: 1; }
+    .ts-reset:hover { color: var(--fire-bright); }
+
+    /* League group */
+    .ts-league {
+      border-bottom: 1px solid var(--hairline);
+    }
+    .ts-league:last-child { border-bottom: none; }
+    .ts-league-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .12s;
+    }
+    .ts-league-header:hover { background: var(--surface-2); }
+    .ts-league-logo {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .ts-league-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      flex: 1;
+    }
+    .ts-league-count {
+      font-size: 10px;
+      color: var(--ink-tertiary);
+      background: var(--surface-3);
+      border-radius: 9999px;
+      padding: 1px 6px;
+    }
+    .ts-chevron {
+      color: var(--ink-tertiary);
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+    .ts-league.collapsed .ts-chevron { transform: rotate(-90deg); }
+    .ts-teams {
+      padding: 2px 0 8px;
+      overflow: hidden;
+    }
+    .ts-league.collapsed .ts-teams { display: none; }
+
+    /* Team row */
+    .ts-team {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 14px 6px 20px;
+      cursor: pointer;
+      border-radius: 0;
+      transition: background .1s;
+      position: relative;
+    }
+    .ts-team:hover { background: rgba(255,107,0,.06); }
+    .ts-team.active {
+      background: rgba(255,107,0,.1);
+    }
+    .ts-team.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 4px; bottom: 4px;
+      width: 3px;
+      background: var(--fire);
+      border-radius: 0 2px 2px 0;
+    }
+    .ts-team-logo {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .ts-team-logo-fb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      background: rgba(255,107,0,.3);
+    }
+    .ts-team-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ts-team.active .ts-team-name { color: var(--fire-bright); font-weight: 600; }
+    .ts-team-cnt {
+      font-size: 10px;
+      color: var(--ink-tertiary);
+      background: var(--surface-2);
+      border-radius: 9999px;
+      padding: 1px 5px;
+      flex-shrink: 0;
+    }
+    .ts-team.active .ts-team-cnt {
+      background: rgba(255,107,0,.15);
+      color: var(--fire);
+    }
+
+    /* Active team banner */
+    .active-team-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: rgba(255,107,0,.08);
+      border: 1px solid rgba(255,107,0,.2);
+      border-radius: var(--r-md);
+      margin-bottom: 16px;
+    }
+    .active-team-banner.show { display: flex; }
+    .atb-logo { width: 28px; height: 28px; object-fit: contain; }
+    .atb-name { font-size: 14px; font-weight: 700; color: var(--fire-bright); flex: 1; }
+    .atb-clear {
+      font-size: 12px;
+      color: var(--ink-tertiary);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 4px 10px;
+      border-radius: var(--r-sm);
+      transition: background .1s;
+    }
+    .atb-clear:hover { background: var(--surface-2); color: var(--ink); }
+
+    @media(max-width:1100px) {
+      .transfers-layout { grid-template-columns: 200px 1fr; }
+    }
     @media(max-width:1024px) {
       .transfers-grid, .news-grid { grid-template-columns: repeat(2,1fr); }
       .burn-stats { gap: 16px; }
+    }
+    @media(max-width:860px) {
+      .transfers-layout { grid-template-columns: 1fr; }
+      .team-sidebar { position: static; max-height: 300px; }
     }
     @media(max-width:768px) {
       .transfers-grid, .news-grid { grid-template-columns: 1fr; }
@@ -688,28 +892,51 @@
 
 <!-- MAIN CONTENT -->
 <section class="section" style="padding-top:40px;">
-  <div class="wrap">
+  <div class="wrap" style="max-width:1400px;">
+    <div class="transfers-layout">
 
-    <!-- FILTER -->
-    <div class="fire-filter" id="filterBar"></div>
-
-    <!-- TRANSFERS GRID -->
-    <div class="transfers-grid" id="transfersGrid"></div>
-
-    <!-- NEWS SECTION -->
-    <div class="news-section">
-      <div class="news-section-header">
-        <div>
-          <div class="news-eyebrow">
-            🔥 이적 뉴스
-            <span class="news-count-badge" id="newsCount"></span>
-          </div>
-          <h2 class="t-headline" style="color:var(--ink);">관련 기사</h2>
+      <!-- ─── TEAM SIDEBAR ─── -->
+      <aside class="team-sidebar" id="teamSidebar">
+        <div class="ts-header">
+          <span class="ts-title">팀 필터</span>
+          <button class="ts-reset" id="tsReset" onclick="clearTeamFilter()">✕ 초기화</button>
         </div>
-        <span style="font-size:12px;color:var(--ink-tertiary);">클릭하면 전문을 볼 수 있습니다</span>
-      </div>
-      <div class="news-grid" id="newsGrid"></div>
-    </div>
+        <div id="teamLeagues"><!-- JS로 채움 --></div>
+      </aside>
+
+      <!-- ─── MAIN CONTENT ─── -->
+      <div class="transfers-main">
+
+        <!-- Active team banner -->
+        <div class="active-team-banner" id="activeTeamBanner">
+          <img class="atb-logo" id="atbLogo" src="" alt="" />
+          <span class="atb-name" id="atbName"></span>
+          <button class="atb-clear" onclick="clearTeamFilter()">필터 해제</button>
+        </div>
+
+        <!-- FILTER -->
+        <div class="fire-filter" id="filterBar"></div>
+
+        <!-- TRANSFERS GRID -->
+        <div class="transfers-grid" id="transfersGrid"></div>
+
+        <!-- NEWS SECTION -->
+        <div class="news-section">
+          <div class="news-section-header">
+            <div>
+              <div class="news-eyebrow">
+                🔥 이적 뉴스
+                <span class="news-count-badge" id="newsCount"></span>
+              </div>
+              <h2 class="t-headline" style="color:var(--ink);">관련 기사</h2>
+            </div>
+            <span style="font-size:12px;color:var(--ink-tertiary);">클릭하면 전문을 볼 수 있습니다</span>
+          </div>
+          <div class="news-grid" id="newsGrid"></div>
+        </div>
+      </div><!-- /transfers-main -->
+
+    </div><!-- /transfers-layout -->
   </div>
 </section>
 
@@ -763,6 +990,141 @@
 
 <script>
 /* ════════════════════════════════════════
+   5대리그 팀 데이터 (API-Football ID 기준 로고)
+════════════════════════════════════════ */
+const LOGO = id => `https://media.api-sports.io/football/teams/${id}.png`;
+const LEAGUE_LOGO = id => `https://media.api-sports.io/football/leagues/${id}.png`;
+
+const LEAGUES = [
+  {
+    id: 'pl', name: 'Premier League', leagueId: 39,
+    color: '#3d195b',
+    teams: [
+      { id:42,  name:'Arsenal'           },
+      { id:66,  name:'Aston Villa'       },
+      { id:35,  name:'Bournemouth'       },
+      { id:55,  name:'Brentford'         },
+      { id:51,  name:'Brighton'          },
+      { id:49,  name:'Chelsea'           },
+      { id:52,  name:'Crystal Palace'    },
+      { id:45,  name:'Everton'           },
+      { id:36,  name:'Fulham'            },
+      { id:57,  name:'Ipswich Town'      },
+      { id:46,  name:'Leicester City'    },
+      { id:40,  name:'Liverpool'         },
+      { id:50,  name:'Manchester City'   },
+      { id:33,  name:'Manchester United' },
+      { id:34,  name:'Newcastle'         },
+      { id:65,  name:'Nottm Forest'      },
+      { id:41,  name:'Southampton'       },
+      { id:47,  name:'Tottenham'         },
+      { id:48,  name:'West Ham'          },
+      { id:39,  name:'Wolverhampton'     },
+    ]
+  },
+  {
+    id: 'll', name: 'La Liga', leagueId: 140,
+    color: '#ee8208',
+    teams: [
+      { id:541, name:'Real Madrid'       },
+      { id:529, name:'Barcelona'         },
+      { id:530, name:'Atletico Madrid'   },
+      { id:536, name:'Sevilla'           },
+      { id:548, name:'Real Sociedad'     },
+      { id:531, name:'Athletic Bilbao'   },
+      { id:532, name:'Valencia'          },
+      { id:533, name:'Villarreal'        },
+      { id:543, name:'Real Betis'        },
+      { id:546, name:'Getafe'            },
+      { id:547, name:'Girona'            },
+      { id:537, name:'Osasuna'           },
+      { id:542, name:'Rayo Vallecano'    },
+      { id:538, name:'Celta Vigo'        },
+      { id:534, name:'Las Palmas'        },
+      { id:539, name:'Mallorca'          },
+      { id:540, name:'Espanyol'          },
+      { id:544, name:'Alaves'            },
+      { id:545, name:'Valladolid'        },
+      { id:723, name:'Leganes'           },
+    ]
+  },
+  {
+    id: 'bl', name: 'Bundesliga', leagueId: 78,
+    color: '#d20515',
+    teams: [
+      { id:157, name:'Bayern Munich'     },
+      { id:165, name:'Dortmund'          },
+      { id:173, name:'RB Leipzig'        },
+      { id:168, name:'Bayer Leverkusen'  },
+      { id:169, name:'Eintracht Frankfurt'},
+      { id:163, name:'Gladbach'          },
+      { id:172, name:'Stuttgart'         },
+      { id:161, name:'Wolfsburg'         },
+      { id:160, name:'Freiburg'          },
+      { id:159, name:'Augsburg'          },
+      { id:164, name:'Mainz'             },
+      { id:167, name:'Hoffenheim'        },
+      { id:170, name:'Werder Bremen'     },
+      { id:162, name:'Union Berlin'      },
+      { id:176, name:'Heidenheim'        },
+      { id:182, name:'St. Pauli'         },
+      { id:177, name:'Holstein Kiel'     },
+      { id:183, name:'Bochum'            },
+    ]
+  },
+  {
+    id: 'sa', name: 'Serie A', leagueId: 135,
+    color: '#024494',
+    teams: [
+      { id:505, name:'Inter Milan'       },
+      { id:489, name:'AC Milan'          },
+      { id:496, name:'Juventus'          },
+      { id:492, name:'Napoli'            },
+      { id:497, name:'Roma'              },
+      { id:487, name:'Lazio'             },
+      { id:499, name:'Atalanta'          },
+      { id:502, name:'Fiorentina'        },
+      { id:500, name:'Bologna'           },
+      { id:503, name:'Torino'            },
+      { id:504, name:'Udinese'           },
+      { id:450, name:'Verona'            },
+      { id:488, name:'Cagliari'          },
+      { id:490, name:'Genoa'             },
+      { id:508, name:'Empoli'            },
+      { id:586, name:'Como'              },
+      { id:588, name:'Monza'             },
+      { id:494, name:'Parma'             },
+      { id:867, name:'Lecce'             },
+      { id:517, name:'Venezia'           },
+    ]
+  },
+  {
+    id: 'l1', name: 'Ligue 1', leagueId: 61,
+    color: '#091c3e',
+    teams: [
+      { id:85,  name:'Paris Saint-Germain'},
+      { id:91,  name:'Monaco'            },
+      { id:81,  name:'Marseille'         },
+      { id:80,  name:'Lyon'              },
+      { id:84,  name:'Nice'              },
+      { id:94,  name:'Rennes'            },
+      { id:116, name:'Lens'              },
+      { id:79,  name:'Lille'             },
+      { id:95,  name:'Strasbourg'        },
+      { id:130, name:'Brest'             },
+      { id:83,  name:'Nantes'            },
+      { id:93,  name:'Reims'             },
+      { id:111, name:'Le Havre'          },
+      { id:96,  name:'Toulouse'          },
+      { id:77,  name:'Auxerre'           },
+      { id:76,  name:'Angers'            },
+      { id:244, name:'Saint-Etienne'     },
+      { id:82,  name:'Montpellier'       },
+    ]
+  },
+];
+
+/* ════════════════════════════════════════
    상수 & 상태
 ════════════════════════════════════════ */
 const BADGE_MAP = {
@@ -778,6 +1140,7 @@ const FILTERS = [
 ];
 
 let activeFilter = 'all';
+let activeTeam   = null;   // { id, name, leagueId }
 let _data = null;
 
 /* ════════════════════════════════════════
@@ -789,9 +1152,121 @@ async function load() {
     _data = r.ok ? await r.json() : {};
   } catch { _data = {}; }
 
+  renderSidebar();
   renderTicker();
   renderStats();
   renderFilterBar();
+  renderTransfers();
+  renderNews();
+}
+
+/* ════════════════════════════════════════
+   TEAM SIDEBAR
+════════════════════════════════════════ */
+function renderSidebar() {
+  const transfers = _data.transfers || [];
+
+  // 팀별 이적 건수 집계
+  const teamCount = {};
+  transfers.forEach(t => {
+    [t.from, t.to].forEach(club => {
+      if (!club) return;
+      const key = club.toLowerCase().trim();
+      teamCount[key] = (teamCount[key] || 0) + 1;
+    });
+  });
+
+  // 팀 이름 매칭 헬퍼
+  function getCount(name) {
+    const key = name.toLowerCase().trim();
+    // 직접 일치
+    if (teamCount[key]) return teamCount[key];
+    // 부분 일치
+    const found = Object.keys(teamCount).find(k => k.includes(key) || key.includes(k));
+    return found ? teamCount[found] : 0;
+  }
+
+  const container = document.getElementById('teamLeagues');
+  container.innerHTML = LEAGUES.map(league => {
+    const leagueCount = league.teams.reduce((s, t) => s + getCount(t.name), 0);
+    return `
+    <div class="ts-league" id="league-${league.id}">
+      <div class="ts-league-header" onclick="toggleLeague('${league.id}')">
+        <img class="ts-league-logo"
+          src="${LEAGUE_LOGO(league.leagueId)}"
+          alt="${league.name}"
+          onerror="this.style.display='none'"
+        />
+        <span class="ts-league-name">${league.name}</span>
+        <span class="ts-league-count">${leagueCount || ''}</span>
+        <svg class="ts-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ts-teams">
+        ${league.teams.map(team => {
+          const cnt = getCount(team.name);
+          const isActive = activeTeam && activeTeam.id === team.id;
+          return `
+          <div class="ts-team${isActive ? ' active' : ''}"
+            onclick="selectTeam(${team.id},'${team.name.replace(/'/g,"\\'")}',${league.leagueId})"
+            title="${team.name}">
+            <img class="ts-team-logo"
+              src="${LOGO(team.id)}"
+              alt="${team.name}"
+              onerror="this.replaceWith(makeFallback('${team.name.replace(/'/g,"\\'")}'))"
+            />
+            <span class="ts-team-name">${team.name}</span>
+            ${cnt ? `<span class="ts-team-cnt">${cnt}</span>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function makeFallback(name) {
+  const fb = document.createElement('div');
+  fb.className = 'ts-team-logo-fb';
+  fb.textContent = name.slice(0,2).toUpperCase();
+  return fb;
+}
+
+function toggleLeague(id) {
+  document.getElementById('league-' + id).classList.toggle('collapsed');
+}
+
+function selectTeam(id, name, leagueId) {
+  if (activeTeam && activeTeam.id === id) {
+    clearTeamFilter();
+    return;
+  }
+  activeTeam = { id, name, leagueId };
+  // update sidebar
+  document.querySelectorAll('.ts-team').forEach(el => el.classList.remove('active'));
+  const teamEls = document.querySelectorAll('.ts-team');
+  teamEls.forEach(el => {
+    if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(`(${id},`)) {
+      el.classList.add('active');
+    }
+  });
+  // show reset button
+  document.getElementById('tsReset').classList.add('visible');
+  // show active banner
+  const banner = document.getElementById('activeTeamBanner');
+  banner.classList.add('show');
+  document.getElementById('atbLogo').src = LOGO(id);
+  document.getElementById('atbLogo').onerror = function(){ this.style.display='none'; };
+  document.getElementById('atbName').textContent = name + ' 이적 소식';
+  renderTransfers();
+  renderNews();
+}
+
+function clearTeamFilter() {
+  activeTeam = null;
+  document.querySelectorAll('.ts-team').forEach(el => el.classList.remove('active'));
+  document.getElementById('tsReset').classList.remove('visible');
+  document.getElementById('activeTeamBanner').classList.remove('show');
   renderTransfers();
   renderNews();
 }
@@ -875,9 +1350,19 @@ function setFilter(key) {
 /* ════════════════════════════════════════
    TRANSFERS GRID
 ════════════════════════════════════════ */
+function teamMatch(t, name) {
+  if (!name) return true;
+  const n = name.toLowerCase();
+  const from = (t.from || '').toLowerCase();
+  const to   = (t.to   || '').toLowerCase();
+  return from.includes(n) || to.includes(n) ||
+         n.includes(from.split(' ')[0]) || n.includes(to.split(' ')[0]);
+}
+
 function renderTransfers() {
   const all      = _data.transfers || [];
-  const filtered = activeFilter === 'all' ? all : all.filter(t => t.badge === activeFilter);
+  let   filtered = activeFilter === 'all' ? all : all.filter(t => t.badge === activeFilter);
+  if (activeTeam) filtered = filtered.filter(t => teamMatch(t, activeTeam.name));
   const grid     = document.getElementById('transfersGrid');
 
   if (!filtered.length) {
@@ -941,7 +1426,13 @@ function renderTransfers() {
    NEWS GRID
 ════════════════════════════════════════ */
 function renderNews() {
-  const news = (_data.news || []).filter(n => n.badge === 'transfer');
+  let news = (_data.news || []).filter(n => n.badge === 'transfer');
+  if (activeTeam) {
+    news = news.filter(n => {
+      const txt = ((n.title || '') + ' ' + (n.desc || '')).toLowerCase();
+      return txt.includes(activeTeam.name.toLowerCase());
+    });
+  }
   const grid = document.getElementById('newsGrid');
   const countEl = document.getElementById('newsCount');
   if (countEl) countEl.textContent = news.length;
