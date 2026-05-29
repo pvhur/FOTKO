@@ -565,6 +565,39 @@
       box-shadow:0 0 0 2px rgba(94,106,210,.15);
     }
     .art-content-textarea::placeholder { color:var(--ink-tertiary); }
+    .art-img-section {
+      margin-top:14px;
+      padding:14px;
+      background:var(--surface-2);
+      border:1px solid var(--hairline);
+      border-radius:var(--r-md);
+    }
+    .art-img-row {
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+    }
+    .art-img-preview {
+      width:120px;
+      height:80px;
+      flex-shrink:0;
+      background:var(--surface-1);
+      border:1px solid var(--hairline);
+      border-radius:var(--r-sm);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .art-img-preview img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .art-img-preview span {
+      font-size:11px;
+      color:var(--ink-tertiary);
+    }
 
     /* ── ⑤ USERS SECTION ── */
     .user-list { display:flex; flex-direction:column; gap:8px; }
@@ -1684,6 +1717,23 @@ function mkArticleRow(a={}, autoOpen=false) {
           placeholder="기사 본문을 여기에 입력하세요. 단락은 빈 줄로 구분됩니다."
         >${ESC(a.content)}</textarea>
       </div>
+      <!-- 이미지 -->
+      <div class="art-img-section">
+        <label style="font-size:12px;font-weight:600;color:var(--ink-subtle);margin-bottom:8px;display:block;">
+          📷 썸네일 이미지
+        </label>
+        <div class="art-img-row">
+          <div class="art-img-preview" id="art-imgprev-${artId}">
+            ${a.image_url ? `<img src="${ESC(a.image_url)}" onerror="this.parentElement.innerHTML='<span>이미지 없음</span>'" />` : '<span>이미지 없음</span>'}
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+            <input data-field="image_url" type="text" value="${ESC(a.image_url)}" placeholder="이미지 URL (https://...)"
+              style="background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:7px 10px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;width:100%;"
+              oninput="artImgPreview('${artId}', this.value)" />
+            <div style="font-size:11px;color:var(--ink-tertiary);">URL을 입력하면 미리보기가 표시됩니다.</div>
+          </div>
+        </div>
+      </div>
       <!-- hidden: badge always = transfer -->
       <input type="hidden" data-field="badge" value="transfer" />
     </div>
@@ -1692,6 +1742,16 @@ function mkArticleRow(a={}, autoOpen=false) {
 }
 
 function toggleArtCard(card) { card.classList.toggle('open'); }
+
+function artImgPreview(artId, url) {
+  const box = document.getElementById('art-imgprev-' + artId);
+  if (!box) return;
+  if (!url || !url.trim()) {
+    box.innerHTML = '<span>이미지 없음</span>';
+    return;
+  }
+  box.innerHTML = `<img src="${url.trim()}" onerror="this.parentElement.innerHTML='<span>로드 실패</span>'" />`;
+}
 
 function addArticle() {
   const list = document.getElementById('articlesList');
