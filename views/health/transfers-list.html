@@ -83,11 +83,59 @@
     /* ── LAYOUT ── */
     .tl-layout {
       display: grid;
-      grid-template-columns: 1fr 260px;
-      gap: 28px;
+      grid-template-columns: 220px 1fr 260px;
+      gap: 24px;
       align-items: start;
       padding: 28px 0 60px;
     }
+
+    /* ── TEAM SIDEBAR ── */
+    .team-sidebar {
+      position: sticky;
+      top: 72px;
+      max-height: calc(100vh - 88px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,107,0,.2) transparent;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-xl);
+      padding-bottom: 8px;
+    }
+    .team-sidebar::-webkit-scrollbar { width: 4px; }
+    .team-sidebar::-webkit-scrollbar-thumb { background: rgba(255,107,0,.2); border-radius: 2px; }
+    .ts-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--hairline);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0;
+      background: var(--surface-1); z-index: 2;
+      border-radius: var(--r-xl) var(--r-xl) 0 0;
+    }
+    .ts-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-tertiary); }
+    .ts-reset { font-size:11px; color:var(--fire); cursor:pointer; background:none; border:none; font-family:inherit; padding:0; opacity:0; transition:opacity .15s; }
+    .ts-reset.visible { opacity:1; }
+    .ts-league { border-bottom:1px solid var(--hairline); }
+    .ts-league:last-child { border-bottom:none; }
+    .ts-league-header { display:flex; align-items:center; gap:8px; padding:10px 14px 8px; cursor:pointer; user-select:none; transition:background .12s; }
+    .ts-league-header:hover { background:var(--surface-2); }
+    .ts-league-logo { width:18px; height:18px; object-fit:contain; flex-shrink:0; }
+    .ts-league-name { font-size:12px; font-weight:700; color:var(--ink-muted); flex:1; }
+    .ts-league-count { font-size:10px; color:var(--ink-tertiary); background:var(--surface-3); border-radius:9999px; padding:1px 6px; }
+    .ts-chevron { color:var(--ink-tertiary); transition:transform .2s; flex-shrink:0; }
+    .ts-league.collapsed .ts-chevron { transform:rotate(-90deg); }
+    .ts-teams { padding:2px 0 8px; }
+    .ts-league.collapsed .ts-teams { display:none; }
+    .ts-team { display:flex; align-items:center; gap:9px; padding:6px 14px 6px 20px; cursor:pointer; transition:background .1s; position:relative; }
+    .ts-team:hover { background:rgba(255,107,0,.06); }
+    .ts-team.active { background:rgba(255,107,0,.1); }
+    .ts-team.active::before { content:''; position:absolute; left:0; top:4px; bottom:4px; width:3px; background:var(--fire); border-radius:0 2px 2px 0; }
+    .ts-team-logo { width:22px; height:22px; object-fit:contain; flex-shrink:0; }
+    .ts-team-logo-fb { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:#fff; flex-shrink:0; background:rgba(255,107,0,.3); }
+    .ts-team-name { font-size:12px; font-weight:500; color:var(--ink-muted); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ts-team.active .ts-team-name { color:var(--fire-bright); font-weight:600; }
+    .ts-team-cnt { font-size:10px; color:var(--ink-tertiary); background:var(--surface-2); border-radius:9999px; padding:1px 5px; flex-shrink:0; }
+    .ts-team.active .ts-team-cnt { background:rgba(255,107,0,.15); color:var(--fire); }
 
     /* ── HOT STRIP ── */
     .hot-strip {
@@ -336,15 +384,21 @@
     .tls-stat-label { color: var(--ink-muted); }
     .tls-stat-val { font-weight: 700; color: var(--ink); }
 
-    @media(max-width:900px) {
+    @media(max-width:1200px) {
+      .tl-layout { grid-template-columns: 200px 1fr 240px; }
+    }
+    @media(max-width:1000px) {
+      .tl-layout { grid-template-columns: 200px 1fr; }
+      .tl-sidebar { display: none; }
+    }
+    @media(max-width:760px) {
       .tl-layout { grid-template-columns: 1fr; }
-      .tl-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .team-sidebar { position: static; max-height: 260px; }
     }
     @media(max-width:600px) {
       .post-list-header { display: none; }
       .post-row { grid-template-columns: 90px 1fr 60px; }
       .pr-fee { display: none; }
-      .tl-sidebar { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -399,7 +453,16 @@
 <div class="wrap">
   <div class="tl-layout">
 
-    <!-- LEFT: LIST -->
+    <!-- TEAM SIDEBAR -->
+    <aside class="team-sidebar" id="teamSidebar">
+      <div class="ts-header">
+        <span class="ts-title">팀 필터</span>
+        <button class="ts-reset" id="tsReset" onclick="clearTeamFilter()">✕ 초기화</button>
+      </div>
+      <div id="teamLeagues"></div>
+    </aside>
+
+    <!-- MAIN: LIST -->
     <div class="tl-main">
       <!-- Hot strip -->
       <div class="hot-strip" id="hotStrip">
@@ -447,10 +510,14 @@
 </div>
 
 <script>
+/* ── 상수 ── */
+const LOGO       = id => `https://media.api-sports.io/football/teams/${id}.png`;
+const LEAGUE_LOGO = id => `https://media.api-sports.io/football/leagues/${id}.png`;
+
 const BADGE = {
-  rumor:    { cls:'badge-rumor',    label:'👀 루머'  },
-  official: { cls:'badge-official', label:'🔥 공식'  },
-  done:     { cls:'badge-done',     label:'✅ 완료'  },
+  rumor:    { cls:'badge-rumor',    label:'👀 루머'     },
+  official: { cls:'badge-official', label:'🔥 공식'     },
+  done:     { cls:'badge-done',     label:'✅ 완료'     },
 };
 const FILTERS = [
   { key:'all',      label:'전체' },
@@ -459,9 +526,47 @@ const FILTERS = [
   { key:'done',     label:'✅ 완료' },
 ];
 
-let _posts  = [];
-let _filter = 'all';
+const LEAGUES = [
+  { id:'pl', name:'Premier League', leagueId:39,  teams:[
+    {id:42,name:'Arsenal'},{id:66,name:'Aston Villa'},{id:35,name:'Bournemouth'},
+    {id:55,name:'Brentford'},{id:51,name:'Brighton'},{id:49,name:'Chelsea'},
+    {id:52,name:'Crystal Palace'},{id:45,name:'Everton'},{id:36,name:'Fulham'},
+    {id:46,name:'Leicester City'},{id:40,name:'Liverpool'},{id:50,name:'Manchester City'},
+    {id:33,name:'Manchester United'},{id:34,name:'Newcastle'},{id:65,name:'Nottm Forest'},
+    {id:47,name:'Tottenham'},{id:48,name:'West Ham'},{id:39,name:'Wolverhampton'},
+  ]},
+  { id:'ll', name:'La Liga', leagueId:140, teams:[
+    {id:541,name:'Real Madrid'},{id:529,name:'Barcelona'},{id:530,name:'Atletico Madrid'},
+    {id:536,name:'Sevilla'},{id:548,name:'Real Sociedad'},{id:531,name:'Athletic Bilbao'},
+    {id:532,name:'Valencia'},{id:533,name:'Villarreal'},{id:543,name:'Real Betis'},
+    {id:542,name:'Rayo Vallecano'},{id:538,name:'Celta Vigo'},{id:537,name:'Osasuna'},
+  ]},
+  { id:'bl', name:'Bundesliga', leagueId:78, teams:[
+    {id:157,name:'Bayern Munich'},{id:165,name:'Dortmund'},{id:173,name:'RB Leipzig'},
+    {id:168,name:'Bayer Leverkusen'},{id:169,name:'Eintracht Frankfurt'},{id:163,name:'Gladbach'},
+    {id:172,name:'Stuttgart'},{id:161,name:'Wolfsburg'},{id:160,name:'Freiburg'},
+    {id:167,name:'Hoffenheim'},{id:170,name:'Werder Bremen'},{id:182,name:'St. Pauli'},
+  ]},
+  { id:'sa', name:'Serie A', leagueId:135, teams:[
+    {id:505,name:'Inter Milan'},{id:489,name:'AC Milan'},{id:496,name:'Juventus'},
+    {id:492,name:'Napoli'},{id:497,name:'Roma'},{id:487,name:'Lazio'},
+    {id:499,name:'Atalanta'},{id:502,name:'Fiorentina'},{id:500,name:'Bologna'},
+    {id:503,name:'Torino'},{id:490,name:'Genoa'},{id:494,name:'Parma'},
+  ]},
+  { id:'l1', name:'Ligue 1', leagueId:61, teams:[
+    {id:85,name:'Paris Saint-Germain'},{id:91,name:'Monaco'},{id:81,name:'Marseille'},
+    {id:80,name:'Lyon'},{id:84,name:'Nice'},{id:94,name:'Rennes'},
+    {id:116,name:'Lens'},{id:79,name:'Lille'},{id:83,name:'Nantes'},
+    {id:93,name:'Reims'},{id:96,name:'Toulouse'},{id:95,name:'Strasbourg'},
+  ]},
+];
 
+/* ── 상태 ── */
+let _posts     = [];
+let _filter    = 'all';
+let _activeTeam = null;
+
+/* ── 유틸 ── */
 function timeAgo(iso) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
@@ -473,39 +578,113 @@ function timeAgo(iso) {
   if (d <  7) return `${d}일 전`;
   return new Date(iso).toLocaleDateString('ko-KR', { month:'short', day:'numeric' });
 }
+function isNew(iso) { return Date.now() - new Date(iso).getTime() < 3 * 3600000; }
 
-function isNew(iso) {
-  return Date.now() - new Date(iso).getTime() < 3 * 60 * 60 * 1000; // 3h
+function teamMatch(p, name) {
+  if (!name) return true;
+  const n    = name.toLowerCase();
+  const from = (p.from_team || '').toLowerCase();
+  const to   = (p.to_team   || '').toLowerCase();
+  return from.includes(n) || to.includes(n) ||
+         n.includes(from.split(' ')[0]) || n.includes(to.split(' ')[0]);
 }
 
+/* ── 팀 사이드바 ── */
+function renderSidebar() {
+  const teamCount = {};
+  _posts.forEach(p => {
+    [p.from_team, p.to_team].forEach(club => {
+      if (!club) return;
+      const k = club.toLowerCase().trim();
+      teamCount[k] = (teamCount[k] || 0) + 1;
+    });
+  });
+  function getCount(name) {
+    const k = name.toLowerCase().trim();
+    if (teamCount[k]) return teamCount[k];
+    const found = Object.keys(teamCount).find(x => x.includes(k) || k.includes(x));
+    return found ? teamCount[found] : 0;
+  }
+
+  document.getElementById('teamLeagues').innerHTML = LEAGUES.map(league => {
+    const lc = league.teams.reduce((s, t) => s + getCount(t.name), 0);
+    return `
+    <div class="ts-league collapsed" id="tl-league-${league.id}">
+      <div class="ts-league-header" onclick="toggleLeague('${league.id}')">
+        <img class="ts-league-logo" src="${LEAGUE_LOGO(league.leagueId)}" alt="${league.name}" onerror="this.style.display='none'" />
+        <span class="ts-league-name">${league.name}</span>
+        <span class="ts-league-count">${lc || ''}</span>
+        <svg class="ts-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ts-teams">
+        ${league.teams.map(team => {
+          const cnt = getCount(team.name);
+          const active = _activeTeam && _activeTeam.id === team.id;
+          return `
+          <div class="ts-team${active ? ' active' : ''}"
+            onclick="selectTeam(${team.id},'${team.name.replace(/'/g,"\\'")}',${league.leagueId})">
+            <img class="ts-team-logo" src="${LOGO(team.id)}" alt="${team.name}"
+              onerror="this.replaceWith(makeFb('${team.name.replace(/'/g,"\\'")}'))" />
+            <span class="ts-team-name">${team.name}</span>
+            ${cnt ? `<span class="ts-team-cnt">${cnt}</span>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function makeFb(name) {
+  const d = document.createElement('div');
+  d.className = 'ts-team-logo-fb';
+  d.textContent = name.slice(0,2).toUpperCase();
+  return d;
+}
+function toggleLeague(id) { document.getElementById('tl-league-' + id).classList.toggle('collapsed'); }
+
+function selectTeam(id, name, leagueId) {
+  if (_activeTeam && _activeTeam.id === id) { clearTeamFilter(); return; }
+  _activeTeam = { id, name, leagueId };
+  document.getElementById('tsReset').classList.add('visible');
+  renderSidebar();
+  renderList();
+}
+
+function clearTeamFilter() {
+  _activeTeam = null;
+  document.getElementById('tsReset').classList.remove('visible');
+  renderSidebar();
+  renderList();
+}
+
+/* ── 필터 바 ── */
 function renderFilters() {
   document.getElementById('filters').innerHTML = FILTERS.map(f => `
     <div class="tf-chip${_filter === f.key ? ' active' : ''}" onclick="setFilter('${f.key}')">${f.label}</div>
   `).join('');
 }
+function setFilter(key) { _filter = key; renderFilters(); renderList(); }
 
-function setFilter(key) {
-  _filter = key;
-  renderFilters();
-  renderList();
-}
-
+/* ── 핫 스트립 ── */
 function renderHotStrip() {
   const hot = _posts.filter(p => p.hot == 1);
   const strip = document.getElementById('hotStrip');
   if (!hot.length) { strip.style.display = 'none'; return; }
+  strip.style.display = '';
   strip.innerHTML = `<span class="hot-strip-label">🔥 핫</span>` +
     hot.map(p => `
       <a class="hot-chip" href="/transfers/${p.id}">
         ${p.player}
-        ${p.from_team && p.to_team ? `<span style="font-weight:400;opacity:.7;">→ ${p.to_team}</span>` : ''}
+        ${p.to_team ? `<span style="font-weight:400;opacity:.7;">→ ${p.to_team}</span>` : ''}
       </a>`).join('');
 }
 
+/* ── 핫 랭킹 사이드바 ── */
 function renderHotRanking() {
-  const hot = _posts.filter(p => p.hot == 1).slice(0, 7);
-  const all = _posts.slice(0, 5);
-  const items = hot.length ? hot : all;
+  const hot   = _posts.filter(p => p.hot == 1).slice(0, 7);
+  const items = hot.length ? hot : _posts.slice(0, 5);
   document.getElementById('hotRanking').innerHTML = items.length
     ? items.map((p, i) => `
         <a class="tls-hot-item" href="/transfers/${p.id}">
@@ -513,7 +692,7 @@ function renderHotRanking() {
           <div>
             <div class="tls-hot-name">${p.player}</div>
             ${p.from_team || p.to_team
-              ? `<div class="tls-hot-route">${p.from_team || '?'} → ${p.to_team || '?'}</div>`
+              ? `<div class="tls-hot-route">${p.from_team||'?'} → ${p.to_team||'?'}</div>`
               : ''}
           </div>
           <span class="${(BADGE[p.badge]||BADGE.rumor).cls}" style="font-size:10px;padding:1px 6px;">${(BADGE[p.badge]||BADGE.rumor).label.replace(/👀|🔥|✅/g,'').trim()}</span>
@@ -521,47 +700,42 @@ function renderHotRanking() {
     : '<div style="padding:20px 16px;font-size:13px;color:var(--ink-tertiary);">데이터 없음</div>';
 }
 
+/* ── 통계 ── */
 function renderStats() {
-  const total    = _posts.length;
-  const rumors   = _posts.filter(p => p.badge === 'rumor').length;
-  const official = _posts.filter(p => p.badge === 'official').length;
-  const done     = _posts.filter(p => p.badge === 'done').length;
+  const t = _posts.length;
+  const r = _posts.filter(p => p.badge === 'rumor').length;
+  const o = _posts.filter(p => p.badge === 'official').length;
+  const d = _posts.filter(p => p.badge === 'done').length;
   document.getElementById('statRows').innerHTML = [
-    { label: '전체', val: total },
-    { label: '루머', val: rumors },
-    { label: '공식 발표', val: official },
-    { label: '완료', val: done },
-  ].map(r => `
+    {label:'전체', val:t},{label:'루머', val:r},
+    {label:'공식 발표', val:o},{label:'완료', val:d},
+  ].map(x => `
     <div class="tls-stat-row">
-      <span class="tls-stat-label">${r.label}</span>
-      <span class="tls-stat-val">${r.val}</span>
+      <span class="tls-stat-label">${x.label}</span>
+      <span class="tls-stat-val">${x.val}</span>
     </div>`).join('');
 }
 
+/* ── 목록 렌더링 ── */
 function renderList() {
-  const filtered = _filter === 'all'
-    ? _posts
-    : _posts.filter(p => p.badge === _filter);
+  let filtered = _filter === 'all' ? [..._posts] : _posts.filter(p => p.badge === _filter);
+  if (_activeTeam) filtered = filtered.filter(p => teamMatch(p, _activeTeam.name));
 
   const el = document.getElementById('postList');
-
   if (!filtered.length) {
     el.innerHTML = `
       <div class="post-list-empty">
         <div class="ple-icon">🏜️</div>
-        <p>${_filter === 'all' ? '아직 이적 소식이 없습니다.' : '해당 조건의 소식이 없습니다.'}</p>
+        <p>${_activeTeam ? `${_activeTeam.name} 관련 소식이 없습니다.` : '아직 이적 소식이 없습니다.'}</p>
       </div>`;
     document.getElementById('countBadge').innerHTML = '';
     return;
   }
-
-  document.getElementById('countBadge').innerHTML =
-    `<strong>${filtered.length}</strong>건의 이적 소식`;
-
+  document.getElementById('countBadge').innerHTML = `<strong>${filtered.length}</strong>건의 이적 소식`;
   el.innerHTML = filtered.map(p => {
-    const bm  = BADGE[p.badge] || BADGE.rumor;
-    const fee = p.fee && p.fee !== '-' ? p.fee : null;
-    const ago = timeAgo(p.updated_at);
+    const bm    = BADGE[p.badge] || BADGE.rumor;
+    const fee   = p.fee && p.fee !== '-' ? p.fee : null;
+    const ago   = timeAgo(p.updated_at);
     const fresh = isNew(p.updated_at);
     return `
       <a class="post-row" href="/transfers/${p.id}">
@@ -583,18 +757,50 @@ function renderList() {
   }).join('');
 }
 
+/* ── 데이터 로드 (새 DB + 기존 content JSON 병합) ── */
 async function load() {
   fetch('/api/track', {
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ page: '/transfers' }),
   }).catch(()=>{});
 
-  try {
-    const r = await fetch('/api/transfer-posts');
-    _posts = r.ok ? await r.json() : [];
-  } catch { _posts = []; }
+  const [tpRes, dataRes] = await Promise.allSettled([
+    fetch('/api/transfer-posts'),
+    fetch('/api/data'),
+  ]);
+
+  const newPosts = (tpRes.status === 'fulfilled' && tpRes.value.ok)
+    ? await tpRes.value.json() : [];
+
+  const oldData  = (dataRes.status === 'fulfilled' && dataRes.value.ok)
+    ? await dataRes.value.json() : {};
+
+  // 기존 transfers 배열을 새 포맷으로 변환
+  const oldPosts = (oldData.transfers || []).map((t, i) => ({
+    id:         'legacy_' + i + '_' + (t.player||'').replace(/\s/g,'_'),
+    player:     t.player    || '선수 미상',
+    from_team:  t.from      || '',
+    to_team:    t.to        || '',
+    fee:        t.fee       || '',
+    badge:      t.badge     || 'rumor',
+    detail:     t.detail    || '',
+    source:     t.source    || '',
+    hot:        0,
+    created_at: t.date      || new Date().toISOString(),
+    updated_at: t.date      || new Date().toISOString(),
+    _legacy:    true,
+  }));
+
+  // 새 글 우선, 기존 글은 같은 선수가 없을 때만 추가
+  const newPlayerKeys = new Set(newPosts.map(p => p.player.toLowerCase().trim()));
+  const merged = [
+    ...newPosts,
+    ...oldPosts.filter(p => !newPlayerKeys.has(p.player.toLowerCase().trim())),
+  ];
+  _posts = merged;
 
   renderFilters();
+  renderSidebar();
   renderHotStrip();
   renderHotRanking();
   renderStats();
