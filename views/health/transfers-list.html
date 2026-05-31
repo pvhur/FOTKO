@@ -19,66 +19,148 @@
     }
 
     /* ── HERO ── */
-    .tl-hero {
-      padding: calc(56px + 32px) 0 28px;
-      border-bottom: 1px solid var(--hairline);
-      background: var(--canvas);
-      position: relative;
-      overflow: hidden;
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.45; transform:scale(.7); }
     }
-    .tl-hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 60% 80% at 50% 130%, rgba(255,107,0,.12) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .tl-hero-inner {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .tl-hero-eyebrow {
+
+    /* 속보 티커 */
+    .tl-ticker {
+      background: var(--fire);
+      padding: 0;
+      height: 32px;
       display: flex;
       align-items: center;
-      gap: 7px;
+      overflow: hidden;
+      margin-top: 56px; /* nav height */
+    }
+    .tl-ticker-label {
+      flex-shrink: 0;
+      padding: 0 14px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(0,0,0,.25);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .tl-ticker-viewport { flex: 1; overflow: hidden; height: 100%; position: relative; }
+    .tl-ticker-track {
+      display: flex;
+      gap: 0;
+      white-space: nowrap;
+      animation: tickerScroll 28s linear infinite;
+      height: 100%;
+      align-items: center;
+    }
+    .tl-ticker-track:hover { animation-play-state: paused; }
+    @keyframes tickerScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .tl-ticker-item {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      padding: 0 20px;
+      opacity: .92;
+    }
+    .tl-ticker-sep { color: rgba(255,255,255,.4); padding: 0 4px; }
+
+    /* 히어로 */
+    .tl-hero {
+      padding: 22px 0 20px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--canvas);
+    }
+    .tl-hero-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .tl-hero-left { display: flex; align-items: center; gap: 16px; }
+    .tl-hero-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: var(--fire-dim);
+      border: 1px solid rgba(255,107,0,.25);
+      border-radius: var(--r-pill);
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: var(--fire);
-      margin-bottom: 8px;
+      color: var(--fire-bright);
+      letter-spacing: .4px;
+      white-space: nowrap;
     }
     .tl-live-dot {
-      width: 7px; height: 7px;
+      width: 6px; height: 6px;
       border-radius: 50%;
       background: var(--fire);
       animation: pulse 1.6s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%,100% { opacity:1; transform:scale(1); }
-      50%      { opacity:.5; transform:scale(.7); }
+      flex-shrink: 0;
     }
     .tl-hero-title {
-      font-size: clamp(26px, 4vw, 38px);
+      font-size: clamp(22px, 3vw, 30px);
       font-weight: 900;
-      letter-spacing: -1.2px;
+      letter-spacing: -1px;
       color: var(--ink);
       margin: 0;
     }
-    .tl-hero-sub {
-      font-size: 13px;
-      color: var(--ink-tertiary);
-      margin-top: 6px;
+
+    /* 통계 칩 행 */
+    .tl-stat-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
     }
-    .tl-count-badge {
-      font-size: 13px;
-      color: var(--ink-tertiary);
-      align-self: flex-end;
-      padding-bottom: 4px;
+    .tl-stat-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-pill);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      white-space: nowrap;
     }
-    .tl-count-badge strong { color: var(--fire-bright); font-weight: 700; }
+    .tl-stat-chip .sc-num {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .tl-stat-chip.fire  { background: rgba(255,107,0,.08); border-color: rgba(255,107,0,.2); }
+    .tl-stat-chip.fire  .sc-num { color: var(--fire-bright); }
+    .tl-stat-chip.green { background: rgba(74,222,128,.07); border-color: rgba(74,222,128,.2); }
+    .tl-stat-chip.green .sc-num { color: #4ade80; }
+    .tl-stat-chip.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.2); }
+    .tl-stat-chip.amber .sc-num { color: var(--ember); }
+
+    /* 창구 상태 */
+    .tl-window-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--ink-tertiary);
+      white-space: nowrap;
+    }
+    .tl-window-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4ade80;
+      flex-shrink: 0;
+    }
 
     /* ── LAYOUT ── */
     .tl-layout {
@@ -432,20 +514,38 @@
   </div>
 </nav>
 
+<!-- BREAKING TICKER -->
+<div class="tl-ticker">
+  <div class="tl-ticker-label">
+    <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>
+    BREAKING
+  </div>
+  <div class="tl-ticker-viewport">
+    <div class="tl-ticker-track" id="tlTicker">
+      <span class="tl-ticker-item">이적 뉴스 로딩 중...</span>
+    </div>
+  </div>
+</div>
+
 <!-- HERO -->
 <div class="tl-hero">
   <div class="wrap">
-    <div class="tl-hero-inner">
-      <div>
-        <div class="tl-hero-eyebrow">
+    <div class="tl-hero-row">
+      <div class="tl-hero-left">
+        <div class="tl-hero-badge">
           <div class="tl-live-dot"></div>
-          2026 이적시장 · LIVE
+          LIVE · 2026 이적시장
         </div>
         <h1 class="tl-hero-title">이적 뉴스</h1>
-        <p class="tl-hero-sub">루머부터 공식 발표까지, 업데이트되면 바로 상위에</p>
       </div>
-      <div class="tl-count-badge" id="countBadge"></div>
+      <div class="tl-window-status" id="tlWindowStatus">
+        <div class="tl-window-dot"></div>
+        <span>이적 창구 열림</span>
+        <span style="color:var(--hairline-strong);">·</span>
+        <span id="tlWindowDates">2026.06.01 ~ 2026.09.01</span>
+      </div>
     </div>
+    <div class="tl-stat-row" id="tlStatRow" style="margin-top:14px;"></div>
   </div>
 </div>
 
@@ -757,6 +857,40 @@ function renderList() {
   }).join('');
 }
 
+/* ── 통계 칩 렌더링 ── */
+function renderStatChips() {
+  const total    = _posts.length;
+  const official = _posts.filter(p => p.badge === 'official').length;
+  const rumor    = _posts.filter(p => p.badge === 'rumor').length;
+  const done     = _posts.filter(p => p.badge === 'done').length;
+  document.getElementById('tlStatRow').innerHTML = [
+    { cls:'', num: total,    label: '총 이적 소식' },
+    { cls:'fire',  num: official, label: '공식 발표' },
+    { cls:'amber', num: rumor,    label: '루머' },
+    { cls:'green', num: done,     label: '완료' },
+  ].map(s => `
+    <div class="tl-stat-chip ${s.cls}">
+      <span class="sc-num">${s.num}</span>
+      <span>${s.label}</span>
+    </div>`).join('');
+}
+
+/* ── 티커 렌더링 ── */
+function renderTicker(posts, settings) {
+  const items = posts.filter(p => p.badge === 'official' || p.badge === 'done').slice(0, 8);
+  if (!items.length) { document.getElementById('tlTicker').innerHTML = '<span class="tl-ticker-item">이적시장 최신 소식</span>'; return; }
+  const html = items.map(p =>
+    `<span class="tl-ticker-item">${p.player} → ${p.to_team || '?'} (${p.fee || '미공개'})</span><span class="tl-ticker-sep">·</span>`
+  ).join('');
+  // 무한 루프를 위해 2번 복사
+  document.getElementById('tlTicker').innerHTML = html + html;
+
+  // 창구 상태 업데이트
+  const w = settings?.window || {};
+  if (w.statusText) document.querySelector('#tlWindowStatus span').textContent = w.statusText;
+  if (w.dates) document.getElementById('tlWindowDates').textContent = w.dates;
+}
+
 /* ── 데이터 로드 (새 DB + 기존 content JSON 병합) ── */
 async function load() {
   fetch('/api/track', {
@@ -772,7 +906,7 @@ async function load() {
   const newPosts = (tpRes.status === 'fulfilled' && tpRes.value.ok)
     ? await tpRes.value.json() : [];
 
-  const oldData  = (dataRes.status === 'fulfilled' && dataRes.value.ok)
+  const oldData = (dataRes.status === 'fulfilled' && dataRes.value.ok)
     ? await dataRes.value.json() : {};
 
   // 기존 transfers 배열을 새 포맷으로 변환
@@ -793,17 +927,18 @@ async function load() {
 
   // 새 글 우선, 기존 글은 같은 선수가 없을 때만 추가
   const newPlayerKeys = new Set(newPosts.map(p => p.player.toLowerCase().trim()));
-  const merged = [
+  _posts = [
     ...newPosts,
     ...oldPosts.filter(p => !newPlayerKeys.has(p.player.toLowerCase().trim())),
   ];
-  _posts = merged;
 
+  renderTicker(_posts, oldData.settings);
   renderFilters();
   renderSidebar();
   renderHotStrip();
   renderHotRanking();
   renderStats();
+  renderStatChips();
   renderList();
 }
 
