@@ -943,63 +943,71 @@
       <div class="section-page" id="sec-transfer-news">
         <div class="main-header">
           <div class="main-title">이적 뉴스</div>
-          <div class="main-desc">/transfers 페이지에 표시되는 이적 소식을 관리합니다. 저장하면 목록 상위로 자동 이동합니다.</div>
+          <div class="main-desc">/transfers 페이지에 표시됩니다. 저장하면 목록 최상위로 자동 이동합니다.</div>
         </div>
-        <div class="panel">
-          <div class="panel-head">
-            <h3>이적 소식 목록</h3>
-            <button class="btn btn-secondary btn-sm" onclick="openTpForm()">+ 새 소식 추가</button>
-          </div>
-          <div class="panel-body" style="padding:0;">
-            <div id="tpList" style="min-height:60px;"></div>
-          </div>
-        </div>
-      </div>
 
-      <!-- TP FORM MODAL -->
-      <div id="tpModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:800;display:none;align-items:center;justify-content:center;padding:20px;">
-        <div style="background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--r-xl);width:100%;max-width:580px;max-height:90vh;overflow-y:auto;">
-          <div style="padding:20px 24px 16px;border-bottom:1px solid var(--hairline);display:flex;align-items:center;justify-content:space-between;">
-            <h3 id="tpModalTitle" style="font-size:15px;font-weight:700;">새 이적 소식</h3>
-            <button onclick="closeTpModal()" style="background:none;border:none;color:var(--ink-tertiary);cursor:pointer;font-size:18px;line-height:1;">✕</button>
+        <!-- 입력 폼 패널 -->
+        <div class="panel" id="tpFormPanel" style="margin-bottom:16px;display:none;">
+          <div class="panel-head">
+            <h3 id="tpFormTitle">새 이적 소식</h3>
+            <button class="btn btn-secondary btn-sm" onclick="closeTpForm()">취소</button>
           </div>
-          <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">
+          <div class="panel-body">
             <input type="hidden" id="tp-id" />
-            <div class="field">
-              <label>선수명 *</label>
-              <input class="inp" id="tp-player" placeholder="황희찬" />
+            <div class="form-row-3" style="margin-bottom:10px;">
+              <div class="field">
+                <label>선수명 *</label>
+                <input class="inp inp-sm" id="tp-player" placeholder="황희찬" />
+              </div>
+              <div class="field">
+                <label>이전 클럽</label>
+                <input class="inp inp-sm" id="tp-from" placeholder="울버햄튼" />
+              </div>
+              <div class="field">
+                <label>이적 클럽</label>
+                <input class="inp inp-sm" id="tp-to" placeholder="토트넘" />
+              </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div class="field"><label>이전 클럽</label><input class="inp inp-sm" id="tp-from" placeholder="울버햄튼" /></div>
-              <div class="field"><label>이적 클럽</label><input class="inp inp-sm" id="tp-to" placeholder="토트넘" /></div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-row-3" style="margin-bottom:10px;">
               <div class="field">
                 <label>상태</label>
                 <select class="inp inp-sm" id="tp-badge">
-                  <option value="rumor">👀 루머</option>
-                  <option value="official">🔥 공식 발표</option>
-                  <option value="done">✅ 완료</option>
+                  <option value="rumor">루머</option>
+                  <option value="official">공식 발표</option>
+                  <option value="done">완료</option>
                 </select>
               </div>
-              <div class="field"><label>이적료</label><input class="inp inp-sm" id="tp-fee" placeholder="€ 미공개 / €3500만" /></div>
+              <div class="field">
+                <label>이적료</label>
+                <input class="inp inp-sm" id="tp-fee" placeholder="€3500만 / 미공개" />
+              </div>
+              <div class="field">
+                <label>출처</label>
+                <input class="inp inp-sm" id="tp-source" placeholder="Fabrizio Romano" />
+              </div>
             </div>
-            <div class="field">
-              <label>출처</label>
-              <input class="inp inp-sm" id="tp-source" placeholder="Fabrizio Romano / Sky Sports" />
-            </div>
-            <div class="field">
+            <div class="field" style="margin-bottom:10px;">
               <label>세부 내용</label>
-              <textarea class="inp" id="tp-detail" rows="5" placeholder="이적 배경, 계약 조건, 선수 반응 등 상세 내용을 입력하세요." style="resize:vertical;min-height:100px;"></textarea>
+              <textarea class="inp inp-sm" id="tp-detail" rows="4" placeholder="이적 배경, 계약 조건, 선수 반응 등..." style="resize:vertical;"></textarea>
             </div>
-            <div class="field" style="display:flex;align-items:center;gap:10px;">
-              <input type="checkbox" id="tp-hot" style="width:16px;height:16px;accent-color:var(--fire);" />
-              <label for="tp-hot" style="font-size:13px;font-weight:600;color:var(--ink-muted);cursor:pointer;">🔥 핫 매물로 표시 (상단 hot strip + 사이드바에 노출)</label>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-muted);cursor:pointer;">
+                <input type="checkbox" id="tp-hot" style="width:14px;height:14px;accent-color:var(--fire);" />
+                핫 매물로 표시 (상단 스트립 + 사이드바 노출)
+              </label>
+              <button class="btn btn-primary btn-sm" onclick="saveTp()">저장 — 상위로 이동</button>
             </div>
           </div>
-          <div style="padding:16px 24px 20px;border-top:1px solid var(--hairline);display:flex;gap:10px;justify-content:flex-end;">
-            <button class="btn btn-secondary btn-sm" onclick="closeTpModal()">취소</button>
-            <button class="btn btn-primary btn-sm" onclick="saveTp()">저장 (상위로 이동)</button>
+        </div>
+
+        <!-- 목록 패널 -->
+        <div class="panel">
+          <div class="panel-head">
+            <h3>이적 소식 목록 <span id="cnt-tp-list" style="font-weight:400;color:var(--ink-tertiary);font-size:12px;"></span></h3>
+            <button class="btn btn-secondary btn-sm" onclick="openTpForm()">+ 새 소식 추가</button>
+          </div>
+          <div class="panel-body" style="padding:0;">
+            <div id="tpList"></div>
           </div>
         </div>
       </div>
@@ -1952,20 +1960,32 @@ const TP_BADGE = {
 function renderTpList() {
   const list = document.getElementById('tpList');
   if (!list) return;
+  const cntEl = document.getElementById('cnt-tp-list');
+  if (cntEl) cntEl.textContent = _tpPosts.length ? `(${_tpPosts.length}건)` : '';
   if (!_tpPosts.length) {
     list.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--ink-tertiary);">아직 이적 소식이 없습니다. 위 버튼으로 추가하세요.</div>';
     return;
   }
   list.innerHTML = _tpPosts.map(p => `
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hairline);">
-      <span style="font-size:11px;font-weight:600;width:52px;flex-shrink:0;color:var(--ink-muted);">${TP_BADGE[p.badge]||p.badge}</span>
+    <div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--hairline);">
+      <div style="width:56px;flex-shrink:0;">
+        <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;
+          background:${p.badge==='official'?'rgba(255,107,0,.1)':p.badge==='done'?'rgba(74,222,128,.1)':'rgba(251,191,36,.1)'};
+          color:${p.badge==='official'?'var(--fire-bright)':p.badge==='done'?'#4ade80':'var(--ember)'};">
+          ${TP_BADGE[p.badge]||p.badge}
+        </span>
+      </div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px;">
           ${ESC(p.player)}
-          ${p.hot == 1 ? '<span style="font-size:10px;color:var(--fire);background:var(--fire-dim);border:1px solid rgba(255,107,0,.2);border-radius:99px;padding:1px 6px;">HOT</span>' : ''}
+          ${p.hot==1?'<span style="font-size:10px;color:var(--fire);background:var(--fire-dim);border:1px solid rgba(255,107,0,.2);border-radius:99px;padding:1px 6px;">HOT</span>':''}
         </div>
-        <div style="font-size:11px;color:var(--ink-tertiary);margin-top:2px;">${ESC(p.from_team)||'?'} → ${ESC(p.to_team)||'?'}${p.fee ? ' · ' + ESC(p.fee) : ''}</div>
+        <div style="font-size:11px;color:var(--ink-tertiary);margin-top:2px;">
+          ${ESC(p.from_team)||'?'} → ${ESC(p.to_team)||'?'}
+          ${p.fee?'<span style="margin-left:6px;color:var(--fire-bright);font-weight:600;">'+ESC(p.fee)+'</span>':''}
+        </div>
       </div>
+      ${p.source?`<span style="font-size:11px;color:var(--ink-tertiary);flex-shrink:0;">${ESC(p.source)}</span>`:''}
       <div style="display:flex;gap:6px;flex-shrink:0;">
         <button class="btn btn-secondary btn-sm" onclick="openTpForm('${p.id}')">수정</button>
         <button class="btn btn-secondary btn-sm" onclick="deleteTp('${p.id}')" style="color:var(--fire-hot);">삭제</button>
@@ -1974,12 +1994,13 @@ function renderTpList() {
 }
 
 function openTpForm(id) {
-  const modal = document.getElementById('tpModal');
-  modal.style.display = 'flex';
+  const panel = document.getElementById('tpFormPanel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   if (id) {
     const p = _tpPosts.find(x => x.id === id);
     if (!p) return;
-    document.getElementById('tpModalTitle').textContent = '이적 소식 수정';
+    document.getElementById('tpFormTitle').textContent = '이적 소식 수정';
     document.getElementById('tp-id').value     = p.id;
     document.getElementById('tp-player').value = p.player;
     document.getElementById('tp-from').value   = p.from_team;
@@ -1990,7 +2011,7 @@ function openTpForm(id) {
     document.getElementById('tp-detail').value = p.detail;
     document.getElementById('tp-hot').checked  = p.hot == 1;
   } else {
-    document.getElementById('tpModalTitle').textContent = '새 이적 소식';
+    document.getElementById('tpFormTitle').textContent = '새 이적 소식';
     document.getElementById('tp-id').value     = '';
     document.getElementById('tp-player').value = '';
     document.getElementById('tp-from').value   = '';
@@ -2003,8 +2024,8 @@ function openTpForm(id) {
   }
 }
 
-function closeTpModal() {
-  document.getElementById('tpModal').style.display = 'none';
+function closeTpForm() {
+  document.getElementById('tpFormPanel').style.display = 'none';
 }
 
 async function saveTp() {
@@ -2029,7 +2050,7 @@ async function saveTp() {
     });
     if (!r.ok) throw new Error();
     showToast(id ? '수정 완료 — 상위로 이동됨' : '추가 완료', 'success');
-    closeTpModal();
+    closeTpForm();
     await loadTransferNews();
   } catch {
     showToast('저장 실패', 'error');
@@ -2047,10 +2068,6 @@ async function deleteTp(id) {
   }
 }
 
-// 모달 바깥 클릭 시 닫기
-document.getElementById('tpModal')?.addEventListener('click', e => {
-  if (e.target === document.getElementById('tpModal')) closeTpModal();
-});
 </script>
 </body>
 </html>
