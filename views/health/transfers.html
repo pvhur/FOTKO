@@ -55,10 +55,10 @@
     .detail-body { font-size:13px; line-height:1.7; color:var(--ink-muted); padding:14px 16px; background:rgba(94,106,210,.06); border:1px solid rgba(94,106,210,.15); border-left:3px solid var(--primary); border-radius:var(--r-md); word-break:keep-all; }
     .detail-body-label { font-size:10px; color:var(--primary-hover); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
 
-    /* 뉴스 링크 배너 */
-    .news-cta { display:flex; align-items:center; justify-content:space-between; padding:16px 24px; background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); margin-top:32px; }
-    .news-cta-text h3 { font-size:14px; font-weight:600; margin-bottom:3px; }
-    .news-cta-text p { font-size:12px; color:var(--ink-subtle); }
+    /* 관련기사 그리드 */
+    .transfer-news-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:32px; }
+    @media(max-width:1024px) { .transfer-news-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:768px)  { .transfer-news-grid { grid-template-columns:1fr; } }
 
     .empty-state { padding:64px 0; text-align:center; color:var(--ink-tertiary); }
     .empty-state h3 { font-size:16px; font-weight:500; margin-bottom:8px; color:var(--ink-subtle); }
@@ -87,7 +87,7 @@
       <li><a href="/kickoff">홈</a></li>
       <li><a href="/kickoff/league">리그</a></li>
       <li><a href="/kickoff/results">경기 결과</a></li>
-      <li><a href="/kickoff/transfers" class="active">이적 시장</a></li>
+      <li><a href="/kickoff/transfers" class="active">이적 시장 🔥</a></li>
       <li><a href="/kickoff/analysis">분석</a></li>
     </ul>
     <div class="nav-right">
@@ -139,13 +139,15 @@
       <div id="boardBody"></div>
     </div>
 
-    <!-- 관련기사 링크 -->
-    <div class="news-cta" id="newsCta" style="display:none;">
-      <div class="news-cta-text">
-        <h3>관련 기사</h3>
-        <p>이적 시장 관련 최신 기사 모아보기</p>
+    <!-- 관련기사 -->
+    <div id="transferNewsSection" style="display:none; margin-top:56px;">
+      <div class="section-header-row">
+        <div>
+          <div class="eyebrow-label">관련 기사</div>
+          <h2 class="t-headline">이적 시장 뉴스</h2>
+        </div>
       </div>
-      <a href="/kickoff/transfer-news" class="btn btn-secondary btn-sm">기사 보러 가기 →</a>
+      <div class="transfer-news-grid" id="transferNews"></div>
     </div>
 
   </div>
@@ -191,14 +193,34 @@ let activeFilter = 'all';
 let _data = null;
 let _openIdx = null;
 
+const NEWS_SVG = `<svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="5" y="5" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M9 10h10M9 14h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+
 async function load() {
   const r = await fetch('/api/data');
   _data = await r.json();
   renderFilterBar();
   renderBoard();
+  renderTransferNews();
+}
 
-  const hasNews = (_data.news || []).some(n => n.badge === 'transfer');
-  if (hasNews) document.getElementById('newsCta').style.display = 'flex';
+function renderTransferNews() {
+  const news = (_data.news || []).filter(n => n.badge === 'transfer');
+  if (!news.length) return;
+
+  document.getElementById('transferNewsSection').style.display = 'block';
+  document.getElementById('transferNews').innerHTML = news.map(n => `
+    <article class="news-card">
+      <div class="news-thumb"><div class="news-thumb-inner">${NEWS_SVG}</div></div>
+      <div class="news-body">
+        <div class="news-category">${n.category}</div>
+        <div class="news-title">${n.title}</div>
+        <div class="news-desc">${n.desc}</div>
+        <div class="news-footer">
+          <span class="badge badge-result">이적</span>
+          <span>${n.time}</span>
+        </div>
+      </div>
+    </article>`).join('');
 }
 
 function renderFilterBar() {

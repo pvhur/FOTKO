@@ -8,55 +8,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/kickoff.css" />
   <style>
-    /* ── League page specific ── */
-    .league-hero { padding:calc(56px + 48px) 0 40px; }
-    .league-tabs-bar { display:flex; gap:8px; flex-wrap:wrap; margin-top:28px; }
-    .league-hero-tab { display:flex; flex-direction:column; gap:4px; padding:14px 20px; background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-lg); cursor:pointer; transition:all .14s; min-width:160px; }
-    .league-hero-tab:hover { background:var(--surface-3); border-color:var(--hairline-strong); }
-    .league-hero-tab.active { background:var(--surface-3); border-color:var(--primary); box-shadow:0 0 0 1px var(--primary); }
-    .league-hero-tab .lht-name { font-size:13px; font-weight:600; color:var(--ink); }
-    .league-hero-tab .lht-leader { font-size:12px; color:var(--ink-subtle); }
-    .league-hero-tab .lht-badge { font-size:10px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--primary); margin-bottom:4px; }
-
-    .content-grid { display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start; }
-    .standings-panel { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); overflow:hidden; }
-
-    /* zone bar under table */
-    .zone-legend { display:flex; flex-wrap:wrap; gap:16px; padding:14px 20px; border-top:1px solid var(--hairline); background:var(--surface-2); }
-    .zone-item { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-subtle); }
-    .zone-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
-
-    /* Top scorers panel */
-    .scorers-panel { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); overflow:hidden; }
-    .scorers-head { background:var(--surface-2); border-bottom:1px solid var(--hairline); padding:13px 20px; }
-    .scorers-head h3 { font-size:13px; font-weight:600; }
-    .scorer-row { display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:12px; padding:12px 20px; border-bottom:1px solid var(--hairline); transition:background .12s; }
-    .scorer-row:last-child { border-bottom:none; }
-    .scorer-row:hover { background:rgba(255,255,255,.02); }
-    .scorer-rank { font-size:13px; font-weight:700; color:var(--ink-tertiary); text-align:center; }
-    .scorer-rank.top { color:var(--primary-hover); }
-    .scorer-info { display:flex; flex-direction:column; gap:2px; }
-    .scorer-name { font-size:13px; font-weight:600; color:var(--ink); }
-    .scorer-team { font-size:11px; color:var(--ink-tertiary); }
-    .scorer-stats { display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
-    .scorer-goals { font-size:15px; font-weight:700; color:var(--ink); letter-spacing:-.3px; }
-    .scorer-assists { font-size:11px; color:var(--ink-tertiary); }
-
-    /* Stats summary cards */
-    .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
-    .stat-mini { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:14px 16px; }
-    .stat-mini-val { font-size:22px; font-weight:700; color:var(--ink); letter-spacing:-.5px; }
-    .stat-mini-label { font-size:11px; color:var(--ink-tertiary); margin-top:3px; }
-
-    @media(max-width:1024px) {
-      .content-grid { grid-template-columns:1fr; }
-      .league-hero-tab { min-width:130px; }
-    }
-    @media(max-width:600px) {
-      .league-tabs-bar { gap:6px; }
-      .league-hero-tab { min-width:calc(50% - 3px); }
-      .stats-row { grid-template-columns:repeat(3,1fr); }
-    }
+    .updating-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 56px); padding:80px 32px; text-align:center; }
+    .updating-icon { width:64px; height:64px; border-radius:var(--r-xl); background:var(--surface-2); border:1px solid var(--hairline); display:flex; align-items:center; justify-content:center; margin-bottom:28px; }
+    .updating-wrap h1 { font-size:clamp(22px,3vw,32px); font-weight:700; letter-spacing:-.6px; margin-bottom:12px; }
+    .updating-wrap p { font-size:15px; color:var(--ink-subtle); line-height:1.7; max-width:400px; }
+    .updating-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; background:rgba(251,191,36,.1); border:1px solid rgba(251,191,36,.2); border-radius:var(--r-pill); font-size:12px; font-weight:600; color:#fbbf24; margin-bottom:20px; letter-spacing:.3px; }
   </style>
 </head>
 <body>
@@ -74,7 +30,7 @@
       <li><a href="/kickoff">홈</a></li>
       <li><a href="/kickoff/league" class="active">리그</a></li>
       <li><a href="/kickoff/results">경기 결과</a></li>
-      <li><a href="/kickoff/transfers">이적 시장</a></li>
+      <li><a href="/kickoff/transfers">이적 시장 🔥</a></li>
       <li><a href="/kickoff/analysis">분석</a></li>
     </ul>
     <div class="nav-right">
@@ -88,31 +44,16 @@
   </div>
 </nav>
 
-<div class="league-hero" style="margin-top:0;">
-  <div class="wrap">
-    <div class="eyebrow-label">2025–26 시즌</div>
-    <h1 class="t-display-md">리그 순위</h1>
-    <p style="font-size:15px;color:var(--ink-subtle);margin-top:8px;">최신 리그 순위, 득점왕, 팀 전적을 한눈에 확인하세요.</p>
-    <div class="league-tabs-bar" id="leagueTabs"></div>
+<div class="updating-wrap">
+  <div class="updating-icon">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <path d="M14 5v4M14 19v4M5 14H9M19 14h4M7.5 7.5l2.8 2.8M17.7 17.7l2.8 2.8M7.5 20.5l2.8-2.8M17.7 10.3l2.8-2.8" stroke="var(--ink-tertiary)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
   </div>
+  <div class="updating-badge">업데이트 중</div>
+  <h1>리그 순위 준비 중</h1>
+  <p>리그 순위 페이지를 새롭게 준비하고 있습니다.<br>조금만 기다려 주세요.</p>
 </div>
-
-<section class="section" style="padding-top:32px;">
-  <div class="wrap">
-    <div class="content-grid">
-      <!-- Standings table -->
-      <div class="standings-panel" id="standingsPanel"></div>
-
-      <!-- Right sidebar -->
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <!-- Stats summary -->
-        <div id="statsRow"></div>
-        <!-- Top scorers -->
-        <div class="scorers-panel" id="scorersPanel"></div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <footer class="footer">
   <div class="wrap">
@@ -125,7 +66,7 @@
         <p>축구를 더 깊게. 매일 업데이트되는 뉴스, 경기 분석, 이적 소식을 전합니다.</p>
       </div>
       <div class="footer-col"><h4>리그</h4><ul><li><a href="/kickoff/league">프리미어리그</a></li><li><a href="/kickoff/league">라 리가</a></li><li><a href="/kickoff/league">분데스리가</a></li><li><a href="/kickoff/league">세리에 A</a></li></ul></div>
-      <div class="footer-col"><h4>콘텐츠</h4><ul><li><a href="/kickoff/analysis">분석</a></li><li><a href="/kickoff/transfers">이적 시장</a></li><li><a href="/kickoff/results">경기 결과</a></li><li><a href="#">뉴스레터</a></li></ul></div>
+      <div class="footer-col"><h4>콘텐츠</h4><ul><li><a href="/kickoff/analysis">분석</a></li><li><a href="/kickoff/transfers">이적 시장</a></li><li><a href="/kickoff/results">경기 결과</a></li></ul></div>
       <div class="footer-col"><h4>대회</h4><ul><li><a href="#">챔피언스리그</a></li><li><a href="#">유로파리그</a></li><li><a href="#">FIFA 월드컵</a></li></ul></div>
       <div class="footer-col"><h4>Kickoff</h4><ul><li><a href="#">소개</a></li><li><a href="#">광고 문의</a></li><li><a href="#">문의</a></li></ul></div>
     </div>
@@ -136,128 +77,6 @@
   </div>
 </footer>
 
-<script>
-const LEAGUES = { pl:'프리미어리그', laliga:'라 리가', bundesliga:'분데스리가', seriea:'세리에 A' };
-const LEAGUE_INFO = {
-  pl:         { badge:'PL',  teams:20, matches:380, season:'2025–26' },
-  laliga:     { badge:'ESP', teams:20, matches:380, season:'2025–26' },
-  bundesliga: { badge:'GER', teams:18, matches:306, season:'2025–26' },
-  seriea:     { badge:'ITA', teams:20, matches:380, season:'2025–26' },
-};
-const CREST = `<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="4"/></svg>`;
-
-let active = 'pl';
-let _data = null;
-
-async function load() {
-  const r = await fetch('/api/data');
-  _data = await r.json();
-  renderTabs();
-  renderAll(active);
-}
-
-function renderTabs() {
-  document.getElementById('leagueTabs').innerHTML = Object.entries(LEAGUES).map(([k,v]) => {
-    const leader = _data.standings[k]?.[0];
-    const info = LEAGUE_INFO[k];
-    return `
-      <div class="league-hero-tab${k===active?' active':''}" onclick="switchLeague('${k}')">
-        <div class="lht-badge">${info.badge}</div>
-        <div class="lht-name">${v}</div>
-        <div class="lht-leader">${leader ? '선두 ' + leader.name : ''}</div>
-      </div>`;
-  }).join('');
-}
-
-function switchLeague(league) {
-  active = league;
-  renderTabs();
-  renderAll(league);
-}
-
-function renderAll(league) {
-  renderStandings(league);
-  renderScorers(league);
-  renderStats(league);
-}
-
-function renderStandings(league) {
-  const rows = _data.standings?.[league] || [];
-  const tbody = rows.map(r => {
-    const form = (r.form||'').split('').map(c=>`<span class="form-dot form-${c}"></span>`).join('');
-    return `
-      <tr>
-        <td style="width:44px;text-align:center;"><span class="rank-badge rank-${r.tier}">${r.rank}</span></td>
-        <td><div class="team-cell"><div class="team-crest-sm">${CREST}</div><span class="team-cell-name">${r.name}</span></div></td>
-        <td class="c">${r.p}</td><td class="c">${r.w}</td><td class="c">${r.d}</td><td class="c">${r.l}</td>
-        <td class="c" style="color:${+r.gd>0?'#4ade80':+r.gd<0?'#f87171':'inherit'}">${r.gd}</td>
-        <td class="pts">${r.pts}</td>
-        <td class="c" style="min-width:80px;">${form}</td>
-      </tr>`;
-  }).join('');
-  document.getElementById('standingsPanel').innerHTML = `
-    <table class="standings-table">
-      <thead><tr>
-        <th class="c">#</th><th>구단</th>
-        <th class="c" title="경기">G</th><th class="c" title="승">W</th><th class="c" title="무">D</th><th class="c" title="패">L</th>
-        <th class="c" title="득실차">GD</th><th class="c" title="승점">Pts</th><th class="c">최근 5경기</th>
-      </tr></thead>
-      <tbody>${tbody || '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--ink-tertiary);">데이터가 없습니다.</td></tr>'}</tbody>
-    </table>
-    <div class="zone-legend">
-      <div class="zone-item"><div class="zone-dot" style="background:rgba(94,106,210,.6);"></div>챔피언스리그</div>
-      <div class="zone-item"><div class="zone-dot" style="background:rgba(39,166,68,.6);"></div>유로파리그</div>
-      <div class="zone-item"><div class="zone-dot" style="background:rgba(239,68,68,.6);"></div>강등권</div>
-    </div>`;
-}
-
-function renderScorers(league) {
-  const scorers = _data.topScorers?.[league] || [];
-  if (!scorers.length) {
-    document.getElementById('scorersPanel').innerHTML = '';
-    return;
-  }
-  document.getElementById('scorersPanel').innerHTML = `
-    <div class="scorers-head"><h3>득점 순위</h3></div>
-    ${scorers.map((s,i) => `
-      <div class="scorer-row">
-        <div class="scorer-rank${i<3?' top':''}">${s.rank}</div>
-        <div class="scorer-info">
-          <div class="scorer-name">${s.player}</div>
-          <div class="scorer-team">${s.team} · ${s.apps}경기</div>
-        </div>
-        <div class="scorer-stats">
-          <div class="scorer-goals">${s.goals}<span style="font-size:11px;font-weight:400;color:var(--ink-tertiary);margin-left:2px;">골</span></div>
-          <div class="scorer-assists">${s.assists} 도움</div>
-        </div>
-      </div>`).join('')}`;
-}
-
-function renderStats(league) {
-  const rows = _data.standings?.[league] || [];
-  if (!rows.length) { document.getElementById('statsRow').innerHTML=''; return; }
-  const leader = rows[0];
-  const totalGoals = rows.reduce((a,r) => a + (r.w*2 + r.d), 0); // rough
-  const avgPts = Math.round(rows.reduce((a,r)=>a+r.pts,0)/rows.length);
-  document.getElementById('statsRow').innerHTML = `
-    <div class="stats-row">
-      <div class="stat-mini">
-        <div class="stat-mini-val" style="color:var(--primary-hover);">${leader.pts}</div>
-        <div class="stat-mini-label">선두 승점</div>
-      </div>
-      <div class="stat-mini">
-        <div class="stat-mini-val">${leader.p}</div>
-        <div class="stat-mini-label">진행 경기</div>
-      </div>
-      <div class="stat-mini">
-        <div class="stat-mini-val">${avgPts}</div>
-        <div class="stat-mini-label">평균 승점</div>
-      </div>
-    </div>`;
-}
-
-load();
-</script>
 <script src="/js/kickoff-nav.js"></script>
 </body>
 </html>
