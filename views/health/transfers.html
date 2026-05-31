@@ -514,7 +514,10 @@ function showKakaoResult() {
     invalid_state:  '보안 확인에 실패했습니다. 다시 시도해주세요.',
     not_configured: '카카오 알림 설정이 아직 준비되지 않았습니다.',
   };
-  if (msgs[p]) setTimeout(() => alert(msgs[p]), 300);
+  const reason = new URLSearchParams(location.search).get('reason');
+  let msg = msgs[p] || '';
+  if (p === 'failed' && reason) msg += `\n\n[원인: ${reason}]`;
+  if (msg) setTimeout(() => alert(msg), 300);
   history.replaceState({}, '', '/kickoff/transfers');
 }
 

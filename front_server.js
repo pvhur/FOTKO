@@ -469,18 +469,21 @@ app.get('/api/auth/kakao/callback', requireAuth, async (req, res) => {
   if (!state || state !== req.session.kakaoState)
     return res.redirect('/kickoff/transfers?kakao=invalid_state');
   try {
+    const tokenParams = {
+      grant_type:   'authorization_code',
+      client_id:    KAKAO_REST_KEY,
+      redirect_uri: KAKAO_REDIRECT,
+      code,
+    };
+    if (process.env.KAKAO_CLIENT_SECRET) tokenParams.client_secret = process.env.KAKAO_CLIENT_SECRET;
     const tokenRes = await fetch(KAKAO_TOKEN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        grant_type:   'authorization_code',
-        client_id:    KAKAO_REST_KEY,
-        redirect_uri: KAKAO_REDIRECT,
-        code,
-      }),
+      body: new URLSearchParams(tokenParams),
     });
     const t = await tokenRes.json();
-    if (!tokenRes.ok || !t.access_token) throw new Error(t.error_description || 'token_error');
+    if (!tokenRes.ok || !t.access_token)
+      throw new Error(t.error_code ? `${t.error_code}:${t.error_description||t.error}` : (t.error_description || 'token_error'));
 
     const expires = Date.now() + (t.expires_in || 21600) * 1000;
     await pool.query(
@@ -492,7 +495,7 @@ app.get('/api/auth/kakao/callback', requireAuth, async (req, res) => {
     res.redirect('/kickoff/transfers?kakao=connected');
   } catch (e) {
     console.error('[Kakao OAuth]', e.message);
-    res.redirect('/kickoff/transfers?kakao=failed');
+    res.redirect('/kickoff/transfers?kakao=failed&reason=' + encodeURIComponent(e.message));
   }
 });
 
@@ -542,6 +545,7 @@ async function kakaoValidToken(user) {
         grant_type:    'refresh_token',
         client_id:     KAKAO_REST_KEY,
         refresh_token: user.kakao_refresh_token,
+        ...(process.env.KAKAO_CLIENT_SECRET ? { client_secret: process.env.KAKAO_CLIENT_SECRET } : {}),
       }),
     });
     const t = await r.json();
