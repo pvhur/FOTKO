@@ -179,6 +179,63 @@
     .empty-state { padding:64px 0; text-align:center; color:var(--ink-tertiary); }
     .empty-state h3 { font-size:16px; font-weight:500; margin-bottom:8px; color:var(--ink-subtle); }
 
+    /* ── 레이아웃 (사이드바 + 메인) ── */
+    .tf-layout { display:grid; grid-template-columns:260px 1fr; gap:24px; align-items:start; margin-top:28px; }
+    .tf-main { min-width:0; }
+    .tf-main .transfer-board { margin-top:0; }
+
+    /* ── 사이드바 ── */
+    .tf-sidebar { position:sticky; top:72px; max-height:calc(100vh - 96px); overflow-y:auto; background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); }
+    .tf-side-head { padding:13px 16px; border-bottom:1px solid var(--hairline); background:var(--surface-2); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:2; }
+    .tf-side-head h3 { font-size:13px; font-weight:600; }
+    .tf-side-head .count { font-size:11px; color:var(--ink-tertiary); }
+
+    /* 내 관심팀 */
+    .tf-fav { padding:12px 14px; border-bottom:1px solid var(--hairline); }
+    .tf-fav-label { font-size:10px; font-weight:600; color:var(--primary-hover); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+    .tf-fav-empty { font-size:12px; color:var(--ink-tertiary); line-height:1.5; }
+    .tf-fav-list { display:flex; flex-direction:column; gap:2px; }
+
+    /* 리그 그룹 */
+    .tf-league { border-bottom:1px solid var(--hairline); }
+    .tf-league:last-child { border-bottom:none; }
+    .tf-league-head { display:flex; align-items:center; gap:9px; padding:11px 14px; cursor:pointer; transition:background .12s; user-select:none; }
+    .tf-league-head:hover { background:var(--surface-2); }
+    .tf-league-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+    .tf-league-name { font-size:13px; font-weight:600; flex:1; }
+    .tf-league-cnt { font-size:11px; color:var(--ink-tertiary); }
+    .tf-league-arrow { color:var(--ink-tertiary); transition:transform .18s; }
+    .tf-league.open .tf-league-arrow { transform:rotate(90deg); }
+    .tf-team-list { display:none; padding:2px 8px 8px; }
+    .tf-league.open .tf-team-list { display:block; }
+
+    /* 팀 행 */
+    .tf-team { display:flex; align-items:center; gap:9px; padding:6px 8px; border-radius:var(--r-sm); cursor:default; transition:background .12s; }
+    .tf-team:hover { background:var(--surface-2); }
+    .tf-team-logo { width:22px; height:22px; border-radius:var(--r-xs); object-fit:contain; background:var(--surface-3); flex-shrink:0; }
+    .tf-team-badge { width:22px; height:22px; border-radius:var(--r-xs); background:var(--surface-3); border:1px solid var(--hairline); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:var(--ink-subtle); flex-shrink:0; }
+    .tf-team-name { font-size:12px; color:var(--ink-muted); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .tf-fav-btn { background:none; border:none; cursor:pointer; padding:2px; color:var(--ink-tertiary); flex-shrink:0; display:flex; align-items:center; transition:color .12s, transform .12s; }
+    .tf-fav-btn:hover { transform:scale(1.15); color:var(--warn); }
+    .tf-fav-btn.on { color:var(--warn); }
+
+    /* 카카오 알림 */
+    .tf-kakao { padding:12px 14px; border-bottom:1px solid var(--hairline); background:rgba(254,229,0,.04); }
+    .tf-kakao-row { display:flex; align-items:center; gap:10px; }
+    .tf-kakao-icon { font-size:18px; flex-shrink:0; }
+    .tf-kakao-title { font-size:12px; font-weight:600; color:var(--ink); }
+    .tf-kakao-sub { font-size:11px; color:var(--ink-tertiary); margin-top:1px; }
+    .tf-kakao-note { font-size:10px; color:var(--ink-tertiary); margin-top:8px; line-height:1.4; }
+    .tf-toggle { width:38px; height:22px; border-radius:var(--r-pill); background:var(--surface-3); border:1px solid var(--hairline); position:relative; cursor:pointer; flex-shrink:0; transition:background .15s; padding:0; }
+    .tf-toggle.on { background:var(--primary); border-color:var(--primary); }
+    .tf-toggle-knob { position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:left .15s; }
+    .tf-toggle.on .tf-toggle-knob { left:18px; }
+
+    @media(max-width:1024px) {
+      .tf-layout { grid-template-columns:1fr; }
+      .tf-sidebar { position:static; max-height:420px; }
+    }
+
     @media(max-width:768px) {
       .board-header { grid-template-columns:72px 1fr 80px; }
       .board-header .col-type-h, .board-header .col-time-h { display:none; }
@@ -275,6 +332,13 @@
 
 <section class="section" style="padding-top:0;">
   <div class="wrap">
+   <div class="tf-layout">
+
+    <!-- 사이드바 -->
+    <aside class="tf-sidebar" id="tfSidebar"></aside>
+
+    <!-- 메인 -->
+    <div class="tf-main">
 
     <!-- 게시판 -->
     <div class="transfer-board" id="transferBoard">
@@ -299,6 +363,8 @@
       <div class="transfer-news-grid" id="transferNews"></div>
     </div>
 
+    </div><!-- /.tf-main -->
+   </div><!-- /.tf-layout -->
   </div>
 </section>
 
@@ -343,6 +409,48 @@
 </div>
 
 <script>
+/* ── 유럽 5대리그 팀 데이터 ── */
+const LEAGUES = [
+  { id:'pl', name:'Premier League', color:'#3d195b', teams:[
+    {id:42,name:'Arsenal'},{id:66,name:'Aston Villa'},{id:35,name:'Bournemouth'},{id:55,name:'Brentford'},
+    {id:51,name:'Brighton'},{id:49,name:'Chelsea'},{id:52,name:'Crystal Palace'},{id:45,name:'Everton'},
+    {id:36,name:'Fulham'},{id:57,name:'Ipswich Town'},{id:46,name:'Leicester City'},{id:40,name:'Liverpool'},
+    {id:50,name:'Manchester City'},{id:33,name:'Manchester United'},{id:34,name:'Newcastle'},{id:65,name:'Nottm Forest'},
+    {id:41,name:'Southampton'},{id:47,name:'Tottenham'},{id:48,name:'West Ham'},{id:39,name:'Wolverhampton'} ]},
+  { id:'ll', name:'La Liga', color:'#ee8208', teams:[
+    {id:541,name:'Real Madrid'},{id:529,name:'Barcelona'},{id:530,name:'Atletico Madrid'},{id:536,name:'Sevilla'},
+    {id:548,name:'Real Sociedad'},{id:531,name:'Athletic Bilbao'},{id:532,name:'Valencia'},{id:533,name:'Villarreal'},
+    {id:543,name:'Real Betis'},{id:546,name:'Getafe'},{id:547,name:'Girona'},{id:537,name:'Osasuna'},
+    {id:542,name:'Rayo Vallecano'},{id:538,name:'Celta Vigo'},{id:534,name:'Las Palmas'},{id:539,name:'Mallorca'},
+    {id:540,name:'Espanyol'},{id:544,name:'Alaves'},{id:545,name:'Valladolid'},{id:723,name:'Leganes'} ]},
+  { id:'bl', name:'Bundesliga', color:'#d20515', teams:[
+    {id:157,name:'Bayern Munich'},{id:165,name:'Dortmund'},{id:173,name:'RB Leipzig'},{id:168,name:'Bayer Leverkusen'},
+    {id:169,name:'Eintracht Frankfurt'},{id:163,name:'Gladbach'},{id:172,name:'Stuttgart'},{id:161,name:'Wolfsburg'},
+    {id:160,name:'Freiburg'},{id:159,name:'Augsburg'},{id:164,name:'Mainz'},{id:167,name:'Hoffenheim'},
+    {id:170,name:'Werder Bremen'},{id:162,name:'Union Berlin'},{id:176,name:'Heidenheim'},{id:182,name:'St. Pauli'},
+    {id:177,name:'Holstein Kiel'},{id:183,name:'Bochum'} ]},
+  { id:'sa', name:'Serie A', color:'#024494', teams:[
+    {id:505,name:'Inter Milan'},{id:489,name:'AC Milan'},{id:496,name:'Juventus'},{id:492,name:'Napoli'},
+    {id:497,name:'Roma'},{id:487,name:'Lazio'},{id:499,name:'Atalanta'},{id:502,name:'Fiorentina'},
+    {id:500,name:'Bologna'},{id:503,name:'Torino'},{id:504,name:'Udinese'},{id:450,name:'Verona'},
+    {id:488,name:'Cagliari'},{id:490,name:'Genoa'},{id:508,name:'Empoli'},{id:586,name:'Como'},
+    {id:588,name:'Monza'},{id:494,name:'Parma'},{id:867,name:'Lecce'},{id:517,name:'Venezia'} ]},
+  { id:'l1', name:'Ligue 1', color:'#091c3e', teams:[
+    {id:85,name:'Paris Saint-Germain'},{id:91,name:'Monaco'},{id:81,name:'Marseille'},{id:80,name:'Lyon'},
+    {id:84,name:'Nice'},{id:94,name:'Rennes'},{id:116,name:'Lens'},{id:79,name:'Lille'},
+    {id:95,name:'Strasbourg'},{id:130,name:'Brest'},{id:83,name:'Nantes'},{id:93,name:'Reims'},
+    {id:111,name:'Le Havre'},{id:96,name:'Toulouse'},{id:77,name:'Auxerre'},{id:76,name:'Angers'},
+    {id:244,name:'Saint-Etienne'},{id:82,name:'Montpellier'} ]},
+];
+const LOGO = id => `https://media.api-sports.io/football/teams/${id}.png`;
+const TEAM_BY_ID = {};
+LEAGUES.forEach(lg => lg.teams.forEach(t => { TEAM_BY_ID[t.id] = { ...t, leagueId: lg.id }; }));
+
+let _me = null;
+let _follows = new Set();      // 팔로우한 team_id (문자열)
+let _openLeagues = new Set();  // 펼쳐진 리그 (기본 전부 축소)
+let _kakao = { linked:false, notify:false };
+
 const BADGE_MAP = {
   official: ['badge-new',    '공식 발표'],
   rumor:    ['badge-result', '루머'],
@@ -391,6 +499,157 @@ async function load() {
   renderFilterBar();
   renderBoard();
   renderTransferNews();
+  await loadFollows();
+  renderSidebar();
+}
+
+/* ── 로그인 사용자 + 팔로우 로드 ── */
+async function loadFollows() {
+  try {
+    const meRes = await fetch('/api/auth/me', { credentials:'include' });
+    if (meRes.ok) {
+      _me = await meRes.json();
+      const fRes = await fetch('/api/follows', { credentials:'include' });
+      if (fRes.ok) {
+        const rows = await fRes.json();
+        _follows = new Set(rows.map(f => String(f.team_id)));
+      }
+      const kRes = await fetch('/api/notify/kakao', { credentials:'include' });
+      if (kRes.ok) _kakao = await kRes.json();
+    } else {
+      _me = null;
+    }
+  } catch (_) { _me = null; }
+}
+
+/* ── 사이드바 렌더 ── */
+function STAR(on) {
+  return `<svg width="15" height="15" viewBox="0 0 16 16" fill="${on?'currentColor':'none'}"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.92.71 4.13L8 11.45 4.29 13.4 5 9.27 2 6.35l4.15-.6L8 1.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>`;
+}
+function teamLogoHTML(t) {
+  const initials = t.name.replace(/[^A-Za-z ]/g,'').split(' ').map(w=>w[0]).join('').slice(0,3).toUpperCase();
+  return `<img class="tf-team-logo" src="${LOGO(t.id)}" alt="" loading="lazy"
+    onerror="this.outerHTML='<span class=&quot;tf-team-badge&quot;>${initials}</span>'" />`;
+}
+function teamRowHTML(t, leagueId) {
+  const on = _follows.has(String(t.id));
+  return `
+    <div class="tf-team">
+      ${teamLogoHTML(t)}
+      <span class="tf-team-name" title="${t.name}">${t.name}</span>
+      <button class="tf-fav-btn ${on?'on':''}" title="${on?'관심팀 해제':'관심팀 추가'}"
+        onclick="toggleFollow('${t.id}','${t.name.replace(/'/g,'')}','${leagueId}',this)">${STAR(on)}</button>
+    </div>`;
+}
+function renderSidebar() {
+  const totalTeams = LEAGUES.reduce((s,l)=>s+l.teams.length,0);
+
+  // 관심팀
+  let favHTML;
+  if (!_me) {
+    favHTML = `<div class="tf-fav-empty">로그인하면 관심 팀을 등록하고<br>이적 소식을 받아볼 수 있어요.<br><a href="/kickoff/login?redirect=/kickoff/transfers" style="color:var(--primary-hover);">로그인 →</a></div>`;
+  } else if (_follows.size === 0) {
+    favHTML = `<div class="tf-fav-empty">아직 관심 팀이 없습니다.<br>아래에서 ⭐를 눌러 팀을 추가하세요.</div>`;
+  } else {
+    favHTML = `<div class="tf-fav-list">` + [..._follows].map(id => {
+      const t = TEAM_BY_ID[id]; if (!t) return '';
+      return teamRowHTML(t, t.leagueId);
+    }).join('') + `</div>`;
+  }
+
+  // 리그 그룹 (기본 축소)
+  const leaguesHTML = LEAGUES.map(lg => {
+    const open = _openLeagues.has(lg.id);
+    return `
+      <div class="tf-league ${open?'open':''}" id="lg-${lg.id}">
+        <div class="tf-league-head" onclick="toggleLeague('${lg.id}')">
+          <span class="tf-league-dot" style="background:${lg.color};"></span>
+          <span class="tf-league-name">${lg.name}</span>
+          <span class="tf-league-cnt">${lg.teams.length}</span>
+          <svg class="tf-league-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="tf-team-list">
+          ${lg.teams.map(t => teamRowHTML(t, lg.id)).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  // 카카오톡 알림 (로그인 + 관심팀 있을 때만 노출)
+  let kakaoHTML = '';
+  if (_me && _follows.size) {
+    const on = _kakao.notify;
+    kakaoHTML = `
+      <div class="tf-kakao">
+        <div class="tf-kakao-row">
+          <span class="tf-kakao-icon">💬</span>
+          <div style="flex:1;">
+            <div class="tf-kakao-title">카카오톡으로 받기</div>
+            <div class="tf-kakao-sub">관심팀 이적 소식을 알림으로</div>
+          </div>
+          <button class="tf-toggle ${on?'on':''}" onclick="toggleKakao()" aria-label="카카오 알림 토글"><span class="tf-toggle-knob"></span></button>
+        </div>
+        <div class="tf-kakao-note">${on ? '알림이 켜졌습니다. (실제 발송 연동 준비 중)' : '준비 중인 기능입니다. 미리 신청해두세요.'}</div>
+      </div>`;
+  }
+
+  document.getElementById('tfSidebar').innerHTML = `
+    <div class="tf-side-head">
+      <h3>리그 · 팀</h3>
+      <span class="count">${totalTeams}팀</span>
+    </div>
+    <div class="tf-fav">
+      <div class="tf-fav-label">⭐ 내 관심팀 ${_me&&_follows.size?`(${_follows.size})`:''}</div>
+      ${favHTML}
+    </div>
+    ${kakaoHTML}
+    ${leaguesHTML}`;
+}
+
+async function toggleKakao() {
+  const next = !_kakao.notify;
+  try {
+    const r = await fetch('/api/notify/kakao', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ notify: next }),
+    });
+    if (!r.ok) throw new Error();
+    _kakao.notify = next;
+    renderSidebar();
+  } catch { alert('알림 설정 변경에 실패했습니다.'); }
+}
+
+function toggleLeague(id) {
+  if (_openLeagues.has(id)) _openLeagues.delete(id);
+  else _openLeagues.add(id);
+  document.getElementById('lg-'+id)?.classList.toggle('open');
+}
+
+async function toggleFollow(teamId, teamName, leagueId, btn) {
+  if (!_me) {
+    location.href = '/kickoff/login?redirect=/kickoff/transfers';
+    return;
+  }
+  const id = String(teamId);
+  const on = _follows.has(id);
+  try {
+    if (on) {
+      const r = await fetch('/api/follows/'+id, { method:'DELETE', credentials:'include' });
+      if (!r.ok) throw new Error();
+      _follows.delete(id);
+    } else {
+      const r = await fetch('/api/follows/'+id, {
+        method:'PUT', credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ teamName, leagueId }),
+      });
+      if (!r.ok) throw new Error();
+      _follows.add(id);
+    }
+    renderSidebar();
+  } catch {
+    alert('처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+  }
 }
 
 function renderTransferNews() {

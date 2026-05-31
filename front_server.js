@@ -376,6 +376,86 @@ app.post('/api/data', requireEditor, async (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════
+   팀 팔로우 API (로그인 필요)
+═══════════════════════════════════════════════════════ */
+
+// 내 팔로우 목록
+app.get('/api/follows', requireAuth, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT team_id, team_name, league_id FROM follows WHERE user_id=$1 ORDER BY created_at',
+      [req.session.userId]
+    );
+    res.set('Cache-Control', 'no-store');
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+// 팔로우 추가
+app.put('/api/follows/:teamId', requireAuth, async (req, res) => {
+  const teamId   = sanitize(req.params.teamId);
+  const teamName = sanitize(req.body.teamName || '');
+  const leagueId = sanitize(req.body.leagueId || '');
+  if (!teamId) return res.status(400).json({ error: '팀 정보가 올바르지 않습니다.' });
+  try {
+    await pool.query(
+      `INSERT INTO follows (user_id, team_id, team_name, league_id, created_at)
+       VALUES ($1,$2,$3,$4,$5)
+       ON CONFLICT (user_id, team_id) DO UPDATE SET team_name=$3, league_id=$4`,
+      [req.session.userId, teamId, teamName, leagueId, new Date().toISOString()]
+    );
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+// 언팔로우
+app.delete('/api/follows/:teamId', requireAuth, async (req, res) => {
+  const teamId = sanitize(req.params.teamId);
+  try {
+    await pool.query('DELETE FROM follows WHERE user_id=$1 AND team_id=$2',
+      [req.session.userId, teamId]);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+/* ══════════════════════════════════════════════════════
+   카카오톡 알림 (구조만 — 실제 발송 연동은 추후)
+═══════════════════════════════════════════════════════ */
+
+// 알림 설정 조회
+app.get('/api/notify/kakao', requireAuth, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT kakao_id, kakao_notify FROM users WHERE id=$1', [req.session.userId]
+    );
+    const u = rows[0] || {};
+    res.set('Cache-Control', 'no-store');
+    res.json({ linked: !!u.kakao_id, notify: !!u.kakao_notify });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+// 알림 on/off 토글 (연동 전이라 설정값만 저장)
+app.post('/api/notify/kakao', requireAuth, async (req, res) => {
+  const notify = !!req.body.notify;
+  try {
+    await pool.query('UPDATE users SET kakao_notify=$1 WHERE id=$2',
+      [notify, req.session.userId]);
+    // TODO: 카카오 채널/알림톡 API 연동 시 여기서 구독 처리
+    res.json({ ok: true, notify });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+/* ══════════════════════════════════════════════════════
    헬스체크 (호스팅 플랫폼용)
 ═══════════════════════════════════════════════════════ */
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));

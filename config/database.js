@@ -56,6 +56,23 @@ async function initDB() {
       CREATE INDEX IF NOT EXISTS idx_sess_expired ON sessions(expired)
     `;
 
+    // 팀 팔로우 (관심 팀)
+    await _sql`
+      CREATE TABLE IF NOT EXISTS follows (
+        user_id   TEXT NOT NULL,
+        team_id   TEXT NOT NULL,
+        team_name TEXT,
+        league_id TEXT,
+        created_at TEXT NOT NULL,
+        PRIMARY KEY (user_id, team_id)
+      )
+    `;
+    await _sql`CREATE INDEX IF NOT EXISTS idx_follows_user ON follows(user_id)`;
+
+    // 카카오 알림 연결 정보 (구조만 — 실제 발송 연동은 추후)
+    await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_id TEXT`;
+    await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_notify BOOLEAN NOT NULL DEFAULT false`;
+
     console.log('[DB] 스키마 확인 완료');
   })().catch(e => {
     _initPromise = null; // 실패 시 다음 요청에서 재시도
