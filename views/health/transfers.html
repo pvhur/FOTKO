@@ -8,16 +8,117 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/kickoff.css" />
   <style>
-    .transfers-hero { padding:calc(56px + 48px) 0 40px; }
-
-    .window-banner { display:flex; align-items:center; gap:16px; padding:16px 24px; background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); margin-top:24px; }
-    .window-icon { width:40px; height:40px; border-radius:var(--r-md); background:rgba(94,106,210,.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .window-info h3 { font-size:14px; font-weight:600; margin-bottom:3px; }
-    .window-info p { font-size:12px; color:var(--ink-subtle); }
+    /* ── 버닝 히어로 ── */
+    .burn-hero {
+      position: relative;
+      padding: calc(56px + 56px) 0 52px;
+      overflow: hidden;
+      background: var(--canvas);
+    }
+    /* 불빛 그라디언트 배경 */
+    .burn-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 110%, rgba(251,100,20,.38) 0%, rgba(180,40,0,.18) 40%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 30% 90%, rgba(251,150,20,.18) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 70% 90%, rgba(220,60,0,.15) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    /* 불꽃 파티클 */
+    .burn-particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .spark {
+      position: absolute;
+      bottom: -10px;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #fbbf24;
+      opacity: 0;
+      animation: spark-rise var(--dur, 3s) ease-in var(--delay, 0s) infinite;
+    }
+    .spark:nth-child(odd) { background:#f97316; width:2px; height:2px; }
+    .spark:nth-child(3n) { background:#fef08a; width:2px; height:4px; border-radius:2px; }
+    @keyframes spark-rise {
+      0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+      10%  { opacity: .9; }
+      80%  { opacity: .4; }
+      100% { transform: translateY(-280px) translateX(var(--drift, 20px)) scale(.3); opacity: 0; }
+    }
+    /* 히어로 컨텐츠 */
+    .burn-hero-inner { position:relative; z-index:1; }
+    .burn-live-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 13px;
+      background: rgba(249,115,22,.15);
+      border: 1px solid rgba(249,115,22,.3);
+      border-radius: var(--r-pill);
+      font-size: 12px; font-weight: 600; color: #fb923c;
+      letter-spacing: .4px; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .burn-live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #f97316;
+      animation: pulse 1.4s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    .burn-title {
+      font-size: clamp(40px, 6vw, 80px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #fff 0%, #fde68a 45%, #f97316 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .burn-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,.45);
+      line-height: 1.6;
+      max-width: 500px;
+      margin-bottom: 32px;
+    }
+    /* 통계 칩 */
+    .burn-stats { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:32px; }
+    .burn-stat {
+      display: flex; flex-direction:column; align-items:center;
+      padding: 12px 20px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--r-lg);
+      min-width: 80px;
+      backdrop-filter: blur(4px);
+    }
+    .burn-stat-val { font-size: 22px; font-weight: 700; color: #fbbf24; letter-spacing: -.5px; }
+    .burn-stat-val.orange { color: #fb923c; }
+    .burn-stat-val.green  { color: #4ade80; }
+    .burn-stat-val.blue   { color: var(--primary-hover); }
+    .burn-stat-val.white  { color: var(--ink-muted); }
+    .burn-stat-label { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 3px; font-weight:500; }
+    /* 창구 배너 */
+    .window-banner {
+      display:flex; align-items:center; gap:16px;
+      padding:14px 20px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(249,115,22,.2);
+      border-radius: var(--r-lg);
+      margin-bottom: 24px;
+    }
+    .window-icon {
+      width:36px; height:36px; border-radius:var(--r-md);
+      background: rgba(249,115,22,.15);
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .window-info h3 { font-size:13px; font-weight:600; margin-bottom:2px; }
+    .window-info p  { font-size:12px; color:var(--ink-subtle); }
     .window-badge { margin-left:auto; }
-
-    .filter-bar { display:flex; align-items:center; gap:8px; margin:28px 0 0; flex-wrap:wrap; }
-    .filter-label { font-size:12px; font-weight:500; color:var(--ink-tertiary); text-transform:uppercase; letter-spacing:.4px; margin-right:4px; flex-shrink:0; }
+    /* 필터바 */
+    .filter-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .filter-label { font-size:12px; font-weight:500; color:rgba(255,255,255,.3); text-transform:uppercase; letter-spacing:.4px; margin-right:4px; flex-shrink:0; }
 
     /* ── 게시판 목록 ── */
     .transfer-board { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); overflow:hidden; margin-top:28px; }
@@ -101,25 +202,58 @@
   </div>
 </nav>
 
-<div class="transfers-hero">
-  <div class="wrap">
-    <div class="eyebrow-label">2026 여름 이적 시장</div>
-    <h1 class="t-display-md">이적 시장</h1>
-    <p style="font-size:15px;color:var(--ink-subtle);margin-top:8px;">공식 발표부터 루머까지, 최신 이적 소식을 한눈에.</p>
+<div class="burn-hero">
+  <!-- 불꽃 파티클 -->
+  <div class="burn-particles" id="burnParticles"></div>
 
-    <div class="window-banner">
-      <div class="window-icon">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M10 3l7 7-7 7" stroke="var(--primary-hover)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="wrap burn-hero-inner">
+    <div class="burn-live-badge">
+      <span class="burn-live-dot"></span>
+      2026 SUMMER WINDOW · LIVE
+    </div>
+
+    <h1 class="burn-title">이적시장<br>버닝 🔥</h1>
+    <p class="burn-sub">공식 발표부터 최신 루머까지, 이번 여름 이적시장의 모든 소식을 실시간으로 전합니다.</p>
+
+    <!-- 통계 -->
+    <div class="burn-stats" id="burnStats">
+      <div class="burn-stat">
+        <div class="burn-stat-val" id="statTotal">—</div>
+        <div class="burn-stat-label">총 이적 건</div>
       </div>
-      <div class="window-info">
-        <h3>2026 여름 이적 시장</h3>
-        <p>개막 2026.06.01 · 마감 2026.09.01</p>
+      <div class="burn-stat">
+        <div class="burn-stat-val orange" id="statOfficial">—</div>
+        <div class="burn-stat-label">공식 발표</div>
       </div>
-      <div class="window-badge">
-        <span class="badge badge-new">진행 중</span>
+      <div class="burn-stat">
+        <div class="burn-stat-val white" id="statRumor">—</div>
+        <div class="burn-stat-label">루머</div>
+      </div>
+      <div class="burn-stat">
+        <div class="burn-stat-val green" id="statDone">—</div>
+        <div class="burn-stat-label">완료</div>
+      </div>
+      <div class="burn-stat">
+        <div class="burn-stat-val blue" id="statNews">—</div>
+        <div class="burn-stat-label">관련 기사</div>
       </div>
     </div>
 
+    <!-- 창구 배너 -->
+    <div class="window-banner">
+      <div class="window-icon">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M10 3l7 7-7 7" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="window-info">
+        <h3>이적 창구 열림</h3>
+        <p>2026.06.01 개막 · 2026.09.01 마감</p>
+      </div>
+      <div class="window-badge">
+        <span class="badge" style="background:rgba(249,115,22,.15);color:#fb923c;border-color:rgba(249,115,22,.25);">● 진행 중</span>
+      </div>
+    </div>
+
+    <!-- 필터 -->
     <div class="filter-bar" id="filterBar"></div>
   </div>
 </div>
@@ -195,9 +329,32 @@ let _openIdx = null;
 
 const NEWS_SVG = `<svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="5" y="5" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M9 10h10M9 14h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
 
+function initParticles() {
+  const container = document.getElementById('burnParticles');
+  const positions = [8,15,22,30,38,45,50,55,62,70,78,85,92];
+  container.innerHTML = positions.map((left, i) => {
+    const dur   = (2.5 + Math.random() * 2.5).toFixed(1);
+    const delay = (Math.random() * 3).toFixed(1);
+    const drift = ((Math.random() - .5) * 60).toFixed(0);
+    return `<div class="spark" style="left:${left}%;--dur:${dur}s;--delay:${delay}s;--drift:${drift}px;"></div>`;
+  }).join('');
+}
+
+function renderStats(data) {
+  const transfers = data.transfers || [];
+  const news = (data.news || []).filter(n => n.badge === 'transfer');
+  document.getElementById('statTotal').textContent   = transfers.length;
+  document.getElementById('statOfficial').textContent = transfers.filter(t => t.badge === 'official').length;
+  document.getElementById('statRumor').textContent   = transfers.filter(t => t.badge === 'rumor').length;
+  document.getElementById('statDone').textContent    = transfers.filter(t => t.badge === 'done').length;
+  document.getElementById('statNews').textContent    = news.length;
+}
+
 async function load() {
+  initParticles();
   const r = await fetch('/api/data');
   _data = await r.json();
+  renderStats(_data);
   renderFilterBar();
   renderBoard();
   renderTransferNews();

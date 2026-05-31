@@ -172,23 +172,6 @@
   </div>
 </section>
 
-<!-- Standings + Fixtures -->
-<section class="section" style="padding-top:0;">
-  <div class="wrap">
-    <div class="section-header-row">
-      <div>
-        <div class="eyebrow-label">순위표</div>
-        <h2 class="t-display-md">리그 순위</h2>
-      </div>
-      <a href="/kickoff/league" class="btn btn-secondary btn-sm">전체 순위</a>
-    </div>
-    <div class="standings-wrap">
-      <div class="standings-panel" id="standingsPanel"></div>
-      <div class="fixtures-panel" id="fixturesPanel"></div>
-    </div>
-  </div>
-</section>
-
 <!-- Transfers -->
 <section class="section" style="padding-top:0;">
   <div class="wrap">
@@ -266,10 +249,7 @@ async function loadData() {
   renderScoreboard(d.scores);
   renderPopular(d.popular);
   renderNews(d.news);
-  renderStandings(d.standings, activeLeague);
-  renderFixtures(d.fixtures);
   renderTransfers(d.transfers);
-  window._footballData = d;
 }
 
 function renderTicker(items) {
@@ -353,52 +333,6 @@ function renderNews(items) {
   }).join('');
 }
 
-function renderStandings(standings, league) {
-  activeLeague = league;
-  const rows = standings[league] || [];
-  const tabs = Object.keys(standings).map(k => `
-    <div class="standings-tab${k===league?' active':''}" onclick="switchLeague('${k}')">${LEAGUE_LABELS[k]||k}</div>`).join('');
-  const tbody = rows.map(r => {
-    const form = (r.form||'').split('').map(c=>`<span class="form-dot form-${c}"></span>`).join('');
-    return `
-      <tr>
-        <td style="width:40px;text-align:center;"><span class="rank-badge rank-${r.tier}">${r.rank}</span></td>
-        <td><div class="team-cell"><div class="team-crest-sm">${CREST_SVG}</div><span class="team-cell-name">${r.name}</span></div></td>
-        <td class="c">${r.p}</td><td class="c">${r.w}</td><td class="c">${r.d}</td><td class="c">${r.l}</td>
-        <td class="c">${r.gd}</td><td class="pts">${r.pts}</td>
-        <td class="c">${form}</td>
-      </tr>`;
-  }).join('');
-  document.getElementById('standingsPanel').innerHTML = `
-    <div class="standings-tabs">${tabs}</div>
-    <table class="standings-table">
-      <thead><tr>
-        <th class="c">#</th><th>구단</th>
-        <th class="c">경기</th><th class="c">승</th><th class="c">무</th><th class="c">패</th>
-        <th class="c">득실</th><th class="c">승점</th><th class="c">폼</th>
-      </tr></thead>
-      <tbody>${tbody}</tbody>
-    </table>`;
-}
-function switchLeague(league) { renderStandings(window._footballData.standings, league); }
-
-function renderFixtures(items) {
-  document.getElementById('fixturesPanel').innerHTML = `
-    <div class="fix-header">
-      <h3>예정 경기</h3>
-      <a href="/kickoff/results" style="font-size:12px;color:var(--primary);">전체 일정</a>
-    </div>
-    ${items.map(f => `
-      <div class="fix-row">
-        <div class="fix-league">${f.league}</div>
-        <div class="fix-match">
-          <div class="fix-team">${f.home}</div>
-          <div class="fix-vs">vs</div>
-          <div class="fix-team right">${f.away}</div>
-        </div>
-        <div class="fix-date">${f.date}</div>
-      </div>`).join('')}`;
-}
 
 function renderTransfers(items) {
   document.getElementById('transferGrid').innerHTML = items.map(t => {
