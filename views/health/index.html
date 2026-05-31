@@ -12,7 +12,7 @@
     /* ── Home Hero 헤더 (이적시장 버닝 히어로와 동일 구조) ── */
     .home-hero {
       position: relative;
-      padding: calc(56px + 60px) 0 56px;
+      padding: calc(56px + 120px) 0 130px;
       overflow: hidden;
       background: var(--canvas);
       border-bottom: 1px solid var(--hairline);
@@ -28,17 +28,8 @@
       pointer-events: none;
     }
     .home-hero-inner { position: relative; z-index: 1; }
-    .home-hero-badge {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 5px 13px;
-      background: rgba(94,106,210,.15);
-      border: 1px solid rgba(94,106,210,.3);
-      border-radius: var(--r-pill);
-      font-size: 12px; font-weight: 600; color: var(--primary-hover);
-      letter-spacing: .4px; text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-    .home-hero-dot { width:6px; height:6px; border-radius:50%; background:var(--primary); animation:pulse 1.4s ease-in-out infinite; flex-shrink:0; }
+    .home-hero-logo { margin-bottom: 24px; line-height: 0; }
+    .home-hero-logo svg { filter: drop-shadow(0 0 24px rgba(94,106,210,.5)); }
     .home-hero-title {
       font-size: clamp(40px, 6vw, 78px);
       font-weight: 700; line-height: 1.05; letter-spacing: -2px;
@@ -167,11 +158,13 @@
 <!-- Home Hero 헤더 -->
 <div class="home-hero">
   <div class="wrap home-hero-inner">
-    <div class="home-hero-badge">
-      <span class="home-hero-dot"></span>
-      KICKOFF · LIVE
+    <div class="home-hero-logo">
+      <svg width="64" height="64" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="var(--primary-hover)" stroke-width="1.5"/>
+        <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="var(--primary-hover)" opacity=".4"/>
+      </svg>
     </div>
-    <h1 class="home-hero-title">오늘의 축구</h1>
+    <h1 class="home-hero-title">Kickoff</h1>
     <p class="home-hero-sub">뉴스, 경기 분석, 이적 소식까지 — 세상의 모든 축구를 한눈에.</p>
   </div>
 </div>
