@@ -224,22 +224,20 @@
     ══════════════════════════════════ */
     .transfers-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
     }
 
-    /* ══════════════════════════════════
-       PLAYER CARD (.pc)
-    ══════════════════════════════════ */
-    .pc {
+    .tc {
       background: var(--surface-1);
       border: 1px solid var(--hairline);
       border-radius: var(--r-xl);
       overflow: hidden;
       position: relative;
       transition: border-color .2s, box-shadow .2s, background .2s;
+      cursor: default;
     }
-    .pc::before {
+    .tc::before {
       content: '';
       position: absolute;
       inset: 0 0 auto;
@@ -247,142 +245,68 @@
       background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
       pointer-events: none;
     }
-    .pc:hover {
+    .tc:hover {
       border-color: rgba(255,107,0,.35);
       box-shadow: 0 0 24px rgba(255,107,0,.1), 0 4px 20px rgba(0,0,0,.4);
       background: var(--surface-2);
     }
 
-    .pc-accent { height: 3px; background: linear-gradient(90deg, var(--fire-hot), var(--fire), var(--fire-bright)); }
-    .pc-accent.rumor    { background: linear-gradient(90deg, var(--ink-tertiary), var(--ink-subtle)); }
-    .pc-accent.done     { background: linear-gradient(90deg, #16a34a, #4ade80); }
-    .pc-accent.official { background: linear-gradient(90deg, var(--fire-hot), var(--fire), var(--fire-bright)); }
-
-    .pc-head {
-      padding: 14px 18px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    /* top color accent bar */
+    .tc-accent {
+      height: 3px;
+      background: linear-gradient(90deg, var(--fire-hot), var(--fire), var(--fire-bright));
     }
-    .pc-date { font-size: 11px; color: var(--ink-tertiary); }
-    .pc-body { padding: 16px 18px 18px; }
+    .tc-accent.rumor {
+      background: linear-gradient(90deg, var(--ink-tertiary), var(--ink-subtle));
+    }
+    .tc-accent.done {
+      background: linear-gradient(90deg, #16a34a, #4ade80);
+    }
 
-    .pc-player {
-      font-size: 19px;
+    .tc-head { padding: 16px 20px 0; display: flex; align-items: center; justify-content: space-between; }
+
+    .tc-body { padding: 20px; }
+
+    .tc-player {
+      font-size: 22px;
       font-weight: 800;
-      letter-spacing: -.5px;
+      letter-spacing: -.6px;
       color: var(--ink);
-      margin-bottom: 13px;
-      line-height: 1.15;
+      margin-bottom: 16px;
+      line-height: 1.1;
     }
 
-    /* 이전 → 이적 클럽 */
-    .pc-transfer {
+    .tc-clubs {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-      padding: 11px 13px;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 14px 16px;
       background: var(--surface-2);
       border-radius: var(--r-md);
       border: 1px solid var(--hairline);
     }
-    .pc-club { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-    .pc-club-to { align-items: flex-end; text-align: right; }
-    .pc-club-label { font-size: 10px; color: var(--ink-tertiary); text-transform: uppercase; letter-spacing: .5px; font-weight: 500; }
-    .pc-club-name { font-size: 13px; font-weight: 700; color: var(--ink); }
-    .pc-arrow { color: var(--fire); flex-shrink: 0; display: flex; align-items: center; }
-
-    /* 진행 상태 바 */
-    .pc-progress {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 13px;
-      gap: 0;
-    }
-    .pc-step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-    }
-    .pc-step-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--surface-2);
-      border: 2px solid var(--hairline);
+    .tc-club { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+    .tc-club-label { font-size: 10px; color: var(--ink-tertiary); text-transform: uppercase; letter-spacing: .5px; font-weight: 500; }
+    .tc-club-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+    .tc-arrow {
+      color: var(--fire);
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
     }
-    .pc-step.done    .pc-step-dot { background: var(--fire);        border-color: var(--fire); }
-    .pc-step.current .pc-step-dot { background: var(--fire-bright); border-color: var(--fire-bright); box-shadow: 0 0 7px rgba(255,149,0,.55); }
-    .pc-step-label { font-size: 10px; color: var(--ink-tertiary); font-weight: 500; white-space: nowrap; }
-    .pc-step.done    .pc-step-label { color: var(--fire); }
-    .pc-step.current .pc-step-label { color: var(--fire-bright); font-weight: 700; }
-    .pc-step-line {
-      flex: 1;
-      height: 2px;
-      background: var(--hairline);
-      margin-top: 3px; /* align with dot center */
-      min-width: 12px;
-    }
-    .pc-step-line.done { background: var(--fire); }
 
-    /* 이적료 + 출처 한 줄 */
-    .pc-meta {
+    /* 이적료 — 작은 인라인 뱃지 */
+    .tc-fee-row {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
+      margin-bottom: 14px;
     }
-    .pc-source {
-      font-size: 11px;
-      color: var(--ink-tertiary);
-      font-weight: 500;
-      flex-shrink: 0;
-    }
-    .pc-source strong { color: var(--fire-bright); font-weight: 700; }
-
-    /* 이전 이적 히스토리 */
-    .pc-history {
-      margin-top: 12px;
-      border-top: 1px solid var(--hairline);
-      padding-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-    .pc-history-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--ink-tertiary);
-      text-transform: uppercase;
-      letter-spacing: .4px;
-      margin-bottom: 2px;
-    }
-    .pc-history-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 8px;
-      background: var(--surface-2);
-      border-radius: var(--r-sm);
-    }
-    .pc-history-text {
-      font-size: 12px;
-      color: var(--ink-muted);
-      flex: 1;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .pc-history-date { font-size: 11px; color: var(--ink-tertiary); flex-shrink: 0; }
-
-    /* 이적료 칩 (공통) */
     .tc-fee-chip {
       display: inline-flex;
       align-items: center;
+      gap: 5px;
       padding: 3px 10px;
       background: rgba(255,107,0,.1);
       border: 1px solid rgba(255,107,0,.2);
@@ -397,20 +321,57 @@
       color: var(--ink-tertiary);
       font-weight: 500;
     }
-
-    /* 세부설명 */
-    .tc-detail {
+    .tc-fee-label {
+      font-size: 10px;
+      color: var(--ink-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .tc-source-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: var(--fire-dim);
+      border-left: 3px solid var(--fire-bright);
+      border-radius: 0 6px 6px 0;
+    }
+    .tc-source-icon {
       font-size: 13px;
+      flex-shrink: 0;
+    }
+    .tc-source-label {
+      font-size: 10px;
+      color: var(--ink-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      flex-shrink: 0;
+    }
+    .tc-source-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--fire-bright);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 세부설명 — 메인 본문처럼 크게 */
+    .tc-detail {
+      font-size: 14px;
       line-height: 1.7;
       color: var(--ink-muted);
       white-space: pre-line;
       word-break: break-word;
     }
     .tc-detail-empty {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--ink-tertiary);
       font-style: italic;
     }
+
+    /* 더 보기 / 접기 버튼 */
     .tc-expand-btn {
       display: inline-flex;
       align-items: center;
@@ -427,6 +388,17 @@
       transition: color .14s;
     }
     .tc-expand-btn:hover { color: var(--fire); }
+
+    .tc-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--hairline);
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--ink-tertiary);
+    }
 
     /* HOT BADGE */
     .badge-fire {
@@ -456,25 +428,14 @@
     }
 
     /* ══════════════════════════════════
-       NEWS SIDEBAR
+       NEWS SECTION
     ══════════════════════════════════ */
-    .news-sidebar {
-      position: sticky;
-      top: 72px;
-      max-height: calc(100vh - 88px);
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,107,0,.2) transparent;
-    }
-    .news-sidebar::-webkit-scrollbar { width: 4px; }
-    .news-sidebar::-webkit-scrollbar-thumb { background: rgba(255,107,0,.2); border-radius: 2px; }
-    .news-sidebar-header {
-      margin-bottom: 14px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--hairline);
+    .news-section { margin-top: 72px; }
+    .news-section-header {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: space-between;
+      margin-bottom: 28px;
     }
     .news-eyebrow {
       font-size: 11px;
@@ -498,9 +459,9 @@
     }
 
     .news-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
     }
 
     /* clickable news card */
@@ -603,23 +564,6 @@
       font-size: 12px;
       color: var(--ink-tertiary);
     }
-
-    /* 사이드바 뉴스 카드 — 가로형 */
-    .news-sidebar .fire-news-card {
-      flex-direction: row;
-      align-items: stretch;
-    }
-    .news-sidebar .fnc-thumb {
-      width: 80px;
-      aspect-ratio: unset;
-      border-bottom: none;
-      border-right: 1px solid var(--hairline);
-      flex-shrink: 0;
-    }
-    .news-sidebar .fnc-body { padding: 10px 12px; }
-    .news-sidebar .fnc-title { font-size: 13px; margin-bottom: 4px; }
-    .news-sidebar .fnc-desc { -webkit-line-clamp: 1; margin-bottom: 8px; }
-    .news-sidebar .fnc-footer { padding-top: 8px; }
 
     /* ══════════════════════════════════
        ARTICLE MODAL
@@ -747,8 +691,8 @@
     ══════════════════════════════════ */
     .transfers-layout {
       display: grid;
-      grid-template-columns: 220px 1fr 300px;
-      gap: 24px;
+      grid-template-columns: 240px 1fr;
+      gap: 28px;
       align-items: start;
     }
 
@@ -956,28 +900,19 @@
     .ad-slot:empty { display: none; }
     .ad-slot ins { display: block; width: 100%; }
 
-    @media(max-width:1300px) {
-      .transfers-layout { grid-template-columns: 200px 1fr 260px; }
-    }
     @media(max-width:1100px) {
-      /* 뉴스 사이드바 숨기고 아래로 */
       .transfers-layout { grid-template-columns: 200px 1fr; }
-      .news-sidebar { position: static; max-height: none; overflow: visible; grid-column: 2; }
-      .news-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
-      .news-sidebar .fire-news-card { flex-direction: column; }
-      .news-sidebar .fnc-thumb { width: 100%; aspect-ratio: 16/9; border-right: none; border-bottom: 1px solid var(--hairline); }
-      .news-sidebar .fnc-body { padding: 14px; }
+    }
+    @media(max-width:1024px) {
+      .transfers-grid, .news-grid { grid-template-columns: repeat(2,1fr); }
+      .burn-stats { gap: 16px; }
     }
     @media(max-width:860px) {
       .transfers-layout { grid-template-columns: 1fr; }
       .team-sidebar { position: static; max-height: 300px; }
-      .news-sidebar { grid-column: 1; }
-      .news-grid { grid-template-columns: 1fr; }
-      .transfers-grid { grid-template-columns: repeat(2,1fr); }
-      .burn-stats { gap: 16px; }
     }
-    @media(max-width:600px) {
-      .transfers-grid { grid-template-columns: 1fr; }
+    @media(max-width:768px) {
+      .transfers-grid, .news-grid { grid-template-columns: 1fr; }
       .burn-title { letter-spacing: -1px; }
       .burn-stats { gap: 12px; }
       .article-overlay { padding: 60px 12px 24px; }
@@ -1084,20 +1019,23 @@
         <!-- TRANSFERS GRID -->
         <div class="transfers-grid" id="transfersGrid"></div>
 
-      </div><!-- /transfers-main -->
-
-      <!-- ─── NEWS SIDEBAR ─── -->
-      <aside class="news-sidebar">
-        <div class="news-sidebar-header">
-          <div class="news-eyebrow">
-            🔥 관련 기사
-            <span class="news-count-badge" id="newsCount"></span>
+        <!-- NEWS SECTION -->
+        <div class="news-section">
+          <!-- AD SLOT 2: 뉴스 섹션 상단 -->
+          <div class="ad-slot" id="adSlot2" style="margin-bottom:28px;"></div>
+          <div class="news-section-header">
+            <div>
+              <div class="news-eyebrow">
+                🔥 이적 뉴스
+                <span class="news-count-badge" id="newsCount"></span>
+              </div>
+              <h2 class="t-headline" style="color:var(--ink);">관련 기사</h2>
+            </div>
+            <span style="font-size:12px;color:var(--ink-tertiary);">클릭하면 전문을 볼 수 있습니다</span>
           </div>
-          <span style="font-size:11px;color:var(--ink-tertiary);">클릭 → 전문 보기</span>
+          <div class="news-grid" id="newsGrid"></div>
         </div>
-        <div class="ad-slot" id="adSlot2"></div>
-        <div class="news-grid" id="newsGrid"></div>
-      </aside>
+      </div><!-- /transfers-main -->
 
     </div><!-- /transfers-layout -->
   </div>
@@ -1607,87 +1545,6 @@ function teamMatch(t, name) {
          n.includes(from.split(' ')[0]) || n.includes(to.split(' ')[0]);
 }
 
-/* 뱃지 → 진행 단계 (1=루머, 2=협상, 3=확정) */
-function stageFromBadge(badge) {
-  if (badge === 'rumor')    return 1;
-  if (badge === 'official') return 2;
-  if (badge === 'done')     return 3;
-  return 1;
-}
-
-/* 선수 카드 HTML 생성 */
-function playerCardHtml(events) {
-  const main  = events[0];
-  const bm    = BADGE_MAP[main.badge] || { cls:'badge-result', label:main.badge, accent:'' };
-  const fee   = main.fee && main.fee !== '-' ? main.fee : null;
-  const stage = stageFromBadge(main.badge);
-  const STAGES = ['루머', '협상', '확정'];
-
-  // 진행 상태 바
-  const progressHtml = `
-    <div class="pc-progress">
-      ${STAGES.map((s, i) => {
-        const done    = i + 1 < stage;
-        const current = i + 1 === stage;
-        const line = i < 2 ? `<div class="pc-step-line${done || (current && stage > i+1) ? ' done' : ''}"></div>` : '';
-        return `
-          <div class="pc-step${done ? ' done' : ''}${current ? ' current' : ''}">
-            <div class="pc-step-dot"></div>
-            <div class="pc-step-label">${s}</div>
-          </div>${line}`;
-      }).join('')}
-    </div>`;
-
-  // 이전 이적 히스토리 (같은 선수 2번째 이상 항목)
-  const historyHtml = events.length > 1 ? `
-    <div class="pc-history">
-      <div class="pc-history-label">이전 업데이트</div>
-      ${events.slice(1).map(e => {
-        const ebm = BADGE_MAP[e.badge] || { cls:'badge-result', label:e.badge };
-        return `
-        <div class="pc-history-item">
-          <span class="${ebm.cls}" style="font-size:10px;padding:1px 7px;flex-shrink:0;">${ebm.label}</span>
-          <span class="pc-history-text">${e.detail ? e.detail.slice(0, 55) + '…' : (e.from + ' → ' + e.to)}</span>
-          <span class="pc-history-date">${e.date || ''}</span>
-        </div>`;
-      }).join('')}
-    </div>` : '';
-
-  return `
-    <div class="pc">
-      <div class="pc-accent ${bm.accent}"></div>
-      <div class="pc-head">
-        <span class="${bm.cls}">${bm.label}</span>
-        <span class="pc-date">${main.date || ''}</span>
-      </div>
-      <div class="pc-body">
-        <div class="pc-player">${main.player}</div>
-        <div class="pc-transfer">
-          <div class="pc-club">
-            <div class="pc-club-label">이전</div>
-            <div class="pc-club-name">${main.from || '—'}</div>
-          </div>
-          <div class="pc-arrow">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M3 10h14M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="pc-club pc-club-to">
-            <div class="pc-club-label">이적</div>
-            <div class="pc-club-name">${main.to || '—'}</div>
-          </div>
-        </div>
-        ${progressHtml}
-        <div class="pc-meta">
-          <span class="tc-fee-chip${fee ? '' : ' unknown'}">${fee || '미공개'}</span>
-          ${main.source ? `<span class="pc-source">📰 <strong>${main.source}</strong></span>` : ''}
-        </div>
-        ${tcDetailHtml(main.detail)}
-        ${historyHtml}
-      </div>
-    </div>`;
-}
-
 function renderTransfers() {
   const all      = _data.transfers || [];
   let   filtered = activeFilter === 'all' ? all : all.filter(t => t.badge === activeFilter);
@@ -1704,21 +1561,54 @@ function renderTransfers() {
     return;
   }
 
-  // 선수 기준으로 그룹핑
-  const grouped = {};
-  filtered.forEach(t => {
-    const key = (t.player || '').trim().toLowerCase() || '__unknown' + Math.random();
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(t);
-  });
-
-  // 각 그룹 내 최신순 정렬 후 카드 생성
-  grid.innerHTML = Object.values(grouped)
-    .map(events => {
-      events.sort((a, b) => (b.date || '') > (a.date || '') ? 1 : -1);
-      return playerCardHtml(events);
-    })
-    .join('');
+  grid.innerHTML = filtered.map(t => {
+    const bm  = BADGE_MAP[t.badge] || { cls:'badge-result', label:t.badge, accent:'' };
+    const fee = t.fee && t.fee !== '-' ? t.fee : null;
+    return `
+      <div class="tc">
+        <div class="tc-accent ${bm.accent}"></div>
+        <div class="tc-head">
+          <span class="${bm.cls}">${bm.label}</span>
+          <span style="font-size:11px;color:var(--ink-tertiary);">${t.date || ''}</span>
+        </div>
+        <div class="tc-body">
+          <div class="tc-player">${t.player}</div>
+          <div class="tc-clubs">
+            <div class="tc-club">
+              <div class="tc-club-label">이전 클럽</div>
+              <div class="tc-club-name">${t.from}</div>
+            </div>
+            <div class="tc-arrow">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <path d="M4 11h14M11 5l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="tc-club" style="align-items:flex-end;">
+              <div class="tc-club-label">이적 클럽</div>
+              <div class="tc-club-name">${t.to}</div>
+            </div>
+          </div>
+          <!-- 이적료 — 작은 뱃지 -->
+          <div class="tc-fee-row">
+            <span class="tc-fee-label">이적료</span>
+            <span class="tc-fee-chip${fee ? '' : ' unknown'}">${fee || '미공개'}</span>
+          </div>
+          <!-- 세부설명 — 메인 본문 (길면 접힘) -->
+          ${tcDetailHtml(t.detail)}
+          <!-- 출처 -->
+          ${t.source ? `
+          <div class="tc-source-row">
+            <span class="tc-source-icon">📰</span>
+            <span class="tc-source-label">출처</span>
+            <span class="tc-source-name">${t.source}</span>
+          </div>` : ''}
+        </div>
+        <div class="tc-footer">
+          <span>${t.type || ''}</span>
+          <span style="color:var(--ink-tertiary);">${t.date || ''}</span>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 /* ════════════════════════════════════════
