@@ -8,56 +8,68 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/kickoff.css" />
   <style>
-    /* ── Transfers page ── */
     .transfers-hero { padding:calc(56px + 48px) 0 40px; }
 
-    /* Window banner */
     .window-banner { display:flex; align-items:center; gap:16px; padding:16px 24px; background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); margin-top:24px; }
     .window-icon { width:40px; height:40px; border-radius:var(--r-md); background:rgba(94,106,210,.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .window-info h3 { font-size:14px; font-weight:600; margin-bottom:3px; }
     .window-info p { font-size:12px; color:var(--ink-subtle); }
     .window-badge { margin-left:auto; }
 
-    /* Filter bar */
     .filter-bar { display:flex; align-items:center; gap:8px; margin:28px 0 0; flex-wrap:wrap; }
     .filter-label { font-size:12px; font-weight:500; color:var(--ink-tertiary); text-transform:uppercase; letter-spacing:.4px; margin-right:4px; flex-shrink:0; }
 
-    /* Transfers grid */
-    .transfers-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:32px; }
-    .transfer-big { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); overflow:hidden; transition:background .15s,border-color .15s; position:relative; }
-    .transfer-big::before { content:''; position:absolute; inset:0 0 auto; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent); pointer-events:none; }
-    .transfer-big:hover { background:var(--surface-2); border-color:var(--hairline-strong); }
-    .tb-head { padding:16px 20px 0; display:flex; align-items:center; justify-content:space-between; }
-    .tb-body { padding:20px; }
-    .tb-player { font-size:20px; font-weight:700; letter-spacing:-.5px; margin-bottom:14px; }
-    .tb-clubs { display:flex; align-items:center; gap:10px; margin-bottom:16px; padding:14px 16px; background:var(--surface-2); border-radius:var(--r-md); border:1px solid var(--hairline); }
-    .tb-club { display:flex; flex-direction:column; gap:2px; flex:1; }
-    .tb-club-name { font-size:13px; font-weight:600; color:var(--ink); }
-    .tb-club-label { font-size:11px; color:var(--ink-tertiary); }
-    .tb-arrow { color:var(--ink-tertiary); flex-shrink:0; }
-    /* Stats Row & Detail Box */
-    .tb-stats-row { display:flex; gap:8px; margin-top:14px; }
-    .tb-stat-item { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); flex:1; }
-    .tb-stat-label { font-size:11px; color:var(--ink-tertiary); font-weight:500; text-transform:uppercase; letter-spacing:.4px; }
-    .tb-stat-val { font-size:13px; font-weight:600; color:var(--ink-muted); }
-    .tb-stat-val.highlight { color:var(--warn); }
+    /* ── 게시판 목록 ── */
+    .transfer-board { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); overflow:hidden; margin-top:28px; }
+    .board-header { display:grid; grid-template-columns:80px 1fr 120px 90px 80px; gap:0; padding:10px 20px; background:var(--surface-2); border-bottom:1px solid var(--hairline); }
+    .board-header span { font-size:11px; font-weight:500; color:var(--ink-tertiary); text-transform:uppercase; letter-spacing:.4px; }
+    .board-header .col-title { padding-left:4px; }
 
-    .tb-detail-box { padding:12px 14px; background:rgba(255,255,255,0.02); border:1px solid var(--hairline); border-left:3px solid var(--primary); border-radius:var(--r-md); margin-top:12px; }
-    .tb-detail-label { font-size:10px; color:var(--primary-hover); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
-    .tb-detail-content { font-size:13px; line-height:1.6; color:var(--ink-muted); word-break:keep-all; overflow-wrap:break-word; }
+    .board-row { border-bottom:1px solid var(--hairline); cursor:pointer; transition:background .12s; }
+    .board-row:last-child { border-bottom:none; }
+    .board-row.open { background:var(--surface-2); }
+    .board-row:hover:not(.open) { background:rgba(255,255,255,.025); }
 
-    .tb-footer { padding:12px 20px; border-top:1px solid var(--hairline); background:var(--surface-2); display:flex; align-items:center; justify-content:flex-end; }
-    .tb-type { font-size:12px; color:var(--ink-subtle); }
+    .board-row-main { display:grid; grid-template-columns:80px 1fr 120px 90px 80px; gap:0; padding:14px 20px; align-items:center; }
+    .col-badge { display:flex; align-items:center; }
+    .col-title-cell { display:flex; flex-direction:column; gap:3px; padding:0 12px; }
+    .col-title-cell .player-name { font-size:14px; font-weight:600; color:var(--ink); letter-spacing:-.2px; }
+    .col-title-cell .move-line { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-subtle); }
+    .col-fee { font-size:13px; font-weight:600; color:var(--warn); }
+    .col-type { font-size:12px; color:var(--ink-subtle); }
+    .col-time { font-size:12px; color:var(--ink-tertiary); text-align:right; }
 
-    /* Transfer news section */
-    .transfer-news-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:32px; }
+    /* ── 상세 패널 (펼치기) ── */
+    .board-detail { display:none; padding:20px 24px 24px; border-top:1px solid var(--hairline); background:var(--surface-2); }
+    .board-row.open .board-detail { display:block; }
 
-    /* Empty state */
+    .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+    .detail-item { background:var(--surface-3); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px 16px; }
+    .detail-item-label { font-size:11px; color:var(--ink-tertiary); font-weight:500; text-transform:uppercase; letter-spacing:.4px; margin-bottom:5px; }
+    .detail-item-val { font-size:14px; font-weight:600; color:var(--ink); }
+    .detail-clubs { display:flex; align-items:center; gap:12px; background:var(--surface-3); border:1px solid var(--hairline); border-radius:var(--r-md); padding:14px 18px; margin-bottom:12px; }
+    .detail-club { flex:1; }
+    .detail-club-label { font-size:11px; color:var(--ink-tertiary); margin-bottom:4px; }
+    .detail-club-name { font-size:15px; font-weight:700; color:var(--ink); }
+    .detail-arrow { color:var(--ink-tertiary); flex-shrink:0; }
+    .detail-body { font-size:13px; line-height:1.7; color:var(--ink-muted); padding:14px 16px; background:rgba(94,106,210,.06); border:1px solid rgba(94,106,210,.15); border-left:3px solid var(--primary); border-radius:var(--r-md); word-break:keep-all; }
+    .detail-body-label { font-size:10px; color:var(--primary-hover); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+
+    /* 뉴스 링크 배너 */
+    .news-cta { display:flex; align-items:center; justify-content:space-between; padding:16px 24px; background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-lg); margin-top:32px; }
+    .news-cta-text h3 { font-size:14px; font-weight:600; margin-bottom:3px; }
+    .news-cta-text p { font-size:12px; color:var(--ink-subtle); }
+
     .empty-state { padding:64px 0; text-align:center; color:var(--ink-tertiary); }
     .empty-state h3 { font-size:16px; font-weight:500; margin-bottom:8px; color:var(--ink-subtle); }
 
-    @media(max-width:1024px) { .transfers-grid,.transfer-news-grid { grid-template-columns:repeat(2,1fr); } }
-    @media(max-width:768px)  { .transfers-grid,.transfer-news-grid { grid-template-columns:1fr; } }
+    @media(max-width:768px) {
+      .board-header { grid-template-columns:72px 1fr 80px; }
+      .board-header .col-type-h, .board-header .col-time-h { display:none; }
+      .board-row-main { grid-template-columns:72px 1fr 80px; }
+      .col-type, .col-time { display:none; }
+      .detail-grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
@@ -114,18 +126,28 @@
 
 <section class="section" style="padding-top:0;">
   <div class="wrap">
-    <div class="transfers-grid" id="transfersGrid"></div>
 
-    <!-- Transfer news -->
-    <div style="margin-top:56px;">
-      <div class="section-header-row">
-        <div>
-          <div class="eyebrow-label">이적 뉴스</div>
-          <h2 class="t-headline">관련 기사</h2>
-        </div>
+    <!-- 게시판 -->
+    <div class="transfer-board" id="transferBoard">
+      <div class="board-header">
+        <span>상태</span>
+        <span class="col-title">선수 / 이적</span>
+        <span>이적료</span>
+        <span class="col-type-h">유형</span>
+        <span class="col-time-h" style="text-align:right;">날짜</span>
       </div>
-      <div class="transfer-news-grid" id="transferNews"></div>
+      <div id="boardBody"></div>
     </div>
+
+    <!-- 관련기사 링크 -->
+    <div class="news-cta" id="newsCta" style="display:none;">
+      <div class="news-cta-text">
+        <h3>관련 기사</h3>
+        <p>이적 시장 관련 최신 기사 모아보기</p>
+      </div>
+      <a href="/kickoff/transfer-news" class="btn btn-secondary btn-sm">기사 보러 가기 →</a>
+    </div>
+
   </div>
 </section>
 
@@ -153,110 +175,115 @@
 
 <script>
 const BADGE_MAP = {
-  official:['badge-new','공식 발표'], rumor:['badge-result','루머'], done:['badge-green','완료'],
-  new:['badge-new','새 기사'], transfer:['badge-result','이적'], analysis:['badge-result','분석'],
-  result:['badge-result','결과'], national:['badge-green','대표팀'],
+  official: ['badge-new',    '공식 발표'],
+  rumor:    ['badge-result', '루머'],
+  done:     ['badge-green',  '완료'],
 };
 const FILTERS = [
-  { key:'all', label:'전체' },
+  { key:'all',      label:'전체' },
   { key:'official', label:'공식 발표' },
-  { key:'rumor', label:'루머' },
-  { key:'done', label:'완료' },
+  { key:'rumor',    label:'루머' },
+  { key:'done',     label:'완료' },
 ];
+const ARROW = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
 let activeFilter = 'all';
 let _data = null;
+let _openIdx = null;
 
 async function load() {
   const r = await fetch('/api/data');
   _data = await r.json();
   renderFilterBar();
-  renderTransfers();
-  renderTransferNews();
+  renderBoard();
+
+  const hasNews = (_data.news || []).some(n => n.badge === 'transfer');
+  if (hasNews) document.getElementById('newsCta').style.display = 'flex';
 }
 
 function renderFilterBar() {
   document.getElementById('filterBar').innerHTML =
     `<span class="filter-label">상태</span>` +
-    FILTERS.map(f => `<div class="chip${f.key===activeFilter?' active':''}" onclick="setFilter('${f.key}')">${f.label}</div>`).join('');
+    FILTERS.map(f =>
+      `<div class="chip${f.key === activeFilter ? ' active' : ''}" onclick="setFilter('${f.key}')">${f.label}</div>`
+    ).join('');
 }
 
 function setFilter(key) {
   activeFilter = key;
+  _openIdx = null;
   renderFilterBar();
-  renderTransfers();
+  renderBoard();
 }
 
-function renderTransfers() {
+function renderBoard() {
   const all = _data.transfers || [];
-  const filtered = activeFilter === 'all' ? all : all.filter(t => t.badge === activeFilter);
+  const list = activeFilter === 'all' ? all : all.filter(t => t.badge === activeFilter);
 
-  if (!filtered.length) {
-    document.getElementById('transfersGrid').innerHTML =
-      `<div class="empty-state" style="grid-column:1/-1;"><h3>해당 조건의 이적 정보가 없습니다.</h3><p>다른 필터를 선택해보세요.</p></div>`;
+  if (!list.length) {
+    document.getElementById('boardBody').innerHTML =
+      `<div class="empty-state"><h3>해당 조건의 이적 정보가 없습니다.</h3><p>다른 필터를 선택해보세요.</p></div>`;
     return;
   }
 
-  document.getElementById('transfersGrid').innerHTML = filtered.map(t => {
+  document.getElementById('boardBody').innerHTML = list.map((t, i) => {
     const [bc, bt] = BADGE_MAP[t.badge] || ['badge-result', t.badge];
+    const isOpen = _openIdx === i;
     return `
-      <div class="transfer-big">
-        <div class="tb-head">
-          <span class="badge ${bc}">${bt}</span>
+      <div class="board-row${isOpen ? ' open' : ''}" id="row-${i}">
+        <div class="board-row-main" onclick="toggleRow(${i})">
+          <div class="col-badge"><span class="badge ${bc}">${bt}</span></div>
+          <div class="col-title-cell">
+            <div class="player-name">${t.player}</div>
+            <div class="move-line">
+              <span>${t.from}</span>
+              ${ARROW}
+              <span style="color:var(--ink-muted);font-weight:500;">${t.to}</span>
+            </div>
+          </div>
+          <div class="col-fee">${t.fee}</div>
+          <div class="col-type">${t.type}</div>
+          <div class="col-time">${t.date || ''}</div>
         </div>
-        <div class="tb-body">
-          <div class="tb-player">${t.player}</div>
-          <div class="tb-clubs">
-            <div class="tb-club">
-              <div class="tb-club-label">이전</div>
-              <div class="tb-club-name">${t.from}</div>
+        <div class="board-detail">
+          <div class="detail-clubs">
+            <div class="detail-club">
+              <div class="detail-club-label">이전 클럽</div>
+              <div class="detail-club-name">${t.from}</div>
             </div>
-            <div class="tb-arrow">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div class="tb-club" style="align-items:flex-end;">
-              <div class="tb-club-label">이적</div>
-              <div class="tb-club-name">${t.to}</div>
+            <div class="detail-arrow">${ARROW}</div>
+            <div class="detail-club" style="text-align:right;">
+              <div class="detail-club-label">이적 클럽</div>
+              <div class="detail-club-name">${t.to}</div>
             </div>
           </div>
-          <div class="tb-stats-row">
-            <div class="tb-stat-item">
-              <span class="tb-stat-label">이적료</span>
-              <span class="tb-stat-val highlight">${t.fee}</span>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="detail-item-label">이적료</div>
+              <div class="detail-item-val" style="color:var(--warn);">${t.fee}</div>
             </div>
-            <div class="tb-stat-item">
-              <span class="tb-stat-label">이적 유형</span>
-              <span class="tb-stat-val">${t.type}</span>
+            <div class="detail-item">
+              <div class="detail-item-label">유형</div>
+              <div class="detail-item-val">${t.type}</div>
             </div>
           </div>
-          <div class="tb-detail-box">
-            <div class="tb-detail-label">세부사항</div>
-            <p class="tb-detail-content">${t.detail}</p>
-          </div>
-        </div>
-        <div class="tb-footer">
-          <a href="#" style="font-size:12px;color:var(--primary);font-weight:500;">자세히 보기 →</a>
+          ${t.detail ? `
+          <div class="detail-body">
+            <div class="detail-body-label">세부사항</div>
+            ${t.detail}
+          </div>` : ''}
         </div>
       </div>`;
   }).join('');
 }
 
-function renderTransferNews() {
-  const news = (_data.news || []).filter(n => n.badge === 'transfer');
-  if (!news.length) { document.getElementById('transferNews').style.display='none'; return; }
-  const NEWS_SVG = `<svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="5" y="5" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M9 10h10M9 14h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
-  document.getElementById('transferNews').innerHTML = news.map(n => `
-    <article class="news-card">
-      <div class="news-thumb"><div class="news-thumb-inner">${NEWS_SVG}</div></div>
-      <div class="news-body">
-        <div class="news-category">${n.category}</div>
-        <div class="news-title">${n.title}</div>
-        <div class="news-desc">${n.desc}</div>
-        <div class="news-footer">
-          <span class="badge badge-result">이적</span>
-          <span>${n.time}</span>
-        </div>
-      </div>
-    </article>`).join('');
+function toggleRow(i) {
+  _openIdx = _openIdx === i ? null : i;
+  renderBoard();
+  if (_openIdx !== null) {
+    const el = document.getElementById(`row-${i}`);
+    if (el) el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
 }
 
 load();
