@@ -23,144 +23,146 @@
       0%,100% { opacity:1; transform:scale(1); }
       50%      { opacity:.45; transform:scale(.7); }
     }
+    @keyframes heroFlicker {
+      0%   { opacity:.8; }
+      50%  { opacity:1; }
+      100% { opacity:.85; }
+    }
+    @keyframes ticker { from{transform:translateX(0);}to{transform:translateX(-50%);} }
 
     /* 속보 티커 */
-    .tl-ticker {
-      background: var(--fire);
-      padding: 0;
-      height: 32px;
-      display: flex;
-      align-items: center;
+    .fire-ticker {
+      background: rgba(255,107,0,.08);
+      border-bottom: 1px solid rgba(255,107,0,.18);
       overflow: hidden;
-      margin-top: 56px; /* nav height */
+      height: 36px;
+      display: flex;
+      align-items: center;
+      margin-top: 56px;
     }
-    .tl-ticker-label {
-      flex-shrink: 0;
-      padding: 0 14px;
+    .fire-ticker-label {
+      background: linear-gradient(135deg, var(--fire-hot), var(--fire));
+      color: #fff;
       font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1px;
+      font-weight: 700;
+      letter-spacing: .8px;
       text-transform: uppercase;
-      color: #fff;
-      background: rgba(0,0,0,.25);
+      padding: 0 14px;
       height: 100%;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
+      flex-shrink: 0;
     }
-    .tl-ticker-viewport { flex: 1; overflow: hidden; height: 100%; position: relative; }
-    .tl-ticker-track {
+    .ticker-viewport { flex:1; overflow:hidden; }
+    .fire-ticker-track {
       display: flex;
-      gap: 0;
+      align-items: center;
       white-space: nowrap;
-      animation: tickerScroll 28s linear infinite;
-      height: 100%;
-      align-items: center;
-    }
-    .tl-ticker-track:hover { animation-play-state: paused; }
-    @keyframes tickerScroll {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .tl-ticker-item {
+      padding-left: 24px;
+      gap: 48px;
       font-size: 12px;
-      font-weight: 600;
-      color: #fff;
-      padding: 0 20px;
-      opacity: .92;
+      color: rgba(255,149,0,.9);
+      animation: ticker 28s linear infinite;
     }
-    .tl-ticker-sep { color: rgba(255,255,255,.4); padding: 0 4px; }
+    .fire-ticker-track span { flex-shrink:0; }
+    .fire-ticker-sep { color: rgba(255,107,0,.3); }
 
     /* 히어로 */
-    .tl-hero {
-      padding: 22px 0 20px;
-      border-bottom: 1px solid var(--hairline);
+    .burn-hero {
+      position: relative;
+      padding: calc(64px) 0 60px;
+      overflow: hidden;
       background: var(--canvas);
     }
-    .tl-hero-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
+    .burn-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 120%, rgba(255,107,0,.22) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 40% at 20% 80%,  rgba(239,68,68,.14) 0%, transparent 55%),
+        radial-gradient(ellipse 30% 30% at 80% 90%,  rgba(251,191,36,.1) 0%, transparent 50%);
+      animation: heroFlicker 4s ease-in-out infinite alternate;
+      pointer-events: none;
     }
-    .tl-hero-left { display: flex; align-items: center; gap: 16px; }
-    .tl-hero-badge {
-      display: flex;
+    .burn-hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--fire) 30%, var(--ember) 50%, var(--fire) 70%, transparent 100%);
+      opacity: .5;
+    }
+    .burn-eyebrow {
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      background: var(--fire-dim);
-      border: 1px solid rgba(255,107,0,.25);
-      border-radius: var(--r-pill);
+      gap: 8px;
       font-size: 11px;
       font-weight: 700;
-      color: var(--fire-bright);
-      letter-spacing: .4px;
-      white-space: nowrap;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--fire);
+      margin-bottom: 20px;
     }
-    .tl-live-dot {
-      width: 6px; height: 6px;
+    .burn-eyebrow-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--fire-hot);
+      box-shadow: 0 0 8px var(--fire-hot);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    .burn-title {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #fff 0%, #ffb347 40%, var(--fire) 70%, var(--fire-hot) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .burn-sub {
+      font-size: 15px;
+      color: var(--ink-subtle);
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .window-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      background: rgba(255,107,0,.08);
+      border: 1px solid rgba(255,107,0,.22);
+      border-radius: var(--r-pill);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .window-status-dot {
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--fire);
-      animation: pulse 1.6s ease-in-out infinite;
-      flex-shrink: 0;
+      box-shadow: 0 0 10px var(--fire);
+      animation: pulse 1.2s ease-in-out infinite;
     }
-    .tl-hero-title {
-      font-size: clamp(22px, 3vw, 30px);
-      font-weight: 900;
-      letter-spacing: -1px;
-      color: var(--ink);
-      margin: 0;
-    }
-
-    /* 통계 칩 행 */
-    .tl-stat-row {
+    .window-status-text { color: var(--fire-bright); }
+    .window-status-date { color: var(--ink-tertiary); font-size: 12px; }
+    .window-status-sep  { color: rgba(255,107,0,.3); }
+    .burn-stats {
       display: flex;
-      align-items: center;
-      gap: 6px;
+      gap: 24px;
+      margin-top: 36px;
       flex-wrap: wrap;
     }
-    .tl-stat-chip {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 5px 12px;
-      background: var(--surface-1);
-      border: 1px solid var(--hairline);
-      border-radius: var(--r-pill);
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ink-muted);
-      white-space: nowrap;
-    }
-    .tl-stat-chip .sc-num {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--ink);
-    }
-    .tl-stat-chip.fire  { background: rgba(255,107,0,.08); border-color: rgba(255,107,0,.2); }
-    .tl-stat-chip.fire  .sc-num { color: var(--fire-bright); }
-    .tl-stat-chip.green { background: rgba(74,222,128,.07); border-color: rgba(74,222,128,.2); }
-    .tl-stat-chip.green .sc-num { color: #4ade80; }
-    .tl-stat-chip.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.2); }
-    .tl-stat-chip.amber .sc-num { color: var(--ember); }
-
-    /* 창구 상태 */
-    .tl-window-status {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 12px;
-      color: var(--ink-tertiary);
-      white-space: nowrap;
-    }
-    .tl-window-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: #4ade80;
-      flex-shrink: 0;
-    }
+    .burn-stat { display: flex; flex-direction: column; gap: 4px; }
+    .burn-stat-val { font-size: 28px; font-weight: 800; letter-spacing: -1px; color: var(--ink); }
+    .burn-stat-val.fire  { color: var(--fire); }
+    .burn-stat-val.ember { color: var(--ember); }
+    .burn-stat-label { font-size: 12px; color: var(--ink-tertiary); }
+    .burn-stat-divider { width: 1px; background: var(--hairline); align-self: stretch; }
 
     /* ── LAYOUT ── */
     .tl-layout {
@@ -515,37 +517,36 @@
 </nav>
 
 <!-- BREAKING TICKER -->
-<div class="tl-ticker">
-  <div class="tl-ticker-label">
+<div class="fire-ticker">
+  <div class="fire-ticker-label">
     <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>
     BREAKING
   </div>
-  <div class="tl-ticker-viewport">
-    <div class="tl-ticker-track" id="tlTicker">
-      <span class="tl-ticker-item">이적 뉴스 로딩 중...</span>
+  <div class="ticker-viewport">
+    <div class="fire-ticker-track" id="tlTicker">
+      <span>이적 뉴스 로딩 중...</span>
     </div>
   </div>
 </div>
 
 <!-- HERO -->
-<div class="tl-hero">
+<div class="burn-hero">
   <div class="wrap">
-    <div class="tl-hero-row">
-      <div class="tl-hero-left">
-        <div class="tl-hero-badge">
-          <div class="tl-live-dot"></div>
-          LIVE · 2026 이적시장
-        </div>
-        <h1 class="tl-hero-title">이적 뉴스</h1>
-      </div>
-      <div class="tl-window-status" id="tlWindowStatus">
-        <div class="tl-window-dot"></div>
-        <span>이적 창구 열림</span>
-        <span style="color:var(--hairline-strong);">·</span>
-        <span id="tlWindowDates">2026.06.01 ~ 2026.09.01</span>
-      </div>
+    <div class="burn-eyebrow">
+      <div class="burn-eyebrow-dot"></div>
+      <span>2026 SUMMER WINDOW · LIVE</span>
     </div>
-    <div class="tl-stat-row" id="tlStatRow" style="margin-top:14px;"></div>
+    <h1 class="burn-title">이적시장<br>뉴스</h1>
+    <p class="burn-sub">루머부터 공식 발표까지. 업데이트되면 바로 상위로 올라옵니다.</p>
+
+    <div class="window-status">
+      <div class="window-status-dot" id="windowDot"></div>
+      <span class="window-status-text" id="windowStatusText">이적 창구 열림</span>
+      <span class="window-status-sep">·</span>
+      <span class="window-status-date" id="windowDates">2026.06.01 개막 · 2026.09.01 마감</span>
+    </div>
+
+    <div class="burn-stats" id="burnStats"></div>
   </div>
 </div>
 
@@ -857,38 +858,40 @@ function renderList() {
   }).join('');
 }
 
-/* ── 통계 칩 렌더링 ── */
+/* ── burn stats 렌더링 ── */
 function renderStatChips() {
   const total    = _posts.length;
   const official = _posts.filter(p => p.badge === 'official').length;
   const rumor    = _posts.filter(p => p.badge === 'rumor').length;
   const done     = _posts.filter(p => p.badge === 'done').length;
-  document.getElementById('tlStatRow').innerHTML = [
-    { cls:'', num: total,    label: '총 이적 소식' },
-    { cls:'fire',  num: official, label: '공식 발표' },
-    { cls:'amber', num: rumor,    label: '루머' },
-    { cls:'green', num: done,     label: '완료' },
-  ].map(s => `
-    <div class="tl-stat-chip ${s.cls}">
-      <span class="sc-num">${s.num}</span>
-      <span>${s.label}</span>
+  const stats = [
+    { val: total,    label: '총 이적건',  cls: '' },
+    { val: official, label: '공식 발표',  cls: 'fire' },
+    { val: rumor,    label: '루머',       cls: '' },
+    { val: done,     label: '완료',       cls: '' },
+  ];
+  document.getElementById('burnStats').innerHTML = stats.map((s, i) => `
+    ${i > 0 ? '<div class="burn-stat-divider"></div>' : ''}
+    <div class="burn-stat">
+      <span class="burn-stat-val ${s.cls}">${s.val}</span>
+      <span class="burn-stat-label">${s.label}</span>
     </div>`).join('');
 }
 
 /* ── 티커 렌더링 ── */
 function renderTicker(posts, settings) {
-  const items = posts.filter(p => p.badge === 'official' || p.badge === 'done').slice(0, 8);
-  if (!items.length) { document.getElementById('tlTicker').innerHTML = '<span class="tl-ticker-item">이적시장 최신 소식</span>'; return; }
-  const html = items.map(p =>
-    `<span class="tl-ticker-item">${p.player} → ${p.to_team || '?'} (${p.fee || '미공개'})</span><span class="tl-ticker-sep">·</span>`
-  ).join('');
-  // 무한 루프를 위해 2번 복사
+  const items = posts.slice(0, 10);
+  const html = items.length
+    ? items.map(p =>
+        `<span>${p.player} — ${p.from_team||'?'} → ${p.to_team||'?'} (${p.fee||'미공개'})</span><span class="fire-ticker-sep">·</span>`
+      ).join('')
+    : '<span>이적시장 최신 소식</span>';
   document.getElementById('tlTicker').innerHTML = html + html;
 
-  // 창구 상태 업데이트
+  // 창구 상태 반영
   const w = settings?.window || {};
-  if (w.statusText) document.querySelector('#tlWindowStatus span').textContent = w.statusText;
-  if (w.dates) document.getElementById('tlWindowDates').textContent = w.dates;
+  if (w.statusText) document.getElementById('windowStatusText').textContent = w.statusText;
+  if (w.dates)      document.getElementById('windowDates').textContent = w.dates;
 }
 
 /* ── 데이터 로드 (새 DB + 기존 content JSON 병합) ── */
