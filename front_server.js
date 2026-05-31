@@ -466,6 +466,28 @@ app.get('/api/auth/kakao', requireAuth, async (req, res) => {
   res.redirect(`${KAKAO_AUTH_URL}?${params}`);
 });
 
+// 카카오 연결 완전 해제 (unlink) → 재동의를 위해
+app.get('/api/auth/kakao/reset', requireAuth, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT kakao_access_token FROM users WHERE id=$1', [req.session.userId]);
+    const token = rows[0]?.kakao_access_token;
+    if (token) {
+      try {
+        await fetch('https://kapi.kakao.com/v1/user/unlink', {
+          method: 'POST', headers: { 'Authorization': `Bearer ${token}` },
+        });
+      } catch (_) {}
+    }
+    await pool.query(
+      `UPDATE users SET kakao_id=NULL, kakao_access_token=NULL, kakao_refresh_token=NULL,
+         kakao_token_expires=NULL, kakao_notify=false WHERE id=$1`,
+      [req.session.userId]
+    );
+  } catch (e) { console.error('[Kakao reset]', e.message); }
+  // 해제 직후 바로 재연결 동의 화면으로
+  res.redirect('/api/auth/kakao');
+});
+
 // 카카오 콜백 → 토큰 저장
 app.get('/api/auth/kakao/callback', requireAuth, async (req, res) => {
   const { code, state, error } = req.query;
