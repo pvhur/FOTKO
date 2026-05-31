@@ -233,6 +233,25 @@
     .transfer-bottom input:focus { background:var(--surface-3); border-radius:var(--r-sm); padding:2px 6px; }
     .transfer-bottom input::placeholder { color:var(--ink-tertiary); }
 
+    /* ── 팀 피커 ── */
+    .tp-wrap { position:relative; }
+    .tp-input-row { display:flex; gap:4px; align-items:center; }
+    .tp-input-row input { flex:1; min-width:0; }
+    .tp-btn { flex-shrink:0; background:var(--surface-3); border:1px solid var(--hairline); border-radius:var(--r-sm); padding:5px 8px; color:var(--ink-subtle); font-size:11px; font-weight:600; cursor:pointer; transition:background .12s, color .12s; white-space:nowrap; }
+    .tp-btn:hover { background:rgba(94,106,210,.15); color:var(--primary-hover); border-color:rgba(94,106,210,.3); }
+    .tp-dropdown { position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:999; background:var(--surface-2); border:1px solid var(--hairline-strong); border-radius:var(--r-lg); box-shadow:0 12px 40px rgba(0,0,0,.6); display:none; min-width:280px; }
+    .tp-dropdown.open { display:block; }
+    .tp-league-tabs { display:flex; border-bottom:1px solid var(--hairline); overflow-x:auto; scrollbar-width:none; }
+    .tp-league-tabs::-webkit-scrollbar { display:none; }
+    .tp-ltab { flex-shrink:0; padding:7px 10px; font-size:10px; font-weight:700; color:var(--ink-tertiary); cursor:pointer; border-bottom:2px solid transparent; transition:color .12s; letter-spacing:.3px; text-transform:uppercase; }
+    .tp-ltab:hover { color:var(--ink-muted); }
+    .tp-ltab.active { color:var(--primary-hover); border-bottom-color:var(--primary); }
+    .tp-team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; padding:8px; max-height:200px; overflow-y:auto; scrollbar-width:thin; }
+    .tp-team-btn { display:flex; align-items:center; gap:6px; padding:5px 7px; border-radius:var(--r-sm); border:1px solid var(--hairline); background:var(--surface-3); color:var(--ink-subtle); font-size:11px; font-weight:500; cursor:pointer; transition:background .1s, color .1s, border-color .1s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .tp-team-btn:hover { background:rgba(94,106,210,.15); color:var(--primary-hover); border-color:rgba(94,106,210,.3); }
+    .tp-team-logo { width:14px; height:14px; object-fit:contain; flex-shrink:0; }
+    .tp-team-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
     /* ── ⑤ USERS SECTION ── */
     .user-list { display:flex; flex-direction:column; gap:8px; }
     .user-row { background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px 16px; display:flex; align-items:center; gap:14px; transition:border-color .12s; }
@@ -616,6 +635,90 @@ const BADGE_OPTS = ['new','transfer','analysis','result','national','official','
 const BADGE_LABEL = { new:'새 기사', transfer:'이적', analysis:'분석', result:'결과', national:'대표팀', official:'공식', rumor:'루머', done:'완료' };
 const TIER_OPTS = ['cl','uel','rel','def'];
 
+/* ════════════════════════════════════════
+   빅5 리그 팀 데이터 (팀 피커용)
+════════════════════════════════════════ */
+const LOGO = id => `https://media.api-sports.io/football/teams/${id}.png`;
+const BIG5 = [
+  { id:'pl', label:'PL', teams:[
+    {id:42,n:'Arsenal'},{id:66,n:'Aston Villa'},{id:35,n:'Bournemouth'},{id:55,n:'Brentford'},
+    {id:51,n:'Brighton'},{id:49,n:'Chelsea'},{id:52,n:'Crystal Palace'},{id:45,n:'Everton'},
+    {id:36,n:'Fulham'},{id:46,n:'Leicester'},{id:40,n:'Liverpool'},{id:50,n:'Man City'},
+    {id:33,n:'Man United'},{id:34,n:'Newcastle'},{id:65,n:'Nottm Forest'},{id:47,n:'Tottenham'},
+    {id:48,n:'West Ham'},{id:39,n:'Wolves'} ]},
+  { id:'ll', label:'La Liga', teams:[
+    {id:541,n:'Real Madrid'},{id:529,n:'Barcelona'},{id:530,n:'Atlético'},{id:536,n:'Sevilla'},
+    {id:548,n:'Real Sociedad'},{id:531,n:'Athletic'},{id:532,n:'Valencia'},{id:533,n:'Villarreal'},
+    {id:543,n:'Real Betis'},{id:547,n:'Girona'},{id:537,n:'Osasuna'},{id:538,n:'Celta Vigo'},
+    {id:540,n:'Espanyol'},{id:544,n:'Alavés'},{id:546,n:'Getafe'} ]},
+  { id:'bl', label:'BL', teams:[
+    {id:157,n:'Bayern'},{id:165,n:'Dortmund'},{id:173,n:'RB Leipzig'},{id:168,n:'Leverkusen'},
+    {id:169,n:'Frankfurt'},{id:163,n:'Gladbach'},{id:172,n:'Stuttgart'},{id:161,n:'Wolfsburg'},
+    {id:160,n:'Freiburg'},{id:164,n:'Mainz'},{id:167,n:'Hoffenheim'},{id:170,n:'Werder'},
+    {id:162,n:'Union Berlin'} ]},
+  { id:'sa', label:'Serie A', teams:[
+    {id:505,n:'Inter'},{id:489,n:'AC Milan'},{id:496,n:'Juventus'},{id:492,n:'Napoli'},
+    {id:497,n:'Roma'},{id:487,n:'Lazio'},{id:499,n:'Atalanta'},{id:502,n:'Fiorentina'},
+    {id:500,n:'Bologna'},{id:503,n:'Torino'},{id:504,n:'Udinese'},{id:490,n:'Genoa'} ]},
+  { id:'l1', label:'Ligue 1', teams:[
+    {id:85,n:'PSG'},{id:91,n:'Monaco'},{id:81,n:'Marseille'},{id:80,n:'Lyon'},
+    {id:84,n:'Nice'},{id:94,n:'Rennes'},{id:116,n:'Lens'},{id:79,n:'Lille'},
+    {id:95,n:'Strasbourg'},{id:83,n:'Nantes'},{id:93,n:'Reims'} ]},
+];
+const _tpTab = {};
+
+function tpRender(uid) {
+  const tab    = _tpTab[uid] || BIG5[0].id;
+  const league = BIG5.find(l => l.id === tab) || BIG5[0];
+  const dd     = document.getElementById('tp-dd-' + uid);
+  if (!dd) return;
+  dd.querySelector('.tp-team-grid').innerHTML = league.teams.map(t => `
+    <button type="button" class="tp-team-btn" onclick="tpSelect('${uid}','${t.n.replace(/'/g,"\\'")}')">
+      <img class="tp-team-logo" src="${LOGO(t.id)}" alt="" onerror="this.style.display='none'" />
+      <span class="tp-team-name">${t.n}</span>
+    </button>`).join('');
+}
+function tpOpen(uid) {
+  document.querySelectorAll('.tp-dropdown.open').forEach(d => { if (d.id !== 'tp-dd-'+uid) d.classList.remove('open'); });
+  const dd = document.getElementById('tp-dd-' + uid);
+  if (!dd) return;
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) tpRender(uid);
+}
+function tpTab(uid, lid) {
+  _tpTab[uid] = lid;
+  const dd = document.getElementById('tp-dd-' + uid);
+  if (!dd) return;
+  dd.querySelectorAll('.tp-ltab').forEach(el => el.classList.toggle('active', el.dataset.lid === lid));
+  tpRender(uid);
+}
+function tpSelect(uid, name) {
+  const inp = document.getElementById('tp-inp-' + uid);
+  if (inp) inp.value = name;
+  const dd = document.getElementById('tp-dd-' + uid);
+  if (dd) dd.classList.remove('open');
+}
+function mkTeamPicker(uid, value) {
+  const tabsHtml = BIG5.map((l,i) => `<div class="tp-ltab${i===0?' active':''}" data-lid="${l.id}" onclick="tpTab('${uid}','${l.id}')">${l.label}</div>`).join('');
+  return `
+    <div class="tp-wrap">
+      <div class="tp-input-row">
+        <input id="tp-inp-${uid}" type="text" value="${ESC(value)}" placeholder="팀 이름"
+          style="background:transparent;border:none;outline:none;color:var(--ink);font-size:13px;" />
+        <button type="button" class="tp-btn" onclick="tpOpen('${uid}')">선택 ▾</button>
+      </div>
+      <div class="tp-dropdown" id="tp-dd-${uid}">
+        <div class="tp-league-tabs">${tabsHtml}</div>
+        <div class="tp-team-grid"></div>
+      </div>
+    </div>`;
+}
+/* 드롭다운 바깥 클릭 시 닫기 */
+document.addEventListener('click', e => {
+  if (!e.target.closest('.tp-wrap'))
+    document.querySelectorAll('.tp-dropdown.open').forEach(d => d.classList.remove('open'));
+});
+
 /* ── Init ── */
 (async function init() {
   try {
@@ -994,12 +1097,13 @@ function renderTransfers() {
 function mkTransferRow(t={}) {
   const d = document.createElement('div');
   d.className = 'transfer-row-edit'; d.dataset.row = '1';
+  const rowId = 'tr_' + Math.random().toString(36).slice(2);
   const badgeOpts = ['official','rumor','done'].map(b=>`<option value="${b}" ${t.badge===b?'selected':''}>${b}</option>`).join('');
   d.innerHTML = `
     <div class="transfer-top">
       <input type="text" value="${ESC(t.player)}" placeholder="선수명" />
-      <input type="text" value="${ESC(t.from)}"   placeholder="이전 팀" />
-      <input type="text" value="${ESC(t.to)}"     placeholder="이적 팀" />
+      ${mkTeamPicker(rowId+'_from', t.from||'')}
+      ${mkTeamPicker(rowId+'_to', t.to||'')}
       <input type="text" value="${ESC(t.fee)}"    placeholder="이적료" />
       <select>${badgeOpts}</select>
       ${DEL}
