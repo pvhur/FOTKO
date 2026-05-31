@@ -376,11 +376,15 @@ app.post('/api/data', requireEditor, async (req, res) => {
        ON CONFLICT (key) DO UPDATE SET data=$1, updated_at=$2, updated_by=$3`,
       [payload, new Date().toISOString(), req.session.username || 'unknown']
     );
-    res.json({ ok: true });
 
-    // 응답 후 비동기로 카카오 알림 발송 (실패해도 저장에는 영향 없음)
-    notifyNewTransfers(prevTransfers, req.body.transfers || []).catch(e =>
-      console.error('[notifyNewTransfers]', e.message));
+    // 서버리스(Vercel)에서는 응답 후 비동기 작업이 종료되므로, 응답 전에 await
+    let notified = 0;
+    try {
+      notified = await notifyNewTransfers(prevTransfers, req.body.transfers || []);
+    } catch (e) {
+      console.error('[notifyNewTransfers]', e.message);
+    }
+    res.json({ ok: true, notified });
   } catch (e) {
     res.status(500).json({ error: '서버 오류' });
   }
@@ -584,10 +588,11 @@ async function kakaoSendMemo(user, text, linkUrl) {
 
 // 새 이적 건이 추가되면 알림 켠 사용자에게 카카오 발송
 async function notifyNewTransfers(prevTransfers, nextTransfers) {
-  if (!KAKAO_REST_KEY) return;
+  if (!KAKAO_REST_KEY) { console.log('[Kakao notify] REST 키 없음'); return 0; }
   const prevKeys = new Set((prevTransfers || []).map(t => `${t.player}|${t.from}|${t.to}`));
   const added = (nextTransfers || []).filter(t => !prevKeys.has(`${t.player}|${t.from}|${t.to}`));
-  if (!added.length) return;
+  console.log(`[Kakao notify] 새 이적 ${added.length}건`);
+  if (!added.length) return 0;
 
   const siteUrl = (process.env.CORS_ORIGINS || '').split(',')[0].trim()
     || 'https://fotko.vercel.app';
@@ -595,15 +600,17 @@ async function notifyNewTransfers(prevTransfers, nextTransfers) {
   const lines = added.slice(0, 5).map(t => `· ${t.player}: ${t.from} → ${t.to} (${t.fee || ''})`);
   const text = `⚽ 새 이적 소식 ${added.length}건\n\n${lines.join('\n')}`;
 
+  let sent = 0;
   try {
     const { rows } = await pool.query(
       'SELECT * FROM users WHERE kakao_notify=true AND kakao_access_token IS NOT NULL'
     );
-    // 순차 발송 (개인 프로젝트 규모이므로 충분)
-    for (const u of rows) { await kakaoSendMemo(u, text, link); }
+    console.log(`[Kakao notify] 발송 대상 ${rows.length}명`);
+    for (const u of rows) { if (await kakaoSendMemo(u, text, link)) sent++; }
   } catch (e) {
     console.error('[Kakao notify]', e.message);
   }
+  return sent;
 }
 
 /* ══════════════════════════════════════════════════════

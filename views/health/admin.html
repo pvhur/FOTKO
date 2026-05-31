@@ -788,7 +788,8 @@ async function saveAll() {
       body: JSON.stringify(D)
     });
     if (!r.ok) throw new Error();
-    showToast('저장됐습니다.', 'ok');
+    const d = await r.json().catch(() => ({}));
+    showToast(d.notified ? `저장됨 · 카카오 ${d.notified}건 발송` : '저장됐습니다.', 'ok');
     setIndicator('저장 완료', 'ok');
     renderDashboard(); // counts 업데이트
   } catch {
