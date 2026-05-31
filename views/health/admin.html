@@ -371,6 +371,10 @@
         <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 4.5h9M8 2l3 2.5L8 7M11 8.5H2M5 6.5l-3 2 3 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         이적 시장 <span class="si-count" id="cnt-transfers">0</span>
       </div>
+      <div class="sidebar-item" onclick="switchSection('transferNews')">
+        <span class="si-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 2.5h10v8H1.5z" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 5h6M3.5 7.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+        이적 관련뉴스 <span class="si-count" id="cnt-transferNews">0</span>
+      </div>
 
       <div class="sidebar-group-label admin-only hidden">관리</div>
       <div class="sidebar-item admin-only hidden" onclick="switchSection('users')">
@@ -562,6 +566,23 @@
         </div>
       </div>
 
+      <!-- ── 이적 관련뉴스 ── -->
+      <div class="section-page" id="sec-transferNews">
+        <div class="main-header">
+          <div class="main-title">이적 관련뉴스</div>
+          <div class="main-desc">이적 시장 페이지 하단 "관련 뉴스"에 표시되는 기사입니다. 전문을 입력하면 클릭 시 전체 내용이 표시됩니다.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>관련뉴스 목록</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addTransferNews()">+ 기사 추가</button>
+          </div>
+          <div class="panel-body">
+            <div class="edit-list" id="transferNewsList"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── 사용자 관리 (admin only) ── -->
       <div class="section-page admin-only hidden" id="sec-users">
         <div class="main-header">
@@ -681,7 +702,7 @@ function setIndicator(msg, type) {
 function collectAll() {
   collectBreaking(); collectFeatured(); collectScores();
   collectPopular(); collectNews(); collectStandings();
-  collectFixtures(); collectTransfers();
+  collectFixtures(); collectTransfers(); collectTransferNews();
 }
 
 /* ── Render all ── */
@@ -690,6 +711,7 @@ function renderAllSections() {
   renderBreaking(); renderFeatured(); renderScores();
   renderPopular(); renderNews(); renderLeagueTabs();
   renderStandingsEditor(activeLeague); renderFixtures(); renderTransfers();
+  renderTransferNews();
   updateCounts();
   if (ME.role === 'admin') renderUsers();
 }
@@ -702,6 +724,7 @@ function updateCounts() {
   set('cnt-news',      D.news?.length      || 0);
   set('cnt-fixtures',  D.fixtures?.length  || 0);
   set('cnt-transfers', D.transfers?.length || 0);
+  set('cnt-transferNews', D.transferNews?.length || 0);
 }
 
 /* ── DASHBOARD ── */
@@ -994,6 +1017,44 @@ function collectTransfers() {
     const sel = r.querySelector('select');
     return { player:ins[0].value, from:ins[1].value, to:ins[2].value,
       fee:ins[3].value, badge:sel.value, detail:ins[4].value, type:ins[5].value };
+  });
+}
+
+/* ── TRANSFER NEWS (이적 관련뉴스) ── */
+function renderTransferNews() {
+  const list = document.getElementById('transferNewsList');
+  list.innerHTML = '';
+  (D.transferNews||[]).forEach(n => list.appendChild(mkTransferNewsRow(n)));
+}
+function mkTransferNewsRow(n={}) {
+  const d = document.createElement('div');
+  d.className = 'news-edit-row'; d.dataset.row = '1';
+  d.innerHTML = `
+    <div class="news-edit-top">
+      <input type="text" value="${ESC(n.category)}" placeholder="카테고리" style="width:130px;background:rgba(94,106,210,.1);border:1px solid rgba(94,106,210,.2);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--primary-hover);font-size:11px;font-weight:500;outline:none;text-transform:uppercase;letter-spacing:.3px;" />
+      <div style="flex:1;"></div>
+      <input type="text" value="${ESC(n.time)}" placeholder="1시간 전" style="width:90px;color:var(--ink-tertiary);font-size:12px;" />
+      <button class="del-btn" onclick="this.closest('[data-row]').remove();updateCounts();" title="삭제"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </div>
+    <input type="text" value="${ESC(n.title)}" placeholder="기사 제목" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink);font-size:13px;font-weight:500;" />
+    <div class="mt8">
+      <input type="text" value="${ESC(n.desc)}" placeholder="기사 요약" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink-subtle);font-size:12px;" />
+    </div>
+    <div class="mt8" style="border-top:1px solid var(--hairline);padding-top:8px;">
+      <button type="button" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.textContent=this.textContent.includes('▸')?'▾ 전문 접기':'▸ 전문 펼치기';" style="background:none;border:none;font-size:11px;color:var(--ink-tertiary);cursor:pointer;padding:0;letter-spacing:.2px;">▸ 전문 펼치기</button>
+      <div style="display:none;margin-top:6px;">
+        <textarea class="inp" rows="6" placeholder="기사 전문을 입력하세요. 독자가 클릭하면 이 내용이 표시됩니다." style="font-size:13px;line-height:1.6;">${ESC(n.content||'')}</textarea>
+      </div>
+    </div>`;
+  return d;
+}
+function addTransferNews() { document.getElementById('transferNewsList').appendChild(mkTransferNewsRow()); updateCounts(); }
+function collectTransferNews() {
+  D.transferNews = [...document.querySelectorAll('#transferNewsList [data-row]')].map(r => {
+    const inputs   = r.querySelectorAll('input');
+    const textarea = r.querySelector('textarea');
+    return { category:inputs[0].value, time:inputs[1].value,
+             title:inputs[2].value, desc:inputs[3].value, content:textarea?.value||'' };
   });
 }
 

@@ -2,7 +2,6 @@
 
 const { neon } = require('@neondatabase/serverless');
 const session  = require('express-session');
-const bcrypt   = require('bcryptjs');
 
 /* ── HTTP 쿼리 클라이언트 (TCP 연결 없음 — 콜드 스타트 타임아웃 없음) ── */
 const _sql = neon(
@@ -57,15 +56,6 @@ async function initDB() {
       CREATE INDEX IF NOT EXISTS idx_sess_expired ON sessions(expired)
     `;
 
-    const [row] = await _sql`SELECT COUNT(*)::int AS c FROM users`;
-    if (row.c === 0) {
-      const hash = await bcrypt.hash('kickoff2026', 12);
-      await _sql`
-        INSERT INTO users (id, username, email, password_hash, role, created_at)
-        VALUES ('1', 'admin', 'admin@kickoff.com', ${hash}, 'admin', ${new Date().toISOString()})
-      `;
-      console.log('[DB] 초기 관리자 계정 생성 완료 (admin / kickoff2026)');
-    }
     console.log('[DB] 스키마 확인 완료');
   })().catch(e => {
     _initPromise = null; // 실패 시 다음 요청에서 재시도

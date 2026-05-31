@@ -161,6 +161,21 @@
     @media(max-width:1024px) { .transfer-news-grid { grid-template-columns:repeat(2,1fr); } }
     @media(max-width:768px)  { .transfer-news-grid { grid-template-columns:1fr; } }
 
+    /* ── 기사 모달 ── */
+    .article-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s; }
+    .article-overlay.open { opacity:1; pointer-events:all; }
+    .article-modal { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); width:100%; max-width:720px; max-height:88vh; overflow-y:auto; position:relative; }
+    .article-modal::before { content:''; display:block; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent); }
+    .article-modal-head { position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:14px 24px; background:var(--surface-1); border-bottom:1px solid var(--hairline); }
+    .article-modal-head .category { font-size:11px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:.5px; }
+    .article-modal-close { width:30px; height:30px; border-radius:var(--r-md); background:var(--surface-3); border:1px solid var(--hairline); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-subtle); transition:background .14s, color .14s; flex-shrink:0; }
+    .article-modal-close:hover { background:var(--surface-4); color:var(--ink); }
+    .article-modal-body { padding:32px 36px 40px; }
+    .article-modal-title { font-size:clamp(20px,2.5vw,28px); font-weight:700; line-height:1.2; letter-spacing:-.6px; margin-bottom:14px; }
+    .article-modal-meta { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ink-tertiary); margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--hairline); }
+    .article-modal-desc { font-size:15px; color:var(--ink-muted); line-height:1.7; margin-bottom:24px; font-style:italic; }
+    .article-modal-content { font-size:15px; line-height:1.85; color:var(--ink-muted); word-break:keep-all; white-space:pre-wrap; }
+
     .empty-state { padding:64px 0; text-align:center; color:var(--ink-tertiary); }
     .empty-state h3 { font-size:16px; font-weight:500; margin-bottom:8px; color:var(--ink-subtle); }
 
@@ -273,11 +288,11 @@
       <div id="boardBody"></div>
     </div>
 
-    <!-- 관련기사 -->
+    <!-- 관련 뉴스 -->
     <div id="transferNewsSection" style="display:none; margin-top:56px;">
       <div class="section-header-row">
         <div>
-          <div class="eyebrow-label">관련 기사</div>
+          <div class="eyebrow-label">관련 뉴스</div>
           <h2 class="t-headline">이적 시장 뉴스</h2>
         </div>
       </div>
@@ -308,6 +323,24 @@
     </div>
   </div>
 </footer>
+
+<!-- 기사 전문 모달 -->
+<div class="article-overlay" id="articleOverlay" onclick="closeArticle(event)">
+  <div class="article-modal" id="articleModal">
+    <div class="article-modal-head">
+      <span class="category" id="modalCategory"></span>
+      <div class="article-modal-close" onclick="closeArticleDirect()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="article-modal-body">
+      <h2 class="article-modal-title" id="modalTitle"></h2>
+      <div class="article-modal-meta" id="modalMeta"></div>
+      <p class="article-modal-desc" id="modalDesc"></p>
+      <div class="article-modal-content" id="modalContent"></div>
+    </div>
+  </div>
+</div>
 
 <script>
 const BADGE_MAP = {
@@ -361,24 +394,63 @@ async function load() {
 }
 
 function renderTransferNews() {
-  const news = (_data.news || []).filter(n => n.badge === 'transfer');
+  // 이적시장 전용 관련뉴스(transferNews). 없으면 기존 news의 transfer 배지로 폴백.
+  const news = (_data.transferNews && _data.transferNews.length)
+    ? _data.transferNews
+    : (_data.news || []).filter(n => n.badge === 'transfer');
   if (!news.length) return;
 
   document.getElementById('transferNewsSection').style.display = 'block';
-  document.getElementById('transferNews').innerHTML = news.map(n => `
-    <article class="news-card">
+  document.getElementById('transferNews').innerHTML = news.map((n, i) => `
+    <article class="news-card" style="cursor:pointer;" onclick="openTransferNews(${i})">
       <div class="news-thumb"><div class="news-thumb-inner">${NEWS_SVG}</div></div>
       <div class="news-body">
-        <div class="news-category">${n.category}</div>
-        <div class="news-title">${n.title}</div>
-        <div class="news-desc">${n.desc}</div>
+        <div class="news-category">${n.category || '이적 뉴스'}</div>
+        <div class="news-title">${n.title || ''}</div>
+        <div class="news-desc">${n.desc || ''}</div>
         <div class="news-footer">
           <span class="badge badge-result">이적</span>
-          <span>${n.time}</span>
+          <span>${n.time || ''}</span>
         </div>
       </div>
     </article>`).join('');
 }
+
+function _transferNewsList() {
+  return (_data.transferNews && _data.transferNews.length)
+    ? _data.transferNews
+    : (_data.news || []).filter(n => n.badge === 'transfer');
+}
+
+function openTransferNews(i) {
+  const n = _transferNewsList()[i];
+  if (!n) return;
+  document.getElementById('modalCategory').textContent = n.category || '이적 뉴스';
+  document.getElementById('modalTitle').textContent    = n.title || '';
+  document.getElementById('modalMeta').innerHTML       = `<span>${n.time || ''}</span>`;
+  document.getElementById('modalDesc').textContent     = n.desc || '';
+  const contentEl = document.getElementById('modalContent');
+  if (n.content && n.content.trim()) {
+    contentEl.textContent = n.content;
+    contentEl.style.display = 'block';
+  } else {
+    contentEl.style.display = 'none';
+  }
+  const overlay = document.getElementById('articleOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('articleModal').scrollTop = 0;
+}
+
+function closeArticle(e) {
+  if (e && e.target !== document.getElementById('articleOverlay')) return;
+  closeArticleDirect();
+}
+function closeArticleDirect() {
+  document.getElementById('articleOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArticleDirect(); });
 
 function renderFilterBar() {
   document.getElementById('filterBar').innerHTML =
