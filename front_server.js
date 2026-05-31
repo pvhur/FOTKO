@@ -364,12 +364,23 @@ app.post('/api/data', requireEditor, async (req, res) => {
     return res.status(400).json({ error: '올바르지 않은 데이터입니다.' });
   }
   try {
+    // 발송 비교용: 기존 transfers 읽기
+    let prevTransfers = [];
+    try {
+      const { rows } = await pool.query("SELECT data FROM content WHERE key='football'");
+      if (rows[0]) prevTransfers = (JSON.parse(rows[0].data).transfers) || [];
+    } catch (_) {}
+
     await pool.query(
       `INSERT INTO content (key, data, updated_at, updated_by) VALUES ('football',$1,$2,$3)
        ON CONFLICT (key) DO UPDATE SET data=$1, updated_at=$2, updated_by=$3`,
       [payload, new Date().toISOString(), req.session.username || 'unknown']
     );
     res.json({ ok: true });
+
+    // 응답 후 비동기로 카카오 알림 발송 (실패해도 저장에는 영향 없음)
+    notifyNewTransfers(prevTransfers, req.body.transfers || []).catch(e =>
+      console.error('[notifyNewTransfers]', e.message));
   } catch (e) {
     res.status(500).json({ error: '서버 오류' });
   }
@@ -425,35 +436,171 @@ app.delete('/api/follows/:teamId', requireAuth, async (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════
-   카카오톡 알림 (구조만 — 실제 발송 연동은 추후)
+   카카오톡 알림 — OAuth 연결 + "나에게 보내기" 발송
 ═══════════════════════════════════════════════════════ */
+const KAKAO_REST_KEY = process.env.KAKAO_REST_API_KEY || '';
+const KAKAO_REDIRECT  = process.env.KAKAO_REDIRECT_URI ||
+  `http://localhost:${PORT}/api/auth/kakao/callback`;
+const KAKAO_AUTH_URL  = 'https://kauth.kakao.com/oauth/authorize';
+const KAKAO_TOKEN_URL = 'https://kauth.kakao.com/oauth/token';
+const KAKAO_MEMO_URL  = 'https://kapi.kakao.com/v2/api/talk/memo/default/send';
+
+// 카카오 연결 시작 (동의 화면으로)
+app.get('/api/auth/kakao', requireAuth, async (req, res) => {
+  if (!KAKAO_REST_KEY)
+    return res.redirect('/kickoff/transfers?kakao=not_configured');
+  const state = crypto.randomBytes(16).toString('hex');
+  req.session.kakaoState = state;
+  try { await sessionSave(req.session); } catch { return res.redirect('/kickoff/transfers'); }
+  const params = new URLSearchParams({
+    client_id:     KAKAO_REST_KEY,
+    redirect_uri:  KAKAO_REDIRECT,
+    response_type: 'code',
+    scope:         'talk_message',
+    state,
+  });
+  res.redirect(`${KAKAO_AUTH_URL}?${params}`);
+});
+
+// 카카오 콜백 → 토큰 저장
+app.get('/api/auth/kakao/callback', requireAuth, async (req, res) => {
+  const { code, state, error } = req.query;
+  if (error || !code) return res.redirect('/kickoff/transfers?kakao=denied');
+  if (!state || state !== req.session.kakaoState)
+    return res.redirect('/kickoff/transfers?kakao=invalid_state');
+  try {
+    const tokenRes = await fetch(KAKAO_TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type:   'authorization_code',
+        client_id:    KAKAO_REST_KEY,
+        redirect_uri: KAKAO_REDIRECT,
+        code,
+      }),
+    });
+    const t = await tokenRes.json();
+    if (!tokenRes.ok || !t.access_token) throw new Error(t.error_description || 'token_error');
+
+    const expires = Date.now() + (t.expires_in || 21600) * 1000;
+    await pool.query(
+      `UPDATE users SET kakao_id=COALESCE(kakao_id, $1),
+         kakao_access_token=$2, kakao_refresh_token=COALESCE($3, kakao_refresh_token),
+         kakao_token_expires=$4, kakao_notify=true WHERE id=$5`,
+      ['linked', t.access_token, t.refresh_token || null, expires, req.session.userId]
+    );
+    res.redirect('/kickoff/transfers?kakao=connected');
+  } catch (e) {
+    console.error('[Kakao OAuth]', e.message);
+    res.redirect('/kickoff/transfers?kakao=failed');
+  }
+});
 
 // 알림 설정 조회
 app.get('/api/notify/kakao', requireAuth, async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT kakao_id, kakao_notify FROM users WHERE id=$1', [req.session.userId]
+      'SELECT kakao_access_token, kakao_notify FROM users WHERE id=$1', [req.session.userId]
     );
     const u = rows[0] || {};
     res.set('Cache-Control', 'no-store');
-    res.json({ linked: !!u.kakao_id, notify: !!u.kakao_notify });
+    res.json({ linked: !!u.kakao_access_token, notify: !!u.kakao_notify });
   } catch (e) {
     res.status(500).json({ error: '서버 오류' });
   }
 });
 
-// 알림 on/off 토글 (연동 전이라 설정값만 저장)
+// 알림 on/off 토글
 app.post('/api/notify/kakao', requireAuth, async (req, res) => {
   const notify = !!req.body.notify;
   try {
+    const { rows } = await pool.query(
+      'SELECT kakao_access_token FROM users WHERE id=$1', [req.session.userId]
+    );
+    if (notify && !rows[0]?.kakao_access_token)
+      return res.status(400).json({ error: 'not_linked' }); // 카카오 연결 먼저 필요
     await pool.query('UPDATE users SET kakao_notify=$1 WHERE id=$2',
       [notify, req.session.userId]);
-    // TODO: 카카오 채널/알림톡 API 연동 시 여기서 구독 처리
     res.json({ ok: true, notify });
   } catch (e) {
     res.status(500).json({ error: '서버 오류' });
   }
 });
+
+/* ── 카카오 토큰 갱신 + 발송 헬퍼 ── */
+async function kakaoValidToken(user) {
+  if (!user.kakao_refresh_token && !user.kakao_access_token) return null;
+  // 만료 5분 전이면 갱신
+  if (user.kakao_token_expires && Date.now() < Number(user.kakao_token_expires) - 5 * 60 * 1000)
+    return user.kakao_access_token;
+  if (!user.kakao_refresh_token) return user.kakao_access_token;
+  try {
+    const r = await fetch(KAKAO_TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type:    'refresh_token',
+        client_id:     KAKAO_REST_KEY,
+        refresh_token: user.kakao_refresh_token,
+      }),
+    });
+    const t = await r.json();
+    if (!r.ok || !t.access_token) return user.kakao_access_token;
+    const expires = Date.now() + (t.expires_in || 21600) * 1000;
+    await pool.query(
+      `UPDATE users SET kakao_access_token=$1, kakao_token_expires=$2,
+         kakao_refresh_token=COALESCE($3, kakao_refresh_token) WHERE id=$4`,
+      [t.access_token, expires, t.refresh_token || null, user.id]
+    );
+    return t.access_token;
+  } catch { return user.kakao_access_token; }
+}
+
+async function kakaoSendMemo(user, text, linkUrl) {
+  const token = await kakaoValidToken(user);
+  if (!token) return false;
+  const template = {
+    object_type: 'text',
+    text,
+    link: { web_url: linkUrl, mobile_web_url: linkUrl },
+    button_title: '이적시장 보기',
+  };
+  try {
+    const r = await fetch(KAKAO_MEMO_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({ template_object: JSON.stringify(template) }),
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+// 새 이적 건이 추가되면 알림 켠 사용자에게 카카오 발송
+async function notifyNewTransfers(prevTransfers, nextTransfers) {
+  if (!KAKAO_REST_KEY) return;
+  const prevKeys = new Set((prevTransfers || []).map(t => `${t.player}|${t.from}|${t.to}`));
+  const added = (nextTransfers || []).filter(t => !prevKeys.has(`${t.player}|${t.from}|${t.to}`));
+  if (!added.length) return;
+
+  const siteUrl = (process.env.CORS_ORIGINS || '').split(',')[0].trim()
+    || 'https://fotko.vercel.app';
+  const link = `${siteUrl}/kickoff/transfers`;
+  const lines = added.slice(0, 5).map(t => `· ${t.player}: ${t.from} → ${t.to} (${t.fee || ''})`);
+  const text = `⚽ 새 이적 소식 ${added.length}건\n\n${lines.join('\n')}`;
+
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM users WHERE kakao_notify=true AND kakao_access_token IS NOT NULL'
+    );
+    // 순차 발송 (개인 프로젝트 규모이므로 충분)
+    for (const u of rows) { await kakaoSendMemo(u, text, link); }
+  } catch (e) {
+    console.error('[Kakao notify]', e.message);
+  }
+}
 
 /* ══════════════════════════════════════════════════════
    헬스체크 (호스팅 플랫폼용)

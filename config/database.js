@@ -69,9 +69,12 @@ async function initDB() {
     `;
     await _sql`CREATE INDEX IF NOT EXISTS idx_follows_user ON follows(user_id)`;
 
-    // 카카오 알림 연결 정보 (구조만 — 실제 발송 연동은 추후)
+    // 카카오 알림 연결 정보
     await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_id TEXT`;
     await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_notify BOOLEAN NOT NULL DEFAULT false`;
+    await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_access_token TEXT`;
+    await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_refresh_token TEXT`;
+    await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_token_expires BIGINT`;
 
     console.log('[DB] 스키마 확인 완료');
   })().catch(e => {
