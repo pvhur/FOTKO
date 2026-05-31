@@ -234,6 +234,9 @@
     .transfer-bottom input::placeholder { color:var(--ink-tertiary); }
 
     /* ── 팀 피커 ── */
+    /* 이적 시장 패널은 드롭다운이 잘리지 않게 overflow 허용 */
+    #sec-transfers .panel, #sec-transfers .panel-body { overflow:visible; }
+    #sec-transfers .transfer-row-edit { overflow:visible; }
     .tp-wrap { position:relative; }
     .tp-input-row { display:flex; gap:4px; align-items:center; }
     .tp-input-row input { flex:1; min-width:0; }
