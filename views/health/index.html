@@ -9,6 +9,25 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/kickoff.css" />
   <style>
+    /* ── Hero (메인 기사) ── */
+    .hero { padding-top:calc(56px + 36px); }
+    .hero-wrap { padding:32px 0 56px; }
+    .hero-featured { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); overflow:hidden; display:flex; flex-direction:column; position:relative; cursor:pointer; transition:border-color .15s; }
+    .hero-featured:hover { border-color:var(--hairline-strong); }
+    .hero-featured::before { content:''; position:absolute; inset:0 0 auto; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent); pointer-events:none; }
+    .hero-img { width:100%; aspect-ratio:21/9; background:var(--surface-2); border-bottom:1px solid var(--hairline); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .hero-img::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 8px,rgba(255,255,255,.018) 8px,rgba(255,255,255,.018) 9px); }
+    .hero-img-label { position:relative; z-index:1; font-size:12px; color:var(--ink-tertiary); letter-spacing:.3px; }
+    .hero-body { padding:32px 36px; display:flex; flex-direction:column; }
+    .hero-meta { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+    .hero-title { font-size:clamp(24px,3vw,38px); font-weight:700; line-height:1.15; letter-spacing:-.9px; margin-bottom:16px; }
+    .hero-desc { font-size:16px; color:var(--ink-muted); line-height:1.7; margin-bottom:24px; }
+    .hero-footer { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid var(--hairline); }
+    .byline { display:flex; align-items:center; gap:9px; }
+    .byline-avatar { width:30px; height:30px; border-radius:var(--r-full); background:var(--surface-3); border:1px solid var(--hairline); display:flex; align-items:center; justify-content:center; }
+    .byline-name { font-size:13px; color:var(--ink-muted); font-weight:500; }
+    .byline-date { font-size:12px; color:var(--ink-tertiary); }
+
     /* News Grid */
     .news-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 
@@ -106,6 +125,15 @@
   </div>
 </nav>
 
+<!-- Hero (메인 기사) -->
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-wrap">
+      <article class="hero-featured" id="heroFeatured"></article>
+    </div>
+  </div>
+</div>
+
 <!-- Latest News -->
 <section class="section" style="padding-top:0;">
   <div class="wrap">
@@ -193,8 +221,52 @@ async function loadData() {
   const res = await fetch('/api/data');
   const d   = await res.json();
   window._fd = d;
+  renderFeatured(d.featured);
   renderNews(d.news);
   renderTransfers(d.transfers);
+}
+
+function renderFeatured(f) {
+  if (!f) { document.getElementById('heroFeatured').style.display = 'none'; return; }
+  document.getElementById('heroFeatured').innerHTML = `
+    <div class="hero-img"><span class="hero-img-label">${f.imgDate || ''}</span></div>
+    <div class="hero-body">
+      <div class="hero-meta">
+        ${f.label ? `<span class="badge badge-live"><span class="live-dot"></span>${f.label}</span>` : ''}
+        ${f.tag   ? `<span class="badge badge-new">${f.tag}</span>` : ''}
+        <span style="font-size:12px;color:var(--ink-tertiary);">${f.category || ''}</span>
+      </div>
+      <h2 class="hero-title">${f.title || ''}</h2>
+      <p class="hero-desc">${f.desc || ''}</p>
+      <div class="hero-footer">
+        <div class="byline">
+          <div class="byline-avatar">${USER_SVG}</div>
+          <div>
+            <div class="byline-name">${f.author || ''}</div>
+            <div class="byline-date">${f.time || ''}</div>
+          </div>
+        </div>
+        <span class="btn btn-ghost" style="font-size:13px;gap:5px;">전체 기사 ${ARROW_SVG}</span>
+      </div>
+    </div>`;
+  document.getElementById('heroFeatured').onclick = openFeatured;
+}
+
+function openFeatured() {
+  const f = window._fd?.featured;
+  if (!f) return;
+  document.getElementById('modalCategory').textContent = f.category || '';
+  document.getElementById('modalTitle').textContent    = f.title || '';
+  document.getElementById('modalMeta').innerHTML =
+    `<span>${f.time || ''}</span>` + (f.author ? `<span>·</span><span>${f.author}</span>` : '');
+  document.getElementById('modalDesc').textContent = '';
+  const contentEl = document.getElementById('modalContent');
+  contentEl.textContent = f.content && f.content.trim() ? f.content : (f.desc || '');
+  contentEl.style.display = 'block';
+  const overlay = document.getElementById('articleOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('articleModal').scrollTop = 0;
 }
 
 function renderNews(items) {

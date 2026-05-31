@@ -440,6 +440,7 @@
             <div class="field"><label>이미지 날짜 표시</label><input class="inp inp-sm" id="f-imgDate" oninput="updatePreview()" /></div>
             <div class="field"><label>제목</label><textarea class="inp" id="f-title" rows="2" oninput="updatePreview()"></textarea></div>
             <div class="field"><label>본문 요약</label><textarea class="inp" id="f-desc" rows="3" oninput="updatePreview()"></textarea></div>
+            <div class="field"><label>기사 전문 (클릭 시 표시)</label><textarea class="inp" id="f-content" rows="6" placeholder="기사 전문을 입력하세요. 비워두면 본문 요약이 대신 표시됩니다."></textarea></div>
             <div class="form-row-2">
               <div class="field"><label>작성자</label><input class="inp inp-sm" id="f-author" oninput="updatePreview()" /></div>
               <div class="field"><label>작성 시간</label><input class="inp inp-sm" id="f-time" oninput="updatePreview()" /></div>
@@ -770,7 +771,7 @@ function collectBreaking() {
 /* ── FEATURED ── */
 function renderFeatured() {
   const f = D.featured || {};
-  ['category','label','tag','imgDate','title','desc','author','time'].forEach(k => {
+  ['category','label','tag','imgDate','title','desc','author','time','content'].forEach(k => {
     const el = document.getElementById('f-'+k);
     if(el) el.value = f[k]||'';
   });
@@ -789,7 +790,7 @@ function collectFeatured() {
   const g = id => document.getElementById(id)?.value.trim()||'';
   D.featured = { category:g('f-category'), label:g('f-label'), tag:g('f-tag'),
     imgDate:g('f-imgDate'), title:g('f-title'), desc:g('f-desc'),
-    author:g('f-author'), time:g('f-time') };
+    author:g('f-author'), time:g('f-time'), content:g('f-content') };
 }
 
 /* ── SCORES ── */
