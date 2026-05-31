@@ -176,14 +176,18 @@
   </div>
 </div>
 
-<!-- Hero (메인 기사) -->
-<div class="hero">
+<!-- 인기뉴스 -->
+<section class="section" style="padding-top:48px;">
   <div class="wrap">
-    <div class="hero-wrap">
-      <article class="hero-featured" id="heroFeatured"></article>
+    <div class="section-header-row">
+      <div>
+        <div class="eyebrow-label">인기뉴스</div>
+        <h2 class="t-display-md">지금 뜨는 인기 뉴스</h2>
+      </div>
     </div>
+    <div class="news-grid" id="popularGrid"></div>
   </div>
-</div>
+</section>
 
 <!-- Latest News -->
 <section class="section" style="padding-top:0;">
@@ -272,48 +276,43 @@ async function loadData() {
   const res = await fetch('/api/data');
   const d   = await res.json();
   window._fd = d;
-  renderFeatured(d.featured);
+  renderPopularNews(d.popular);
   renderNews(d.news);
   renderTransfers(d.transfers);
 }
 
-function renderFeatured(f) {
-  if (!f) { document.getElementById('heroFeatured').style.display = 'none'; return; }
-  document.getElementById('heroFeatured').innerHTML = `
-    <div class="hero-img"><span class="hero-img-label">${f.imgDate || ''}</span></div>
-    <div class="hero-body">
-      <div class="hero-meta">
-        ${f.label ? `<span class="badge badge-live"><span class="live-dot"></span>${f.label}</span>` : ''}
-        ${f.tag   ? `<span class="badge badge-new">${f.tag}</span>` : ''}
-        <span style="font-size:12px;color:var(--ink-tertiary);">${f.category || ''}</span>
-      </div>
-      <h2 class="hero-title">${f.title || ''}</h2>
-      <p class="hero-desc">${f.desc || ''}</p>
-      <div class="hero-footer">
-        <div class="byline">
-          <div class="byline-avatar">${USER_SVG}</div>
-          <div>
-            <div class="byline-name">${f.author || ''}</div>
-            <div class="byline-date">${f.time || ''}</div>
-          </div>
+function renderPopularNews(items) {
+  items = items || [];
+  if (!items.length) { document.getElementById('popularGrid').innerHTML =
+    '<div style="grid-column:1/-1;color:var(--ink-tertiary);font-size:14px;padding:24px 0;">등록된 인기 뉴스가 없습니다.</div>'; return; }
+  document.getElementById('popularGrid').innerHTML = items.map((p, i) => `
+    <article class="news-card" style="cursor:pointer;" onclick="openPopular(${i})">
+      <div class="news-thumb"><div class="news-thumb-inner">${NEWS_SVG}</div></div>
+      <div class="news-body">
+        <div class="news-category">인기</div>
+        <div class="news-title">${p.title || ''}</div>
+        <div class="news-footer">
+          <span class="badge badge-new">HOT</span>
+          <span>${p.meta || ''}</span>
         </div>
-        <span class="btn btn-ghost" style="font-size:13px;gap:5px;">전체 기사 ${ARROW_SVG}</span>
       </div>
-    </div>`;
-  document.getElementById('heroFeatured').onclick = openFeatured;
+    </article>`).join('');
 }
 
-function openFeatured() {
-  const f = window._fd?.featured;
-  if (!f) return;
-  document.getElementById('modalCategory').textContent = f.category || '';
-  document.getElementById('modalTitle').textContent    = f.title || '';
-  document.getElementById('modalMeta').innerHTML =
-    `<span>${f.time || ''}</span>` + (f.author ? `<span>·</span><span>${f.author}</span>` : '');
-  document.getElementById('modalDesc').textContent = '';
+function openPopular(i) {
+  const p = (window._fd?.popular || [])[i];
+  if (!p) return;
+  document.getElementById('modalCategory').textContent = '인기뉴스';
+  document.getElementById('modalTitle').textContent    = p.title || '';
+  document.getElementById('modalMeta').innerHTML       = `<span>${p.meta || ''}</span>`;
+  document.getElementById('modalDesc').textContent     = '';
   const contentEl = document.getElementById('modalContent');
-  contentEl.textContent = f.content && f.content.trim() ? f.content : (f.desc || '');
-  contentEl.style.display = 'block';
+  if (p.content && p.content.trim()) {
+    contentEl.textContent = p.content;
+    contentEl.style.display = 'block';
+  } else {
+    contentEl.style.display = 'none';
+  }
   const overlay = document.getElementById('articleOverlay');
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
