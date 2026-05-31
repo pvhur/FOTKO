@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google-adsense-account" content="ca-pub-5886476101959679">
+  <title>이적 뉴스 — Kickoff</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27><path d=%27M10 2L17.32 6V14L10 18L2.68 14V6Z%27 stroke=%27%235e6ad2%27 stroke-width=%271.5%27 fill=%27none%27/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/kickoff.css" />
+  <style>
+    :root {
+      --fire:        #ff6b00;
+      --fire-bright: #ff9500;
+      --fire-hot:    #ef4444;
+      --ember:       #fbbf24;
+      --fire-dim:    rgba(255,107,0,.1);
+    }
+
+    /* ── HERO ── */
+    .tl-hero {
+      padding: calc(56px + 32px) 0 28px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--canvas);
+      position: relative;
+      overflow: hidden;
+    }
+    .tl-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 130%, rgba(255,107,0,.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .tl-hero-inner {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .tl-hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--fire);
+      margin-bottom: 8px;
+    }
+    .tl-live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--fire);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.5; transform:scale(.7); }
+    }
+    .tl-hero-title {
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 900;
+      letter-spacing: -1.2px;
+      color: var(--ink);
+      margin: 0;
+    }
+    .tl-hero-sub {
+      font-size: 13px;
+      color: var(--ink-tertiary);
+      margin-top: 6px;
+    }
+    .tl-count-badge {
+      font-size: 13px;
+      color: var(--ink-tertiary);
+      align-self: flex-end;
+      padding-bottom: 4px;
+    }
+    .tl-count-badge strong { color: var(--fire-bright); font-weight: 700; }
+
+    /* ── LAYOUT ── */
+    .tl-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 28px;
+      align-items: start;
+      padding: 28px 0 60px;
+    }
+
+    /* ── HOT STRIP ── */
+    .hot-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+      margin-bottom: 18px;
+    }
+    .hot-strip::-webkit-scrollbar { display: none; }
+    .hot-strip-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--fire);
+      white-space: nowrap;
+      letter-spacing: .3px;
+    }
+    .hot-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      background: var(--fire-dim);
+      border: 1px solid rgba(255,107,0,.2);
+      border-radius: var(--r-pill);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fire-bright);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background .14s, border-color .14s;
+      text-decoration: none;
+    }
+    .hot-chip:hover {
+      background: rgba(255,107,0,.2);
+      border-color: rgba(255,107,0,.4);
+    }
+
+    /* ── FILTER BAR ── */
+    .tl-filters {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+    .tf-chip {
+      padding: 5px 14px;
+      border-radius: var(--r-pill);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      cursor: pointer;
+      transition: all .14s;
+      user-select: none;
+    }
+    .tf-chip:hover { border-color: var(--hairline-strong); color: var(--ink); }
+    .tf-chip.active {
+      background: var(--fire-dim);
+      border-color: rgba(255,107,0,.3);
+      color: var(--fire-bright);
+    }
+
+    /* ── POST LIST ── */
+    .post-list {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+      background: var(--surface-1);
+    }
+    .post-list-header {
+      display: grid;
+      grid-template-columns: 100px 1fr 100px 70px;
+      gap: 12px;
+      padding: 10px 20px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--hairline);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ink-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .post-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 100px 70px;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--hairline);
+      cursor: pointer;
+      transition: background .12s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .post-row:last-child { border-bottom: none; }
+    .post-row:hover { background: var(--surface-2); }
+
+    .pr-badge { flex-shrink: 0; }
+    .badge-rumor {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: var(--r-pill);
+      font-size: 11px; font-weight: 600;
+      background: rgba(251,191,36,.1); color: var(--ember);
+      border: 1px solid rgba(251,191,36,.25);
+    }
+    .badge-official {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: var(--r-pill);
+      font-size: 11px; font-weight: 600;
+      background: rgba(255,107,0,.12); color: var(--fire-bright);
+      border: 1px solid rgba(255,107,0,.25);
+    }
+    .badge-done {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: var(--r-pill);
+      font-size: 11px; font-weight: 600;
+      background: rgba(74,222,128,.1); color: #4ade80;
+      border: 1px solid rgba(74,222,128,.2);
+    }
+
+    .pr-info {}
+    .pr-player {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 3px;
+    }
+    .pr-hot-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--fire);
+      background: var(--fire-dim);
+      border: 1px solid rgba(255,107,0,.2);
+      border-radius: var(--r-pill);
+      padding: 1px 6px;
+      letter-spacing: .3px;
+    }
+    .pr-route {
+      font-size: 12px;
+      color: var(--ink-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .pr-route-arrow { color: var(--fire); font-weight: 700; }
+
+    .pr-fee {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+    .pr-fee.known { color: var(--fire-bright); }
+
+    .pr-time {
+      font-size: 11px;
+      color: var(--ink-tertiary);
+      text-align: right;
+    }
+
+    /* updated indicator */
+    .pr-updated { color: var(--fire); font-weight: 600; }
+
+    /* empty state */
+    .post-list-empty {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--ink-tertiary);
+    }
+    .post-list-empty .ple-icon { font-size: 36px; margin-bottom: 12px; }
+    .post-list-empty p { font-size: 14px; }
+
+    /* ── RIGHT SIDEBAR ── */
+    .tl-sidebar {
+      position: sticky;
+      top: 72px;
+    }
+    .tls-panel {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .tls-head {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--hairline);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .tls-hot-list { padding: 8px 0; }
+    .tls-hot-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      cursor: pointer;
+      transition: background .12s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .tls-hot-item:hover { background: var(--surface-2); }
+    .tls-hot-rank {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ink-tertiary);
+      width: 18px;
+      flex-shrink: 0;
+    }
+    .tls-hot-rank.top { color: var(--fire); }
+    .tls-hot-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      flex: 1;
+    }
+    .tls-hot-route {
+      font-size: 11px;
+      color: var(--ink-tertiary);
+    }
+
+    /* stats panel */
+    .tls-stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--hairline);
+      font-size: 13px;
+    }
+    .tls-stat-row:last-child { border-bottom: none; }
+    .tls-stat-label { color: var(--ink-muted); }
+    .tls-stat-val { font-weight: 700; color: var(--ink); }
+
+    @media(max-width:900px) {
+      .tl-layout { grid-template-columns: 1fr; }
+      .tl-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
+    @media(max-width:600px) {
+      .post-list-header { display: none; }
+      .post-row { grid-template-columns: 90px 1fr 60px; }
+      .pr-fee { display: none; }
+      .tl-sidebar { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="/transfers" class="nav-logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".4"/>
+      </svg>
+      Kickoff
+    </a>
+    <ul class="nav-links">
+      <li><a href="/transfers" class="active">이적 뉴스</a></li>
+      <li><a href="/kickoff/admin">어드민</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="tl-hero">
+  <div class="wrap">
+    <div class="tl-hero-inner">
+      <div>
+        <div class="tl-hero-eyebrow">
+          <div class="tl-live-dot"></div>
+          2026 이적시장 · LIVE
+        </div>
+        <h1 class="tl-hero-title">이적 뉴스</h1>
+        <p class="tl-hero-sub">루머부터 공식 발표까지, 업데이트되면 바로 상위에</p>
+      </div>
+      <div class="tl-count-badge" id="countBadge"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="wrap">
+  <div class="tl-layout">
+
+    <!-- LEFT: LIST -->
+    <div class="tl-main">
+      <!-- Hot strip -->
+      <div class="hot-strip" id="hotStrip">
+        <span class="hot-strip-label">🔥 핫</span>
+      </div>
+
+      <!-- Filters -->
+      <div class="tl-filters" id="filters"></div>
+
+      <!-- List header -->
+      <div class="post-list-header" style="margin-top:10px;">
+        <span>상태</span>
+        <span>선수 · 이적 경로</span>
+        <span>이적료</span>
+        <span style="text-align:right;">업데이트</span>
+      </div>
+
+      <!-- Post list -->
+      <div class="post-list" id="postList">
+        <div class="post-list-empty">
+          <div class="ple-icon">⏳</div>
+          <p>불러오는 중...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: SIDEBAR -->
+    <aside class="tl-sidebar">
+      <!-- Hot ranking -->
+      <div class="tls-panel">
+        <div class="tls-head">🔥 핫 이적 매물</div>
+        <div class="tls-hot-list" id="hotRanking">
+          <div style="padding:20px 16px;font-size:13px;color:var(--ink-tertiary);">데이터 없음</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="tls-panel">
+        <div class="tls-head">📊 현황</div>
+        <div id="statRows"></div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script>
+const BADGE = {
+  rumor:    { cls:'badge-rumor',    label:'👀 루머'  },
+  official: { cls:'badge-official', label:'🔥 공식'  },
+  done:     { cls:'badge-done',     label:'✅ 완료'  },
+};
+const FILTERS = [
+  { key:'all',      label:'전체' },
+  { key:'rumor',    label:'👀 루머' },
+  { key:'official', label:'🔥 공식 발표' },
+  { key:'done',     label:'✅ 완료' },
+];
+
+let _posts  = [];
+let _filter = 'all';
+
+function timeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  const h = Math.floor(diff / 3600000);
+  const d = Math.floor(diff / 86400000);
+  if (m < 1)  return '방금 전';
+  if (m < 60) return `${m}분 전`;
+  if (h < 24) return `${h}시간 전`;
+  if (d <  7) return `${d}일 전`;
+  return new Date(iso).toLocaleDateString('ko-KR', { month:'short', day:'numeric' });
+}
+
+function isNew(iso) {
+  return Date.now() - new Date(iso).getTime() < 3 * 60 * 60 * 1000; // 3h
+}
+
+function renderFilters() {
+  document.getElementById('filters').innerHTML = FILTERS.map(f => `
+    <div class="tf-chip${_filter === f.key ? ' active' : ''}" onclick="setFilter('${f.key}')">${f.label}</div>
+  `).join('');
+}
+
+function setFilter(key) {
+  _filter = key;
+  renderFilters();
+  renderList();
+}
+
+function renderHotStrip() {
+  const hot = _posts.filter(p => p.hot == 1);
+  const strip = document.getElementById('hotStrip');
+  if (!hot.length) { strip.style.display = 'none'; return; }
+  strip.innerHTML = `<span class="hot-strip-label">🔥 핫</span>` +
+    hot.map(p => `
+      <a class="hot-chip" href="/transfers/${p.id}">
+        ${p.player}
+        ${p.from_team && p.to_team ? `<span style="font-weight:400;opacity:.7;">→ ${p.to_team}</span>` : ''}
+      </a>`).join('');
+}
+
+function renderHotRanking() {
+  const hot = _posts.filter(p => p.hot == 1).slice(0, 7);
+  const all = _posts.slice(0, 5);
+  const items = hot.length ? hot : all;
+  document.getElementById('hotRanking').innerHTML = items.length
+    ? items.map((p, i) => `
+        <a class="tls-hot-item" href="/transfers/${p.id}">
+          <span class="tls-hot-rank${i < 3 ? ' top' : ''}">${i+1}</span>
+          <div>
+            <div class="tls-hot-name">${p.player}</div>
+            ${p.from_team || p.to_team
+              ? `<div class="tls-hot-route">${p.from_team || '?'} → ${p.to_team || '?'}</div>`
+              : ''}
+          </div>
+          <span class="${(BADGE[p.badge]||BADGE.rumor).cls}" style="font-size:10px;padding:1px 6px;">${(BADGE[p.badge]||BADGE.rumor).label.replace(/👀|🔥|✅/g,'').trim()}</span>
+        </a>`).join('')
+    : '<div style="padding:20px 16px;font-size:13px;color:var(--ink-tertiary);">데이터 없음</div>';
+}
+
+function renderStats() {
+  const total    = _posts.length;
+  const rumors   = _posts.filter(p => p.badge === 'rumor').length;
+  const official = _posts.filter(p => p.badge === 'official').length;
+  const done     = _posts.filter(p => p.badge === 'done').length;
+  document.getElementById('statRows').innerHTML = [
+    { label: '전체', val: total },
+    { label: '루머', val: rumors },
+    { label: '공식 발표', val: official },
+    { label: '완료', val: done },
+  ].map(r => `
+    <div class="tls-stat-row">
+      <span class="tls-stat-label">${r.label}</span>
+      <span class="tls-stat-val">${r.val}</span>
+    </div>`).join('');
+}
+
+function renderList() {
+  const filtered = _filter === 'all'
+    ? _posts
+    : _posts.filter(p => p.badge === _filter);
+
+  const el = document.getElementById('postList');
+
+  if (!filtered.length) {
+    el.innerHTML = `
+      <div class="post-list-empty">
+        <div class="ple-icon">🏜️</div>
+        <p>${_filter === 'all' ? '아직 이적 소식이 없습니다.' : '해당 조건의 소식이 없습니다.'}</p>
+      </div>`;
+    document.getElementById('countBadge').innerHTML = '';
+    return;
+  }
+
+  document.getElementById('countBadge').innerHTML =
+    `<strong>${filtered.length}</strong>건의 이적 소식`;
+
+  el.innerHTML = filtered.map(p => {
+    const bm  = BADGE[p.badge] || BADGE.rumor;
+    const fee = p.fee && p.fee !== '-' ? p.fee : null;
+    const ago = timeAgo(p.updated_at);
+    const fresh = isNew(p.updated_at);
+    return `
+      <a class="post-row" href="/transfers/${p.id}">
+        <div class="pr-badge"><span class="${bm.cls}">${bm.label}</span></div>
+        <div class="pr-info">
+          <div class="pr-player">
+            ${p.player}
+            ${p.hot == 1 ? '<span class="pr-hot-badge">HOT</span>' : ''}
+          </div>
+          <div class="pr-route">
+            <span>${p.from_team || '미정'}</span>
+            <span class="pr-route-arrow">→</span>
+            <span>${p.to_team || '미정'}</span>
+          </div>
+        </div>
+        <div class="pr-fee${fee ? ' known' : ''}">${fee || '미공개'}</div>
+        <div class="pr-time${fresh ? ' pr-updated' : ''}">${ago}</div>
+      </a>`;
+  }).join('');
+}
+
+async function load() {
+  fetch('/api/track', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ page: '/transfers' }),
+  }).catch(()=>{});
+
+  try {
+    const r = await fetch('/api/transfer-posts');
+    _posts = r.ok ? await r.json() : [];
+  } catch { _posts = []; }
+
+  renderFilters();
+  renderHotStrip();
+  renderHotRanking();
+  renderStats();
+  renderList();
+}
+
+load();
+</script>
+</body>
+</html>

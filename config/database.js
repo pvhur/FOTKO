@@ -70,6 +70,24 @@ async function initDB() {
       CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC)
     `;
     await _sql`
+      CREATE TABLE IF NOT EXISTS transfer_posts (
+        id         TEXT PRIMARY KEY,
+        player     TEXT NOT NULL,
+        from_team  TEXT NOT NULL DEFAULT '',
+        to_team    TEXT NOT NULL DEFAULT '',
+        fee        TEXT NOT NULL DEFAULT '',
+        badge      TEXT NOT NULL DEFAULT 'rumor',
+        detail     TEXT NOT NULL DEFAULT '',
+        source     TEXT NOT NULL DEFAULT '',
+        hot        INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    `;
+    await _sql`
+      CREATE INDEX IF NOT EXISTS idx_tp_updated ON transfer_posts(updated_at DESC)
+    `;
+    await _sql`
       CREATE TABLE IF NOT EXISTS pageviews (
         id       TEXT PRIMARY KEY,
         page     TEXT NOT NULL,

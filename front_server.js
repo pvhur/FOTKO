@@ -498,6 +498,85 @@ app.get('/api/stats', async (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════
+   이적 뉴스 API (transfer_posts)
+═══════════════════════════════════════════════════════ */
+
+app.get('/api/transfer-posts', async (req, res) => {
+  try {
+    await initDB();
+    const { rows } = await pool.query(
+      'SELECT * FROM transfer_posts ORDER BY updated_at DESC'
+    );
+    res.json(rows);
+  } catch (e) {
+    console.error('[TP GET]', e.message);
+    res.json([]);
+  }
+});
+
+app.get('/api/transfer-posts/:id', async (req, res) => {
+  try {
+    await initDB();
+    const { rows } = await pool.query(
+      'SELECT * FROM transfer_posts WHERE id=$1', [req.params.id]
+    );
+    if (!rows[0]) return res.status(404).json({ error: '없음' });
+    res.json(rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+app.post('/api/transfer-posts', async (req, res) => {
+  try {
+    await initDB();
+    const { player, from_team='', to_team='', fee='', badge='rumor', detail='', source='', hot=0 } = req.body;
+    if (!player) return res.status(400).json({ error: '선수명 필수' });
+    const id  = Date.now().toString();
+    const now = new Date().toISOString();
+    await pool.query(
+      `INSERT INTO transfer_posts (id,player,from_team,to_team,fee,badge,detail,source,hot,created_at,updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [id, player.trim(), from_team, to_team, fee, badge, detail, source, hot ? 1 : 0, now, now]
+    );
+    const { rows } = await pool.query('SELECT * FROM transfer_posts WHERE id=$1', [id]);
+    res.json({ ok: true, post: rows[0] });
+  } catch (e) {
+    console.error('[TP POST]', e.message);
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+app.put('/api/transfer-posts/:id', async (req, res) => {
+  try {
+    await initDB();
+    const { player, from_team='', to_team='', fee='', badge='rumor', detail='', source='', hot=0 } = req.body;
+    const now = new Date().toISOString();
+    const { rowCount } = await pool.query(
+      `UPDATE transfer_posts
+       SET player=$1, from_team=$2, to_team=$3, fee=$4, badge=$5,
+           detail=$6, source=$7, hot=$8, updated_at=$9
+       WHERE id=$10`,
+      [player, from_team, to_team, fee, badge, detail, source, hot ? 1 : 0, now, req.params.id]
+    );
+    if (rowCount === 0) return res.status(404).json({ error: '없음' });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+app.delete('/api/transfer-posts/:id', async (req, res) => {
+  try {
+    await initDB();
+    await pool.query('DELETE FROM transfer_posts WHERE id=$1', [req.params.id]);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+/* ══════════════════════════════════════════════════════
    헬스체크 (호스팅 플랫폼용)
 ═══════════════════════════════════════════════════════ */
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
@@ -519,7 +598,9 @@ app.use((err, req, res, _next) => {
 const V = (p) => path.join(__dirname, './views', p);
 const MAINTENANCE = (req, res) => sendHTML(res, V('health/maintenance.html'));
 
-app.get('/',                  (req, res) => res.redirect('/kickoff/transfers'));
+app.get('/',                  (req, res) => res.redirect('/transfers'));
+app.get('/transfers',         (req, res) => sendHTML(res, V('health/transfers-list.html')));
+app.get('/transfers/:id',     (req, res) => sendHTML(res, V('health/transfers-detail.html')));
 app.get('/kickoff',           MAINTENANCE);
 app.get('/kickoff/league',    MAINTENANCE);
 app.get('/kickoff/results',   MAINTENANCE);

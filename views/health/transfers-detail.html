@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>이적 상세 — Kickoff</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27><path d=%27M10 2L17.32 6V14L10 18L2.68 14V6Z%27 stroke=%27%235e6ad2%27 stroke-width=%271.5%27 fill=%27none%27/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/kickoff.css" />
+  <style>
+    :root {
+      --fire:        #ff6b00;
+      --fire-bright: #ff9500;
+      --fire-hot:    #ef4444;
+      --ember:       #fbbf24;
+      --fire-dim:    rgba(255,107,0,.1);
+    }
+
+    .td-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: calc(56px + 40px) 24px 80px;
+    }
+
+    /* back */
+    .td-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-tertiary);
+      text-decoration: none;
+      margin-bottom: 28px;
+      transition: color .14s;
+    }
+    .td-back:hover { color: var(--ink); }
+
+    /* meta row */
+    .td-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .badge-rumor {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 11px; border-radius: var(--r-pill);
+      font-size: 12px; font-weight: 600;
+      background: rgba(251,191,36,.1); color: var(--ember);
+      border: 1px solid rgba(251,191,36,.25);
+    }
+    .badge-official {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 11px; border-radius: var(--r-pill);
+      font-size: 12px; font-weight: 600;
+      background: rgba(255,107,0,.12); color: var(--fire-bright);
+      border: 1px solid rgba(255,107,0,.25);
+    }
+    .badge-done {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 11px; border-radius: var(--r-pill);
+      font-size: 12px; font-weight: 600;
+      background: rgba(74,222,128,.1); color: #4ade80;
+      border: 1px solid rgba(74,222,128,.2);
+    }
+    .td-time {
+      font-size: 12px;
+      color: var(--ink-tertiary);
+    }
+    .td-hot-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--fire);
+      background: var(--fire-dim);
+      border: 1px solid rgba(255,107,0,.2);
+      border-radius: var(--r-pill);
+      padding: 2px 8px;
+    }
+
+    /* player title */
+    .td-player {
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+
+    /* transfer visual */
+    .td-transfer {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 20px 24px;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-xl);
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .td-transfer::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+    }
+    .td-club {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .td-club-to { align-items: flex-end; text-align: right; }
+    .td-club-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--ink-tertiary);
+    }
+    .td-club-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.4px;
+    }
+    .td-arrow {
+      flex-shrink: 0;
+      padding: 0 16px;
+      color: var(--fire);
+      display: flex;
+      align-items: center;
+    }
+
+    /* progress bar */
+    .td-progress {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding: 16px 20px;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-xl);
+    }
+    .td-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .td-step-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--surface-2);
+      border: 2px solid var(--hairline);
+    }
+    .td-step.done    .td-step-dot { background: var(--fire);        border-color: var(--fire); }
+    .td-step.current .td-step-dot {
+      background: var(--fire-bright); border-color: var(--fire-bright);
+      box-shadow: 0 0 10px rgba(255,149,0,.5);
+    }
+    .td-step-label {
+      font-size: 11px; font-weight: 500;
+      color: var(--ink-tertiary); white-space: nowrap;
+    }
+    .td-step.done    .td-step-label { color: var(--fire); font-weight: 600; }
+    .td-step.current .td-step-label { color: var(--fire-bright); font-weight: 700; }
+    .td-step-line {
+      flex: 1; height: 2px;
+      background: var(--hairline);
+      margin-top: 5px;
+      min-width: 20px;
+    }
+    .td-step-line.done { background: var(--fire); }
+
+    /* fee + source */
+    .td-info-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .td-fee {
+      display: inline-flex; align-items: center;
+      padding: 4px 13px; border-radius: var(--r-pill);
+      font-size: 13px; font-weight: 700;
+      background: rgba(255,107,0,.1);
+      border: 1px solid rgba(255,107,0,.2);
+      color: var(--fire-bright);
+    }
+    .td-fee.unknown {
+      background: var(--surface-1);
+      border-color: var(--hairline);
+      color: var(--ink-tertiary);
+      font-weight: 500;
+    }
+    .td-source {
+      font-size: 12px;
+      color: var(--ink-tertiary);
+    }
+    .td-source strong { color: var(--fire-bright); }
+
+    /* divider */
+    .td-divider {
+      height: 1px;
+      background: var(--hairline);
+      margin: 24px 0;
+    }
+
+    /* detail body */
+    .td-detail {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--ink-muted);
+      white-space: pre-line;
+      word-break: break-word;
+    }
+    .td-detail-empty {
+      font-size: 14px;
+      color: var(--ink-tertiary);
+      font-style: italic;
+    }
+
+    /* related */
+    .td-related-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 12px;
+    }
+    .td-related-list { display: flex; flex-direction: column; gap: 8px; }
+    .td-related-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: background .12s, border-color .14s;
+    }
+    .td-related-item:hover {
+      background: var(--surface-2);
+      border-color: rgba(255,107,0,.25);
+    }
+    .td-related-name { font-size: 13px; font-weight: 600; color: var(--ink); flex: 1; }
+    .td-related-route { font-size: 11px; color: var(--ink-tertiary); }
+    .td-related-time  { font-size: 11px; color: var(--ink-tertiary); }
+
+    /* loading/error */
+    .td-loading {
+      text-align: center;
+      padding: 80px 0;
+      color: var(--ink-tertiary);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="/transfers" class="nav-logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".4"/>
+      </svg>
+      Kickoff
+    </a>
+    <ul class="nav-links">
+      <li><a href="/transfers">이적 뉴스</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="td-wrap" id="tdWrap">
+  <div class="td-loading">불러오는 중...</div>
+</div>
+
+<script>
+const BADGE = {
+  rumor:    { cls:'badge-rumor',    label:'👀 루머'  },
+  official: { cls:'badge-official', label:'🔥 공식 발표' },
+  done:     { cls:'badge-done',     label:'✅ 이적 완료' },
+};
+
+function timeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  const h = Math.floor(diff / 3600000);
+  const d = Math.floor(diff / 86400000);
+  if (m < 1)  return '방금 전';
+  if (m < 60) return `${m}분 전`;
+  if (h < 24) return `${h}시간 전`;
+  if (d <  7) return `${d}일 전`;
+  return new Date(iso).toLocaleDateString('ko-KR', { month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function stageFrom(badge) {
+  if (badge === 'rumor')    return 1;
+  if (badge === 'official') return 2;
+  if (badge === 'done')     return 3;
+  return 1;
+}
+
+function render(p, related) {
+  const bm    = BADGE[p.badge] || BADGE.rumor;
+  const fee   = p.fee && p.fee !== '-' ? p.fee : null;
+  const stage = stageFrom(p.badge);
+  const STAGES = ['루머', '협상', '확정'];
+
+  const progressHtml = `
+    <div class="td-progress">
+      ${STAGES.map((s, i) => {
+        const done    = i + 1 < stage;
+        const current = i + 1 === stage;
+        const line    = i < 2
+          ? `<div class="td-step-line${done ? ' done' : ''}"></div>`
+          : '';
+        return `
+          <div class="td-step${done ? ' done' : ''}${current ? ' current' : ''}">
+            <div class="td-step-dot"></div>
+            <div class="td-step-label">${s}</div>
+          </div>${line}`;
+      }).join('')}
+    </div>`;
+
+  const relatedHtml = related.length ? `
+    <div class="td-divider"></div>
+    <div class="td-related-title">관련 이적 소식</div>
+    <div class="td-related-list">
+      ${related.map(r => {
+        const rbm = BADGE[r.badge] || BADGE.rumor;
+        return `
+          <a class="td-related-item" href="/transfers/${r.id}">
+            <span class="${rbm.cls}" style="font-size:10px;padding:1px 7px;flex-shrink:0;">${rbm.label}</span>
+            <div>
+              <div class="td-related-name">${r.player}</div>
+              <div class="td-related-route">${r.from_team||'?'} → ${r.to_team||'?'}</div>
+            </div>
+            <span class="td-related-time">${timeAgo(r.updated_at)}</span>
+          </a>`;
+      }).join('')}
+    </div>` : '';
+
+  document.title = `${p.player} 이적 — Kickoff`;
+  document.getElementById('tdWrap').innerHTML = `
+    <a class="td-back" href="/transfers">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      목록으로
+    </a>
+
+    <div class="td-meta">
+      <span class="${bm.cls}">${bm.label}</span>
+      ${p.hot == 1 ? '<span class="td-hot-badge">🔥 HOT</span>' : ''}
+      <span class="td-time">업데이트 ${timeAgo(p.updated_at)}</span>
+    </div>
+
+    <div class="td-player">${p.player}</div>
+
+    <div class="td-transfer">
+      <div class="td-club">
+        <div class="td-club-label">이전 클럽</div>
+        <div class="td-club-name">${p.from_team || '미정'}</div>
+      </div>
+      <div class="td-arrow">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path d="M4 14h20M16 7l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="td-club td-club-to">
+        <div class="td-club-label">이적 클럽</div>
+        <div class="td-club-name">${p.to_team || '미정'}</div>
+      </div>
+    </div>
+
+    ${progressHtml}
+
+    <div class="td-info-row">
+      <span class="td-fee${fee ? '' : ' unknown'}">${fee ? '💰 ' + fee : '이적료 미공개'}</span>
+      ${p.source ? `<span class="td-source">출처 <strong>${p.source}</strong></span>` : ''}
+    </div>
+
+    <div class="td-divider"></div>
+
+    ${p.detail
+      ? `<div class="td-detail">${p.detail}</div>`
+      : `<div class="td-detail-empty">세부 내용이 아직 입력되지 않았습니다.</div>`
+    }
+
+    ${relatedHtml}
+  `;
+}
+
+async function load() {
+  const id = location.pathname.split('/').pop();
+  try {
+    const [postRes, allRes] = await Promise.all([
+      fetch(`/api/transfer-posts/${id}`),
+      fetch('/api/transfer-posts'),
+    ]);
+    if (!postRes.ok) throw new Error('not found');
+    const post    = await postRes.json();
+    const all     = allRes.ok ? await allRes.json() : [];
+    // related: same badge or team, excluding this post, max 4
+    const related = all
+      .filter(p => p.id !== id && (
+        p.from_team === post.from_team ||
+        p.to_team   === post.to_team   ||
+        p.badge     === post.badge
+      ))
+      .slice(0, 4);
+    render(post, related);
+  } catch {
+    document.getElementById('tdWrap').innerHTML = `
+      <a class="td-back" href="/transfers">← 목록으로</a>
+      <div class="td-loading">
+        <div style="font-size:32px;margin-bottom:12px;">🏜️</div>
+        <p>이적 소식을 찾을 수 없습니다.</p>
+      </div>`;
+  }
+}
+
+load();
+</script>
+</body>
+</html>

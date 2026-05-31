@@ -1,0 +1,10 @@
+[
+  {
+    "id": "1",
+    "username": "admin",
+    "email": "admin@kickoff.com",
+    "passwordHash": "$2b$10$k6Fd7Sy9SDtmkJm.fXoQOOUGRR4nWkJcotx7loyaiKjtlj34HGfju",
+    "role": "admin",
+    "createdAt": "2026-05-12T16:59:02.555Z"
+  }
+]
