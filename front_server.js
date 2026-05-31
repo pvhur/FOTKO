@@ -534,6 +534,29 @@ app.post('/api/notify/kakao', requireAuth, async (req, res) => {
   }
 });
 
+// 진단용: 현재 사용자에게 직접 테스트 메모 발송하고 카카오 응답 그대로 반환
+app.get('/api/notify/test', requireAuth, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM users WHERE id=$1', [req.session.userId]);
+    const u = rows[0];
+    if (!u) return res.json({ error: 'no_user' });
+    const token = await kakaoValidToken(u);
+    if (!token) return res.json({ error: 'no_token', hasAccess: !!u.kakao_access_token, hasRefresh: !!u.kakao_refresh_token });
+    const template = { object_type:'text', text:'🔔 Kickoff 테스트 알림',
+      link:{ web_url:'https://fotko.vercel.app/kickoff/transfers', mobile_web_url:'https://fotko.vercel.app/kickoff/transfers' },
+      button_title:'보기' };
+    const r = await fetch(KAKAO_MEMO_URL, {
+      method:'POST',
+      headers:{ 'Authorization':`Bearer ${token}`, 'Content-Type':'application/x-www-form-urlencoded' },
+      body:new URLSearchParams({ template_object: JSON.stringify(template) }),
+    });
+    const body = await r.text();
+    res.json({ status: r.status, body });
+  } catch (e) {
+    res.json({ error: e.message });
+  }
+});
+
 /* ── 카카오 토큰 갱신 + 발송 헬퍼 ── */
 async function kakaoValidToken(user) {
   if (!user.kakao_refresh_token && !user.kakao_access_token) return null;
