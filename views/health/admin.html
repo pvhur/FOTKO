@@ -829,18 +829,28 @@ function renderPopular() {
 }
 function mkPopularRow(p={}) {
   const d = document.createElement('div');
-  d.className = 'edit-row'; d.dataset.row = '1';
+  d.className = 'news-edit-row'; d.dataset.row = '1';
   d.innerHTML = `
-    <input type="text" value="${ESC(p.title)}" placeholder="기사 제목" style="flex:1;" />
-    <input type="text" value="${ESC(p.meta)}"  placeholder="출처 · 시간" style="width:160px;color:var(--ink-subtle);" />
-    ${DEL}`;
+    <div class="news-edit-top" style="margin-bottom:6px;">
+      <input type="text" value="${ESC(p.meta)}" placeholder="출처 · 시간 (예: 프리미어리그 · 2시간 전)" style="width:200px;background:rgba(94,106,210,.08);border:1px solid rgba(94,106,210,.15);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--ink-subtle);font-size:11px;outline:none;" />
+      <div style="flex:1;"></div>
+      <button class="del-btn" onclick="this.closest('[data-row]').remove();updateCounts();" title="삭제"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </div>
+    <input type="text" value="${ESC(p.title)}" placeholder="기사 제목" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink);font-size:13px;font-weight:500;" />
+    <div class="mt8" style="border-top:1px solid var(--hairline);padding-top:8px;margin-top:8px;">
+      <button type="button" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.textContent=this.textContent.includes('▸')?'▾ 전문 접기':'▸ 전문 펼치기';" style="background:none;border:none;font-size:11px;color:var(--ink-tertiary);cursor:pointer;padding:0;letter-spacing:.2px;">▸ 전문 펼치기</button>
+      <div style="display:none;margin-top:6px;">
+        <textarea class="inp" rows="6" placeholder="기사 전문을 입력하세요. 독자가 클릭하면 이 내용이 표시됩니다." style="font-size:13px;line-height:1.6;">${ESC(p.content||'')}</textarea>
+      </div>
+    </div>`;
   return d;
 }
 function addPopular() { document.getElementById('popularList').appendChild(mkPopularRow()); updateCounts(); }
 function collectPopular() {
   D.popular = [...document.querySelectorAll('#popularList [data-row]')].map(r => {
-    const ins = r.querySelectorAll('input');
-    return { title:ins[0].value, meta:ins[1].value };
+    const inputs   = r.querySelectorAll('input');
+    const textarea = r.querySelector('textarea');
+    return { meta:inputs[0].value, title:inputs[1].value, content:textarea?.value||'' };
   });
 }
 
@@ -854,6 +864,7 @@ function mkNewsRow(n={}) {
   const d = document.createElement('div');
   d.className = 'news-edit-row'; d.dataset.row = '1';
   const badgeOpts = BADGE_OPTS.map(b=>`<option value="${b}" ${n.badge===b?'selected':''}>${BADGE_LABEL[b]||b}</option>`).join('');
+  const contentId = 'nc_' + Math.random().toString(36).slice(2);
   d.innerHTML = `
     <div class="news-edit-top">
       <input type="text" value="${ESC(n.category)}" placeholder="카테고리" style="width:110px;background:rgba(94,106,210,.1);border:1px solid rgba(94,106,210,.2);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--primary-hover);font-size:11px;font-weight:500;outline:none;text-transform:uppercase;letter-spacing:.3px;" />
@@ -865,15 +876,23 @@ function mkNewsRow(n={}) {
     <input type="text" value="${ESC(n.title)}" placeholder="기사 제목" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink);font-size:13px;font-weight:500;" />
     <div class="mt8">
       <input type="text" value="${ESC(n.desc)}" placeholder="기사 요약" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink-subtle);font-size:12px;" />
+    </div>
+    <div class="mt8" style="border-top:1px solid var(--hairline);padding-top:8px;">
+      <button type="button" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.textContent=this.textContent.includes('▸')?'▾ 전문 접기':'▸ 전문 펼치기';" style="background:none;border:none;font-size:11px;color:var(--ink-tertiary);cursor:pointer;padding:0;letter-spacing:.2px;">▸ 전문 펼치기</button>
+      <div style="display:none;margin-top:6px;">
+        <textarea class="inp" rows="6" placeholder="기사 전문을 입력하세요. 독자가 기사를 클릭하면 이 내용이 표시됩니다." style="font-size:13px;line-height:1.6;">${ESC(n.content||'')}</textarea>
+      </div>
     </div>`;
   return d;
 }
 function addNews() { document.getElementById('newsList').appendChild(mkNewsRow()); updateCounts(); }
 function collectNews() {
   D.news = [...document.querySelectorAll('#newsList [data-row]')].map(r => {
-    const inputs  = r.querySelectorAll('input');
-    const selects = r.querySelectorAll('select');
-    return { category:inputs[0].value, badge:selects[0].value, time:inputs[1].value, title:inputs[2].value, desc:inputs[3].value };
+    const inputs    = r.querySelectorAll('input');
+    const selects   = r.querySelectorAll('select');
+    const textarea  = r.querySelector('textarea');
+    return { category:inputs[0].value, badge:selects[0].value, time:inputs[1].value,
+             title:inputs[2].value, desc:inputs[3].value, content:textarea?.value||'' };
   });
 }
 

@@ -81,6 +81,22 @@
     .transfer-fee { font-size:13px; color:var(--ink-subtle); }
     .transfer-fee strong { color:var(--ink); font-weight:600; }
 
+    /* ── 기사 모달 ── */
+    .article-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s; }
+    .article-overlay.open { opacity:1; pointer-events:all; }
+    .article-modal { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); width:100%; max-width:720px; max-height:88vh; overflow-y:auto; position:relative; }
+    .article-modal::before { content:''; display:block; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent); }
+    .article-modal-head { position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:14px 24px; background:var(--surface-1); border-bottom:1px solid var(--hairline); }
+    .article-modal-head .category { font-size:11px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:.5px; }
+    .article-modal-close { width:30px; height:30px; border-radius:var(--r-md); background:var(--surface-3); border:1px solid var(--hairline); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-subtle); transition:background .14s, color .14s; flex-shrink:0; }
+    .article-modal-close:hover { background:var(--surface-4); color:var(--ink); }
+    .article-modal-body { padding:32px 36px 40px; }
+    .article-modal-title { font-size:clamp(20px,2.5vw,28px); font-weight:700; line-height:1.2; letter-spacing:-.6px; margin-bottom:14px; }
+    .article-modal-meta { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ink-tertiary); margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--hairline); }
+    .article-modal-desc { font-size:15px; color:var(--ink-muted); line-height:1.7; margin-bottom:24px; font-style:italic; }
+    .article-modal-content { font-size:15px; line-height:1.85; color:var(--ink-muted); word-break:keep-all; white-space:pre-wrap; }
+    .article-modal-empty { font-size:14px; color:var(--ink-tertiary); text-align:center; padding:32px 0; }
+
     /* CTA */
     .cta-panel { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); padding:52px; display:grid; grid-template-columns:1fr auto; align-items:center; gap:32px; position:relative; overflow:hidden; }
     .cta-panel::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 50% 80% at 0% 50%,rgba(94,106,210,.07),transparent); pointer-events:none; }
@@ -244,6 +260,7 @@ let activeLeague = 'pl';
 async function loadData() {
   const res = await fetch('/api/data');
   const d   = await res.json();
+  window._fd = d;
   renderTicker(d.breaking);
   renderFeatured(d.featured);
   renderScoreboard(d.scores);
@@ -304,7 +321,7 @@ function renderPopular(items) {
     <div class="popular-wrap">
       <div class="popular-header">많이 본 기사</div>
       ${items.map((it, i) => `
-        <div class="popular-item">
+        <div class="popular-item" onclick="openArticle('popular',${i})">
           <div class="popular-num">0${i+1}</div>
           <div>
             <div class="popular-title">${it.title}</div>
@@ -315,10 +332,10 @@ function renderPopular(items) {
 }
 
 function renderNews(items) {
-  document.getElementById('newsGrid').innerHTML = items.map(n => {
+  document.getElementById('newsGrid').innerHTML = items.map((n, i) => {
     const [bc, bt] = BADGE_MAP[n.badge] || ['badge-result', n.badge];
     return `
-      <article class="news-card">
+      <article class="news-card" style="cursor:pointer;" onclick="openArticle('news',${i})">
         <div class="news-thumb"><div class="news-thumb-inner">${NEWS_SVG}</div></div>
         <div class="news-body">
           <div class="news-category">${n.category}</div>
@@ -354,8 +371,63 @@ function renderTransfers(items) {
   }).join('');
 }
 
+function openArticle(type, idx) {
+  const item = type === 'news'
+    ? (window._fd?.news || [])[idx]
+    : (window._fd?.popular || [])[idx];
+  if (!item) return;
+
+  document.getElementById('modalCategory').textContent = item.category || '';
+  document.getElementById('modalTitle').textContent    = item.title || '';
+  document.getElementById('modalDesc').textContent     = item.desc  || '';
+  document.getElementById('modalMeta').innerHTML =
+    `<span>${item.time || ''}</span>` +
+    (item.author ? `<span>·</span><span>${item.author}</span>` : '');
+
+  const contentEl = document.getElementById('modalContent');
+  if (item.content && item.content.trim()) {
+    contentEl.textContent = item.content;
+    contentEl.style.display = 'block';
+  } else {
+    contentEl.style.display = 'none';
+  }
+
+  const overlay = document.getElementById('articleOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('articleModal').scrollTop = 0;
+}
+
+function closeArticle(e) {
+  if (e && e.target !== document.getElementById('articleOverlay')) return;
+  closeArticleDirect();
+}
+function closeArticleDirect() {
+  document.getElementById('articleOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArticleDirect(); });
+
 loadData();
 </script>
+<!-- 기사 전문 모달 -->
+<div class="article-overlay" id="articleOverlay" onclick="closeArticle(event)">
+  <div class="article-modal" id="articleModal">
+    <div class="article-modal-head">
+      <span class="category" id="modalCategory"></span>
+      <div class="article-modal-close" onclick="closeArticleDirect()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="article-modal-body">
+      <h2 class="article-modal-title" id="modalTitle"></h2>
+      <div class="article-modal-meta" id="modalMeta"></div>
+      <p class="article-modal-desc" id="modalDesc"></p>
+      <div class="article-modal-content" id="modalContent"></div>
+    </div>
+  </div>
+</div>
+
 <script src="/js/kickoff-nav.js"></script>
 </body>
 </html>
