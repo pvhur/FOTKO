@@ -64,6 +64,7 @@
       animation: pulse 1.4s ease-in-out infinite;
       flex-shrink: 0;
     }
+    .burn-flame { width:.78em; height:.78em; vertical-align:-.04em; display:inline-block; filter:drop-shadow(0 0 14px rgba(239,68,68,.5)); }
     .burn-title {
       font-size: clamp(40px, 6vw, 80px);
       font-weight: 700;
@@ -202,6 +203,7 @@
     .tf-league-head { display:flex; align-items:center; gap:9px; padding:11px 14px; cursor:pointer; transition:background .12s; user-select:none; }
     .tf-league-head:hover { background:var(--surface-2); }
     .tf-league-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+    .tf-league-logo { width:20px; height:20px; object-fit:contain; flex-shrink:0; }
     .tf-league-name { font-size:13px; font-weight:600; flex:1; }
     .tf-league-cnt { font-size:11px; color:var(--ink-tertiary); }
     .tf-league-arrow { color:var(--ink-tertiary); transition:transform .18s; }
@@ -284,7 +286,7 @@
       2026 SUMMER WINDOW · LIVE
     </div>
 
-    <h1 class="burn-title">이적시장<br>버닝 🔥</h1>
+    <h1 class="burn-title">이적시장<br>버닝 <svg class="burn-flame" viewBox="0 0 24 24" fill="none" aria-hidden="true"><defs><linearGradient id="flameGrad" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fca5a5"/><stop offset="1" stop-color="#ef4444"/></linearGradient></defs><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" fill="url(#flameGrad)"/></svg></h1>
     <p class="burn-sub">공식 발표부터 최신 루머까지, 이번 여름 이적시장의 모든 소식을 실시간으로 전합니다.</p>
 
     <!-- 통계 -->
@@ -411,31 +413,31 @@
 <script>
 /* ── 유럽 5대리그 팀 데이터 ── */
 const LEAGUES = [
-  { id:'pl', name:'Premier League', color:'#3d195b', teams:[
+  { id:'pl', name:'Premier League', color:'#3d195b', leagueId:39, teams:[
     {id:42,name:'Arsenal'},{id:66,name:'Aston Villa'},{id:35,name:'Bournemouth'},{id:55,name:'Brentford'},
     {id:51,name:'Brighton'},{id:49,name:'Chelsea'},{id:52,name:'Crystal Palace'},{id:45,name:'Everton'},
     {id:36,name:'Fulham'},{id:57,name:'Ipswich Town'},{id:46,name:'Leicester City'},{id:40,name:'Liverpool'},
     {id:50,name:'Manchester City'},{id:33,name:'Manchester United'},{id:34,name:'Newcastle'},{id:65,name:'Nottm Forest'},
     {id:41,name:'Southampton'},{id:47,name:'Tottenham'},{id:48,name:'West Ham'},{id:39,name:'Wolverhampton'} ]},
-  { id:'ll', name:'La Liga', color:'#ee8208', teams:[
+  { id:'ll', name:'La Liga', color:'#ee8208', leagueId:140, teams:[
     {id:541,name:'Real Madrid'},{id:529,name:'Barcelona'},{id:530,name:'Atletico Madrid'},{id:536,name:'Sevilla'},
     {id:548,name:'Real Sociedad'},{id:531,name:'Athletic Bilbao'},{id:532,name:'Valencia'},{id:533,name:'Villarreal'},
     {id:543,name:'Real Betis'},{id:546,name:'Getafe'},{id:547,name:'Girona'},{id:537,name:'Osasuna'},
     {id:542,name:'Rayo Vallecano'},{id:538,name:'Celta Vigo'},{id:534,name:'Las Palmas'},{id:539,name:'Mallorca'},
     {id:540,name:'Espanyol'},{id:544,name:'Alaves'},{id:545,name:'Valladolid'},{id:723,name:'Leganes'} ]},
-  { id:'bl', name:'Bundesliga', color:'#d20515', teams:[
+  { id:'bl', name:'Bundesliga', color:'#d20515', leagueId:78, teams:[
     {id:157,name:'Bayern Munich'},{id:165,name:'Dortmund'},{id:173,name:'RB Leipzig'},{id:168,name:'Bayer Leverkusen'},
     {id:169,name:'Eintracht Frankfurt'},{id:163,name:'Gladbach'},{id:172,name:'Stuttgart'},{id:161,name:'Wolfsburg'},
     {id:160,name:'Freiburg'},{id:159,name:'Augsburg'},{id:164,name:'Mainz'},{id:167,name:'Hoffenheim'},
     {id:170,name:'Werder Bremen'},{id:162,name:'Union Berlin'},{id:176,name:'Heidenheim'},{id:182,name:'St. Pauli'},
     {id:177,name:'Holstein Kiel'},{id:183,name:'Bochum'} ]},
-  { id:'sa', name:'Serie A', color:'#024494', teams:[
+  { id:'sa', name:'Serie A', color:'#024494', leagueId:135, teams:[
     {id:505,name:'Inter Milan'},{id:489,name:'AC Milan'},{id:496,name:'Juventus'},{id:492,name:'Napoli'},
     {id:497,name:'Roma'},{id:487,name:'Lazio'},{id:499,name:'Atalanta'},{id:502,name:'Fiorentina'},
     {id:500,name:'Bologna'},{id:503,name:'Torino'},{id:504,name:'Udinese'},{id:450,name:'Verona'},
     {id:488,name:'Cagliari'},{id:490,name:'Genoa'},{id:508,name:'Empoli'},{id:586,name:'Como'},
     {id:588,name:'Monza'},{id:494,name:'Parma'},{id:867,name:'Lecce'},{id:517,name:'Venezia'} ]},
-  { id:'l1', name:'Ligue 1', color:'#091c3e', teams:[
+  { id:'l1', name:'Ligue 1', color:'#091c3e', leagueId:61, teams:[
     {id:85,name:'Paris Saint-Germain'},{id:91,name:'Monaco'},{id:81,name:'Marseille'},{id:80,name:'Lyon'},
     {id:84,name:'Nice'},{id:94,name:'Rennes'},{id:116,name:'Lens'},{id:79,name:'Lille'},
     {id:95,name:'Strasbourg'},{id:130,name:'Brest'},{id:83,name:'Nantes'},{id:93,name:'Reims'},
@@ -443,6 +445,7 @@ const LEAGUES = [
     {id:244,name:'Saint-Etienne'},{id:82,name:'Montpellier'} ]},
 ];
 const LOGO = id => `https://media.api-sports.io/football/teams/${id}.png`;
+const LEAGUE_LOGO = id => `https://media.api-sports.io/football/leagues/${id}.png`;
 const TEAM_BY_ID = {};
 LEAGUES.forEach(lg => lg.teams.forEach(t => { TEAM_BY_ID[t.id] = { ...t, leagueId: lg.id }; }));
 
@@ -581,7 +584,8 @@ function renderSidebar() {
     return `
       <div class="tf-league ${open?'open':''}" id="lg-${lg.id}">
         <div class="tf-league-head" onclick="toggleLeague('${lg.id}')">
-          <span class="tf-league-dot" style="background:${lg.color};"></span>
+          <img class="tf-league-logo" src="${LEAGUE_LOGO(lg.leagueId)}" alt="" loading="lazy"
+            onerror="this.outerHTML='<span class=&quot;tf-league-dot&quot; style=&quot;background:${lg.color}&quot;></span>'" />
           <span class="tf-league-name">${lg.name}</span>
           <span class="tf-league-cnt">${lg.teams.length}</span>
           <svg class="tf-league-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
