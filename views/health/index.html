@@ -280,7 +280,7 @@ function renderPopularNews(items) {
     '<div style="grid-column:1/-1;color:var(--ink-tertiary);font-size:14px;padding:24px 0;">등록된 인기 뉴스가 없습니다.</div>'; return; }
   document.getElementById('popularGrid').innerHTML = items.map((p, i) => `
     <article class="news-card" style="cursor:pointer;" onclick="openPopular(${i})">
-      <div class="news-thumb"><div class="news-thumb-inner">${NEWS_SVG}</div></div>
+      <div class="news-thumb">${p.image ? `<img src="${p.image}" alt="" style="width:100%;height:100%;object-fit:cover;" />` : `<div class="news-thumb-inner">${NEWS_SVG}</div>`}</div>
       <div class="news-body">
         <div class="news-category">인기</div>
         <div class="news-title">${p.title || ''}</div>
@@ -295,7 +295,8 @@ function renderPopularNews(items) {
 function openPopular(i) {
   const p = (window._fd?.popular || [])[i];
   if (!p) return;
-  document.getElementById('modalImage').style.display = 'none';
+  const mImg = document.getElementById('modalImage');
+  if (p.image) { mImg.src = p.image; mImg.style.display = 'block'; } else { mImg.style.display = 'none'; }
   document.getElementById('modalCategory').textContent = '인기뉴스';
   document.getElementById('modalTitle').textContent    = p.title || '';
   document.getElementById('modalMeta').innerHTML       = `<span>${p.meta || ''}</span>`;
