@@ -54,7 +54,7 @@
 
     /* ── Form inputs ── */
     .inp { width:100%; background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:8px 11px; color:var(--ink); font-size:13px; outline:none; transition:border-color .14s, box-shadow .14s; }
-    .inp:focus { border-color:var(--primary-focus); box-shadow:0 0 0 2px rgba(94,106,210,.18); }
+    .inp:focus { border-color:var(--primary-focus); box-shadow:0 0 0 2px rgba(34,197,94,.18); }
     .inp::placeholder { color:var(--ink-tertiary); }
     textarea.inp { resize:vertical; }
     select.inp { cursor:pointer; }
@@ -66,7 +66,7 @@
 
     /* ── Role badges ── */
     .role-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:var(--r-pill); font-size:11px; font-weight:600; letter-spacing:.3px; text-transform:uppercase; }
-    .role-admin  { background:rgba(94,106,210,.15); color:var(--primary-hover); border:1px solid rgba(94,106,210,.25); }
+    .role-admin  { background:rgba(34,197,94,.15); color:var(--primary-hover); border:1px solid rgba(34,197,94,.25); }
     .role-editor { background:var(--success-dim); color:var(--success); border:1px solid rgba(39,166,68,.2); }
 
     /* ── ① LOGIN / SIGNUP SCREENS ── */
@@ -107,7 +107,7 @@
     .sidebar-item:hover { background:var(--surface-2); color:var(--ink-muted); }
     .sidebar-item.active { background:var(--surface-2); color:var(--ink); }
     .sidebar-item .si-icon { width:22px; height:22px; border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--surface-3); }
-    .sidebar-item.active .si-icon { background:rgba(94,106,210,.2); }
+    .sidebar-item.active .si-icon { background:rgba(34,197,94,.2); }
     .sidebar-item .si-icon svg { color:var(--ink-tertiary); }
     .sidebar-item.active .si-icon svg { color:var(--primary-hover); }
     .si-count { margin-left:auto; background:var(--surface-3); border-radius:var(--r-xs,4px); padding:1px 7px; font-size:11px; color:var(--ink-tertiary); }
@@ -191,7 +191,7 @@
     .preview-badges { display:flex; gap:6px; margin-bottom:10px; }
     .preview-badge { padding:2px 8px; border-radius:var(--r-pill); font-size:11px; font-weight:500; }
     .pb-live { background:rgba(239,68,68,.12); color:#f87171; border:1px solid rgba(239,68,68,.2); }
-    .pb-tag  { background:rgba(94,106,210,.14); color:var(--primary-hover); border:1px solid rgba(94,106,210,.2); }
+    .pb-tag  { background:rgba(34,197,94,.14); color:var(--primary-hover); border:1px solid rgba(34,197,94,.2); }
     .preview-title { font-size:15px; font-weight:600; line-height:1.3; letter-spacing:-.2px; margin-bottom:8px; }
     .preview-desc  { font-size:12px; color:var(--ink-subtle); line-height:1.5; }
     .preview-author { margin-top:12px; padding-top:10px; border-top:1px solid var(--hairline); font-size:11px; color:var(--ink-tertiary); }
@@ -241,7 +241,7 @@
     .tp-input-row { display:flex; gap:4px; align-items:center; }
     .tp-input-row input { flex:1; min-width:0; }
     .tp-btn { flex-shrink:0; background:var(--surface-3); border:1px solid var(--hairline); border-radius:var(--r-sm); padding:5px 8px; color:var(--ink-subtle); font-size:11px; font-weight:600; cursor:pointer; transition:background .12s, color .12s; white-space:nowrap; }
-    .tp-btn:hover { background:rgba(94,106,210,.15); color:var(--primary-hover); border-color:rgba(94,106,210,.3); }
+    .tp-btn:hover { background:rgba(34,197,94,.15); color:var(--primary-hover); border-color:rgba(34,197,94,.3); }
     .tp-dropdown { position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:999; background:var(--surface-2); border:1px solid var(--hairline-strong); border-radius:var(--r-lg); box-shadow:0 12px 40px rgba(0,0,0,.6); display:none; min-width:280px; }
     .tp-dropdown.open { display:block; }
     .tp-league-tabs { display:flex; border-bottom:1px solid var(--hairline); overflow-x:auto; scrollbar-width:none; }
@@ -251,7 +251,7 @@
     .tp-ltab.active { color:var(--primary-hover); border-bottom-color:var(--primary); }
     .tp-team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; padding:8px; max-height:200px; overflow-y:auto; scrollbar-width:thin; }
     .tp-team-btn { display:flex; align-items:center; gap:6px; padding:5px 7px; border-radius:var(--r-sm); border:1px solid var(--hairline); background:var(--surface-3); color:var(--ink-subtle); font-size:11px; font-weight:500; cursor:pointer; transition:background .1s, color .1s, border-color .1s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .tp-team-btn:hover { background:rgba(94,106,210,.15); color:var(--primary-hover); border-color:rgba(94,106,210,.3); }
+    .tp-team-btn:hover { background:rgba(34,197,94,.15); color:var(--primary-hover); border-color:rgba(34,197,94,.3); }
     .tp-team-logo { width:14px; height:14px; object-fit:contain; flex-shrink:0; }
     .tp-team-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
@@ -836,11 +836,11 @@ function updateCounts() {
 
 /* ── DASHBOARD ── */
 const DASH_CARDS = [
-  { key:'breaking',  label:'속보 티커',  sub:'배너 문구',        color:'rgba(94,106,210,.18)',  tc:'var(--primary-hover)', section:'breaking'  },
+  { key:'breaking',  label:'속보 티커',  sub:'배너 문구',        color:'rgba(34,197,94,.18)',  tc:'var(--primary-hover)', section:'breaking'  },
   { key:'featured',  label:'메인 기사',  sub:'히어로 기사',       color:'rgba(251,191,36,.12)',  tc:'#fbbf24',              section:'featured'  },
   { key:'scores',    label:'경기 결과',  sub:'스코어보드',        color:'rgba(74,222,128,.1)',   tc:'#4ade80',              section:'scores'    },
   { key:'popular',   label:'인기 뉴스',  sub:'많이 본 기사',      color:'rgba(248,113,113,.1)', tc:'#f87171',              section:'popular'   },
-  { key:'news',      label:'최신 뉴스',  sub:'뉴스 그리드',       color:'rgba(94,106,210,.18)',  tc:'var(--primary-hover)', section:'news'      },
+  { key:'news',      label:'최신 뉴스',  sub:'뉴스 그리드',       color:'rgba(34,197,94,.18)',  tc:'var(--primary-hover)', section:'news'      },
   { key:'standings', label:'순위표',     sub:'4개 리그',          color:'rgba(251,191,36,.12)',  tc:'#fbbf24',              section:'standings' },
   { key:'fixtures',  label:'경기 일정',  sub:'예정 경기',         color:'rgba(74,222,128,.1)',   tc:'#4ade80',              section:'fixtures'  },
   { key:'transfers', label:'이적 시장',  sub:'이적 정보',         color:'rgba(248,113,113,.1)', tc:'#f87171',              section:'transfers' },
@@ -963,7 +963,7 @@ function mkPopularRow(p={}) {
   d.className = 'news-edit-row'; d.dataset.row = '1';
   d.innerHTML = `
     <div class="news-edit-top" style="margin-bottom:6px;">
-      <input type="text" value="${ESC(p.meta)}" placeholder="출처 · 시간 (예: 프리미어리그 · 2시간 전)" style="width:200px;background:rgba(94,106,210,.08);border:1px solid rgba(94,106,210,.15);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--ink-subtle);font-size:11px;outline:none;" />
+      <input type="text" value="${ESC(p.meta)}" placeholder="출처 · 시간 (예: 프리미어리그 · 2시간 전)" style="width:200px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--ink-subtle);font-size:11px;outline:none;" />
       <div style="flex:1;"></div>
       <button class="del-btn" onclick="this.closest('[data-row]').remove();updateCounts();" title="삭제"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
     </div>
@@ -998,7 +998,7 @@ function mkNewsRow(n={}) {
   const contentId = 'nc_' + Math.random().toString(36).slice(2);
   d.innerHTML = `
     <div class="news-edit-top">
-      <input type="text" value="${ESC(n.category)}" placeholder="카테고리" style="width:110px;background:rgba(94,106,210,.1);border:1px solid rgba(94,106,210,.2);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--primary-hover);font-size:11px;font-weight:500;outline:none;text-transform:uppercase;letter-spacing:.3px;" />
+      <input type="text" value="${ESC(n.category)}" placeholder="카테고리" style="width:110px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--primary-hover);font-size:11px;font-weight:500;outline:none;text-transform:uppercase;letter-spacing:.3px;" />
       <div style="flex:1;"></div>
       <select style="background:var(--surface-3);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:3px 8px;color:var(--ink);font-size:12px;outline:none;">${badgeOpts}</select>
       <input type="text" value="${ESC(n.time)}" placeholder="1시간 전" style="width:80px;color:var(--ink-tertiary);font-size:12px;" />
@@ -1139,7 +1139,7 @@ function mkTransferNewsRow(n={}) {
   d.className = 'news-edit-row'; d.dataset.row = '1';
   d.innerHTML = `
     <div class="news-edit-top">
-      <input type="text" value="${ESC(n.category)}" placeholder="카테고리" style="width:130px;background:rgba(94,106,210,.1);border:1px solid rgba(94,106,210,.2);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--primary-hover);font-size:11px;font-weight:500;outline:none;text-transform:uppercase;letter-spacing:.3px;" />
+      <input type="text" value="${ESC(n.category)}" placeholder="카테고리" style="width:130px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--primary-hover);font-size:11px;font-weight:500;outline:none;text-transform:uppercase;letter-spacing:.3px;" />
       <div style="flex:1;"></div>
       <input type="text" value="${ESC(n.time)}" placeholder="1시간 전" style="width:90px;color:var(--ink-tertiary);font-size:12px;" />
       <button class="del-btn" onclick="this.closest('[data-row]').remove();updateCounts();" title="삭제"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>

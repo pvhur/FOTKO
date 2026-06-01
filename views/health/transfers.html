@@ -21,9 +21,9 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 60% at 50% 110%, rgba(251,100,20,.38) 0%, rgba(180,40,0,.18) 40%, transparent 70%),
-        radial-gradient(ellipse 50% 40% at 30% 90%, rgba(251,150,20,.18) 0%, transparent 55%),
-        radial-gradient(ellipse 50% 40% at 70% 90%, rgba(220,60,0,.15) 0%, transparent 55%);
+        radial-gradient(ellipse 80% 60% at 50% 110%, rgba(239,68,68,.38) 0%, rgba(153,27,27,.18) 40%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 30% 90%, rgba(248,113,113,.18) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 70% 90%, rgba(185,28,28,.15) 0%, transparent 55%);
       pointer-events: none;
     }
     /* 불꽃 파티클 */
@@ -34,12 +34,12 @@
       width: 3px;
       height: 3px;
       border-radius: 50%;
-      background: #fbbf24;
+      background: #f87171;
       opacity: 0;
       animation: spark-rise var(--dur, 3s) ease-in var(--delay, 0s) infinite;
     }
-    .spark:nth-child(odd) { background:#f97316; width:2px; height:2px; }
-    .spark:nth-child(3n) { background:#fef08a; width:2px; height:4px; border-radius:2px; }
+    .spark:nth-child(odd) { background:#ef4444; width:2px; height:2px; }
+    .spark:nth-child(3n) { background:#fca5a5; width:2px; height:4px; border-radius:2px; }
     @keyframes spark-rise {
       0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
       10%  { opacity: .9; }
@@ -51,16 +51,16 @@
     .burn-live-badge {
       display: inline-flex; align-items: center; gap: 7px;
       padding: 5px 13px;
-      background: rgba(249,115,22,.15);
-      border: 1px solid rgba(249,115,22,.3);
+      background: rgba(239,68,68,.15);
+      border: 1px solid rgba(239,68,68,.3);
       border-radius: var(--r-pill);
-      font-size: 12px; font-weight: 600; color: #fb923c;
+      font-size: 12px; font-weight: 600; color: #f87171;
       letter-spacing: .4px; text-transform: uppercase;
       margin-bottom: 20px;
     }
     .burn-live-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: #f97316;
+      background: #ef4444;
       animation: pulse 1.4s ease-in-out infinite;
       flex-shrink: 0;
     }
@@ -69,7 +69,7 @@
       font-weight: 700;
       line-height: 1.05;
       letter-spacing: -2px;
-      background: linear-gradient(135deg, #fff 0%, #fde68a 45%, #f97316 100%);
+      background: linear-gradient(135deg, #fff 0%, #fecaca 45%, #ef4444 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -93,8 +93,8 @@
       min-width: 80px;
       backdrop-filter: blur(4px);
     }
-    .burn-stat-val { font-size: 22px; font-weight: 700; color: #fbbf24; letter-spacing: -.5px; }
-    .burn-stat-val.orange { color: #fb923c; }
+    .burn-stat-val { font-size: 22px; font-weight: 700; color: #f87171; letter-spacing: -.5px; }
+    .burn-stat-val.orange { color: #f87171; }
     .burn-stat-val.green  { color: #4ade80; }
     .burn-stat-val.blue   { color: var(--primary-hover); }
     .burn-stat-val.white  { color: var(--ink-muted); }
@@ -104,13 +104,13 @@
       display:flex; align-items:center; gap:16px;
       padding:14px 20px;
       background: rgba(255,255,255,.04);
-      border: 1px solid rgba(249,115,22,.2);
+      border: 1px solid rgba(239,68,68,.2);
       border-radius: var(--r-lg);
       margin-bottom: 24px;
     }
     .window-icon {
       width:36px; height:36px; border-radius:var(--r-md);
-      background: rgba(249,115,22,.15);
+      background: rgba(239,68,68,.15);
       display:flex; align-items:center; justify-content:center; flex-shrink:0;
     }
     .window-info h3 { font-size:13px; font-weight:600; margin-bottom:2px; }
@@ -153,7 +153,7 @@
     .detail-club-label { font-size:11px; color:var(--ink-tertiary); margin-bottom:4px; }
     .detail-club-name { font-size:15px; font-weight:700; color:var(--ink); }
     .detail-arrow { color:var(--ink-tertiary); flex-shrink:0; }
-    .detail-body { font-size:13px; line-height:1.7; color:var(--ink-muted); padding:14px 16px; background:rgba(94,106,210,.06); border:1px solid rgba(94,106,210,.15); border-left:3px solid var(--primary); border-radius:var(--r-md); word-break:keep-all; }
+    .detail-body { font-size:13px; line-height:1.7; color:var(--ink-muted); padding:14px 16px; background:rgba(34,197,94,.06); border:1px solid rgba(34,197,94,.15); border-left:3px solid var(--primary); border-radius:var(--r-md); word-break:keep-all; }
     .detail-body-label { font-size:10px; color:var(--primary-hover); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
 
     /* 관련기사 그리드 */
@@ -314,14 +314,14 @@
     <!-- 창구 배너 -->
     <div class="window-banner">
       <div class="window-icon">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M10 3l7 7-7 7" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M10 3l7 7-7 7" stroke="#f87171" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="window-info">
         <h3>이적 창구 열림</h3>
         <p>2026.06.01 개막 · 2026.09.01 마감</p>
       </div>
       <div class="window-badge">
-        <span class="badge" style="background:rgba(249,115,22,.15);color:#fb923c;border-color:rgba(249,115,22,.25);">● 진행 중</span>
+        <span class="badge" style="background:rgba(239,68,68,.15);color:#f87171;border-color:rgba(239,68,68,.25);">● 진행 중</span>
       </div>
     </div>
 
