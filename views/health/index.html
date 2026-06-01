@@ -206,7 +206,11 @@
       </div>
       <a href="/kickoff/transfers" class="btn btn-secondary btn-sm">전체 이적 뉴스</a>
     </div>
+    <div class="tr-filter" id="transferFilter" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;"></div>
     <div class="transfer-grid" id="transferGrid"></div>
+    <div style="text-align:center;margin-top:24px;">
+      <button id="transferMore" class="btn btn-secondary btn-sm" style="display:none;" onclick="window._trShowAll=true;renderTransfers();">더 보기</button>
+    </div>
   </div>
 </section>
 
@@ -271,7 +275,7 @@ async function loadData() {
   window._fd = d;
   renderPopularNews(d.popular);
   renderNews(d.news);
-  renderTransfers(d.transfers);
+  renderTransfers();
 }
 
 function renderPopularNews(items) {
@@ -334,11 +338,35 @@ function renderNews(items) {
 }
 
 
-function renderTransfers(items) {
-  document.getElementById('transferGrid').innerHTML = items.map((t, i) => {
+const TR_FILTERS = [
+  { k:'all', l:'전체' }, { k:'official', l:'공식 발표' },
+  { k:'rumor', l:'루머' }, { k:'done', l:'완료' },
+];
+let _trFilter = 'all';
+const TR_LIMIT = 6;
+
+function setTrFilter(k) { _trFilter = k; window._trShowAll = false; renderTransfers(); }
+
+function renderTransfers() {
+  const all = window._fd?.transfers || [];
+
+  // 상태 필터 칩
+  const fb = document.getElementById('transferFilter');
+  if (fb) fb.innerHTML = TR_FILTERS.map(f => {
+    const cnt = f.k === 'all' ? all.length : all.filter(t => t.badge === f.k).length;
+    return `<div class="chip${f.k === _trFilter ? ' active' : ''}" onclick="setTrFilter('${f.k}')">${f.l} ${cnt}</div>`;
+  }).join('');
+
+  // 원본 인덱스 보존하며 필터
+  const list = all.map((t, idx) => ({ t, idx }))
+    .filter(x => _trFilter === 'all' || x.t.badge === _trFilter);
+  const showAll = !!window._trShowAll;
+  const shown = showAll ? list : list.slice(0, TR_LIMIT);
+
+  document.getElementById('transferGrid').innerHTML = shown.map(({ t, idx }) => {
     const [bc, bt] = BADGE_MAP[t.badge] || ['badge-result', t.badge];
     return `
-      <div class="transfer-card" onclick="openTransfer(${i})">
+      <div class="transfer-card" onclick="openTransfer(${idx})">
         <div class="transfer-header">
           <span class="badge ${bc}">${bt}</span>
           <span style="font-size:12px;color:var(--ink-tertiary);">${t.type}</span>
@@ -351,7 +379,10 @@ function renderTransfers(items) {
         </div>
         <div class="transfer-fee">이적료 <strong>${t.fee}</strong></div>
       </div>`;
-  }).join('');
+  }).join('') || `<div style="grid-column:1/-1;color:var(--ink-tertiary);font-size:14px;padding:24px 0;text-align:center;">해당 조건의 이적 소식이 없습니다.</div>`;
+
+  const more = document.getElementById('transferMore');
+  if (more) more.style.display = (list.length > TR_LIMIT && !showAll) ? 'inline-flex' : 'none';
 }
 
 function openTransfer(i) {

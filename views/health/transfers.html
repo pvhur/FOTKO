@@ -363,6 +363,9 @@
         </div>
       </div>
       <div class="transfer-news-grid" id="transferNews"></div>
+      <div style="text-align:center;margin-top:24px;">
+        <button id="transferNewsMore" class="btn btn-secondary btn-sm" style="display:none;" onclick="_tnShowAll=true;renderTransferNews();">더 보기</button>
+      </div>
     </div>
 
     </div><!-- /.tf-main -->
@@ -691,15 +694,17 @@ async function toggleFollow(teamId, teamName, leagueId, btn) {
   }
 }
 
+let _tnShowAll = false;
+const TN_LIMIT = 6;
+
 function renderTransferNews() {
-  // 이적시장 전용 관련뉴스(transferNews). 없으면 기존 news의 transfer 배지로 폴백.
-  const news = (_data.transferNews && _data.transferNews.length)
-    ? _data.transferNews
-    : (_data.news || []).filter(n => n.badge === 'transfer');
+  const news = _transferNewsList();
   if (!news.length) return;
 
   document.getElementById('transferNewsSection').style.display = 'block';
-  document.getElementById('transferNews').innerHTML = news.map((n, i) => `
+  const shown = _tnShowAll ? news : news.slice(0, TN_LIMIT);
+
+  document.getElementById('transferNews').innerHTML = shown.map((n, i) => `
     <article class="news-card" style="cursor:pointer;" onclick="openTransferNews(${i})">
       <div class="news-thumb"><div class="news-thumb-inner">${NEWS_SVG}</div></div>
       <div class="news-body">
@@ -712,6 +717,9 @@ function renderTransferNews() {
         </div>
       </div>
     </article>`).join('');
+
+  const more = document.getElementById('transferNewsMore');
+  if (more) more.style.display = (news.length > TN_LIMIT && !_tnShowAll) ? 'inline-flex' : 'none';
 }
 
 function _transferNewsList() {
