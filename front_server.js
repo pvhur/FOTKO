@@ -121,7 +121,7 @@ app.use('/api',      apiLimiter);
    바디 파싱
 ═══════════════════════════════════════════════════════ */
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '8mb' })); // 뉴스 이미지(base64) 업로드 여유
 
 /* ══════════════════════════════════════════════════════
    정적 파일

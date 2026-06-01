@@ -996,17 +996,26 @@ function mkNewsRow(n={}) {
   d.className = 'news-edit-row'; d.dataset.row = '1';
   const badgeOpts = BADGE_OPTS.map(b=>`<option value="${b}" ${n.badge===b?'selected':''}>${BADGE_LABEL[b]||b}</option>`).join('');
   const contentId = 'nc_' + Math.random().toString(36).slice(2);
+  const hasImg = !!(n.image && n.image.trim());
   d.innerHTML = `
     <div class="news-edit-top">
-      <input type="text" value="${ESC(n.category)}" placeholder="카테고리" style="width:110px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--primary-hover);font-size:11px;font-weight:500;outline:none;text-transform:uppercase;letter-spacing:.3px;" />
+      <input type="text" class="ni-cat" value="${ESC(n.category)}" placeholder="카테고리" style="width:110px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:var(--r-xs,4px);padding:2px 8px;color:var(--primary-hover);font-size:11px;font-weight:500;outline:none;text-transform:uppercase;letter-spacing:.3px;" />
       <div style="flex:1;"></div>
       <select style="background:var(--surface-3);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:3px 8px;color:var(--ink);font-size:12px;outline:none;">${badgeOpts}</select>
-      <input type="text" value="${ESC(n.time)}" placeholder="1시간 전" style="width:80px;color:var(--ink-tertiary);font-size:12px;" />
+      <input type="text" class="ni-time" value="${ESC(n.time)}" placeholder="1시간 전" style="width:80px;color:var(--ink-tertiary);font-size:12px;" />
       <button class="del-btn" onclick="this.closest('[data-row]').remove();updateCounts();" title="삭제"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
     </div>
-    <input type="text" value="${ESC(n.title)}" placeholder="기사 제목" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink);font-size:13px;font-weight:500;" />
+    <input type="text" class="ni-title" value="${ESC(n.title)}" placeholder="기사 제목" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink);font-size:13px;font-weight:500;" />
     <div class="mt8">
-      <input type="text" value="${ESC(n.desc)}" placeholder="기사 요약" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink-subtle);font-size:12px;" />
+      <input type="text" class="ni-desc" value="${ESC(n.desc)}" placeholder="기사 요약" style="width:100%;background:transparent;border:none;outline:none;color:var(--ink-subtle);font-size:12px;" />
+    </div>
+    <div class="mt8" style="display:flex;align-items:center;gap:8px;border-top:1px solid var(--hairline);padding-top:8px;">
+      <img class="ni-img-pv" src="${hasImg?n.image:''}" style="width:64px;height:36px;object-fit:cover;border-radius:var(--r-xs,4px);border:1px solid var(--hairline);${hasImg?'':'display:none;'}" />
+      <input type="hidden" class="ni-img" value="${ESC(n.image||'')}" />
+      <input type="file" class="ni-file" accept="image/*" style="display:none;" onchange="handleNewsImage(this)" />
+      <button type="button" class="btn btn-secondary btn-sm" onclick="this.parentElement.querySelector('.ni-file').click()">사진 업로드</button>
+      <input type="text" class="ni-img-url" placeholder="또는 이미지 URL" oninput="setNewsImageUrl(this)" style="flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-sm);padding:4px 8px;color:var(--ink);font-size:11px;outline:none;" />
+      <button type="button" class="ni-img-clear del-btn" onclick="clearNewsImage(this)" title="이미지 제거" style="${hasImg?'':'display:none;'}"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
     </div>
     <div class="mt8" style="border-top:1px solid var(--hairline);padding-top:8px;">
       <button type="button" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.textContent=this.textContent.includes('▸')?'▾ 전문 접기':'▸ 전문 펼치기';" style="background:none;border:none;font-size:11px;color:var(--ink-tertiary);cursor:pointer;padding:0;letter-spacing:.2px;">▸ 전문 펼치기</button>
@@ -1018,13 +1027,55 @@ function mkNewsRow(n={}) {
 }
 function addNews() { document.getElementById('newsList').appendChild(mkNewsRow()); updateCounts(); }
 function collectNews() {
-  D.news = [...document.querySelectorAll('#newsList [data-row]')].map(r => {
-    const inputs    = r.querySelectorAll('input');
-    const selects   = r.querySelectorAll('select');
-    const textarea  = r.querySelector('textarea');
-    return { category:inputs[0].value, badge:selects[0].value, time:inputs[1].value,
-             title:inputs[2].value, desc:inputs[3].value, content:textarea?.value||'' };
-  });
+  D.news = [...document.querySelectorAll('#newsList [data-row]')].map(r => ({
+    category: r.querySelector('.ni-cat').value,
+    badge:    r.querySelector('select').value,
+    time:     r.querySelector('.ni-time').value,
+    title:    r.querySelector('.ni-title').value,
+    desc:     r.querySelector('.ni-desc').value,
+    content:  r.querySelector('textarea')?.value || '',
+    image:    r.querySelector('.ni-img')?.value || '',
+  }));
+}
+
+/* 뉴스 이미지: 파일 선택 → 리사이즈 → base64 */
+function handleNewsImage(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const row = input.closest('[data-row]');
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 1000;
+      let { width, height } = img;
+      if (width > max) { height = Math.round(height * max / width); width = max; }
+      const c = document.createElement('canvas');
+      c.width = width; c.height = height;
+      c.getContext('2d').drawImage(img, 0, 0, width, height);
+      const data = c.toDataURL('image/jpeg', 0.82);
+      setNewsImage(row, data);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function setNewsImageUrl(inp) {
+  const row = inp.closest('[data-row]');
+  setNewsImage(row, inp.value.trim());
+}
+function setNewsImage(row, src) {
+  row.querySelector('.ni-img').value = src;
+  const pv = row.querySelector('.ni-img-pv');
+  const clr = row.querySelector('.ni-img-clear');
+  if (src) { pv.src = src; pv.style.display = ''; clr.style.display = ''; }
+  else { pv.style.display = 'none'; clr.style.display = 'none'; }
+}
+function clearNewsImage(btn) {
+  const row = btn.closest('[data-row]');
+  row.querySelector('.ni-file').value = '';
+  const url = row.querySelector('.ni-img-url'); if (url) url.value = '';
+  setNewsImage(row, '');
 }
 
 /* ── STANDINGS ── */
