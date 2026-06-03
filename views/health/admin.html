@@ -985,7 +985,7 @@ function mkPopularRow(p={}) {
     </div>`;
   return d;
 }
-function addPopular() { document.getElementById('popularList').appendChild(mkPopularRow()); updateCounts(); }
+function addPopular() { const l=document.getElementById('popularList'); l.insertBefore(mkPopularRow(), l.firstChild); updateCounts(); }
 function collectPopular() {
   D.popular = [...document.querySelectorAll('#popularList [data-row]')].map(r => ({
     meta:    r.querySelector('.ni-meta').value,
@@ -1035,7 +1035,7 @@ function mkNewsRow(n={}) {
     </div>`;
   return d;
 }
-function addNews() { document.getElementById('newsList').appendChild(mkNewsRow()); updateCounts(); }
+function addNews() { const l=document.getElementById('newsList'); l.insertBefore(mkNewsRow(), l.firstChild); updateCounts(); }
 function collectNews() {
   D.news = [...document.querySelectorAll('#newsList [data-row]')].map(r => ({
     category: r.querySelector('.ni-cat').value,
@@ -1179,7 +1179,7 @@ function mkTransferRow(t={}) {
     </div>`;
   return d;
 }
-function addTransfer() { document.getElementById('transfersList').appendChild(mkTransferRow()); updateCounts(); }
+function addTransfer() { const l=document.getElementById('transfersList'); l.insertBefore(mkTransferRow(), l.firstChild); updateCounts(); }
 function collectTransfers() {
   D.transfers = [...document.querySelectorAll('#transfersList [data-row]')].map(r => {
     const ins = r.querySelectorAll('input');
@@ -1217,7 +1217,7 @@ function mkTransferNewsRow(n={}) {
     </div>`;
   return d;
 }
-function addTransferNews() { document.getElementById('transferNewsList').appendChild(mkTransferNewsRow()); updateCounts(); }
+function addTransferNews() { const l=document.getElementById('transferNewsList'); l.insertBefore(mkTransferNewsRow(), l.firstChild); updateCounts(); }
 function collectTransferNews() {
   D.transferNews = [...document.querySelectorAll('#transferNewsList [data-row]')].map(r => {
     const inputs   = r.querySelectorAll('input');
