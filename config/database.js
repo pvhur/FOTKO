@@ -69,6 +69,14 @@ async function initDB() {
     `;
     await _sql`CREATE INDEX IF NOT EXISTS idx_follows_user ON follows(user_id)`;
 
+    // 좋아요(하트) 집계 — 항목 키별 누적 카운트
+    await _sql`
+      CREATE TABLE IF NOT EXISTS likes (
+        key   TEXT PRIMARY KEY,
+        count INTEGER NOT NULL DEFAULT 0
+      )
+    `;
+
     // 카카오 알림 연결 정보
     await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_id TEXT`;
     await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_notify BOOLEAN NOT NULL DEFAULT false`;

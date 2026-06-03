@@ -659,6 +659,40 @@ async function notifyNewTransfers(prevTransfers, nextTransfers) {
 }
 
 /* ══════════════════════════════════════════════════════
+   좋아요(하트) API — 항목 키별 누적 카운트
+═══════════════════════════════════════════════════════ */
+
+// 전체 좋아요 맵 조회
+app.get('/api/likes', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT key, count FROM likes');
+    const map = {};
+    for (const r of rows) map[r.key] = r.count;
+    res.set('Cache-Control', 'no-store');
+    res.json(map);
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+// 좋아요 증감 (+1 / -1)
+app.post('/api/likes/:key', async (req, res) => {
+  const key = String(req.params.key).slice(0, 300);
+  const delta = req.body.delta === -1 ? -1 : 1;
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO likes (key, count) VALUES ($1, GREATEST($2,0))
+       ON CONFLICT (key) DO UPDATE SET count = GREATEST(likes.count + $2, 0)
+       RETURNING count`,
+      [key, delta]
+    );
+    res.json({ ok: true, count: rows[0]?.count ?? 0 });
+  } catch (e) {
+    res.status(500).json({ error: '서버 오류' });
+  }
+});
+
+/* ══════════════════════════════════════════════════════
    헬스체크 (호스팅 플랫폼용)
 ═══════════════════════════════════════════════════════ */
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));

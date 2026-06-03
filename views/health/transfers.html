@@ -511,10 +511,13 @@ function renderStats(data) {
   document.getElementById('statNews').textContent    = news.length;
 }
 
+function heart(key) { return window.Likes ? Likes.heartHTML(key) : ''; }
+
 async function load() {
   initParticles();
   const r = await fetch('/api/data');
   _data = await r.json();
+  if (window.Likes) await Likes.load();
   renderStats(_data);
   renderFilterBar();
   renderBoard();
@@ -728,7 +731,10 @@ function renderTransferNews() {
         <div class="news-desc">${n.desc || ''}</div>
         <div class="news-footer">
           <span class="badge badge-result">이적</span>
-          <span>${n.time || ''}</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            ${heart('tn:'+(n.title||''))}
+            <span>${n.time || ''}</span>
+          </div>
         </div>
       </div>
     </article>`).join('');
@@ -875,6 +881,9 @@ function renderBoard() {
             <div class="detail-body-label">세부사항</div>
             ${t.detail}
           </div>` : ''}
+          <div style="margin-top:14px;display:flex;justify-content:flex-end;">
+            ${heart('tr:'+(t.player||'')+'|'+(t.from||'')+'|'+(t.to||''))}
+          </div>
         </div>
       </div>`;
   }).join('');

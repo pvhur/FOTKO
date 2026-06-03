@@ -142,6 +142,14 @@ ul { list-style:none; }
 .news-desc { font-size:12px; color:var(--ink-subtle); line-height:1.5; margin-bottom:14px; }
 .news-footer { display:flex; align-items:center; justify-content:space-between; padding-top:12px; border-top:1px solid var(--hairline); font-size:12px; color:var(--ink-tertiary); }
 
+/* ── Heart (좋아요) ── */
+.heart-btn { display:inline-flex; align-items:center; gap:5px; background:none; border:none; cursor:pointer; padding:2px 4px; color:var(--ink-tertiary); font-size:12px; font-weight:500; transition:color .14s, transform .12s; }
+.heart-btn svg { width:15px; height:15px; }
+.heart-btn:hover { color:var(--danger); }
+.heart-btn.on { color:var(--danger); }
+.heart-btn:active { transform:scale(1.2); }
+.heart-cnt { line-height:1; }
+
 /* ── Footer ── */
 .footer { background:var(--canvas); border-top:1px solid var(--hairline); padding:64px 0 24px; }
 .footer-grid { display:grid; grid-template-columns:240px repeat(4,1fr); gap:48px; margin-bottom:48px; }

@@ -46,3 +46,47 @@ async function kickoffLogout() {
   try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) {}
   window.location.replace('/kickoff');
 }
+
+/* ── 좋아요(하트) 공통 모듈 ── */
+window.Likes = (function () {
+  let map = {};
+  let liked = new Set();
+  try { liked = new Set(JSON.parse(localStorage.getItem('kickoffLiked') || '[]')); } catch (_) {}
+
+  async function load() {
+    try { map = await fetch('/api/likes', { credentials: 'include' }).then(r => r.json()); }
+    catch (_) { map = {}; }
+  }
+  function count(key) { return map[key] || 0; }
+  function isLiked(key) { return liked.has(key); }
+  function heartHTML(key) {
+    const on = liked.has(key);
+    const safe = key.replace(/"/g, '&quot;');
+    return `<button class="heart-btn${on ? ' on' : ''}" data-key="${safe}" onclick="event.stopPropagation();Likes.toggle('${key.replace(/'/g, "\\'")}',this)" aria-label="좋아요">
+      <svg viewBox="0 0 20 20" fill="${on ? 'currentColor' : 'none'}"><path d="M10 17s-6.5-4.3-6.5-9A3.5 3.5 0 0 1 10 5.5 3.5 3.5 0 0 1 16.5 8c0 4.7-6.5 9-6.5 9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      <span class="heart-cnt">${count(key)}</span>
+    </button>`;
+  }
+  async function toggle(key, btn) {
+    const on = liked.has(key);
+    const delta = on ? -1 : 1;
+    if (on) liked.delete(key); else liked.add(key);
+    try { localStorage.setItem('kickoffLiked', JSON.stringify([...liked])); } catch (_) {}
+    map[key] = Math.max((map[key] || 0) + delta, 0);
+    if (btn) {
+      btn.classList.toggle('on', !on);
+      const c = btn.querySelector('.heart-cnt'); if (c) c.textContent = map[key];
+      const svg = btn.querySelector('svg'); if (svg) svg.setAttribute('fill', !on ? 'currentColor' : 'none');
+    }
+    try {
+      const r = await fetch('/api/likes/' + encodeURIComponent(key), {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ delta }),
+      });
+      const d = await r.json();
+      if (typeof d.count === 'number') { map[key] = d.count; if (btn) { const c = btn.querySelector('.heart-cnt'); if (c) c.textContent = d.count; } }
+    } catch (_) {}
+  }
+  return { load, count, isLiked, heartHTML, toggle };
+})();
