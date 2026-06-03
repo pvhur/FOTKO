@@ -458,8 +458,6 @@ function closeArticleDirect() {
   document.body.style.overflow = '';
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArticleDirect(); });
-
-loadData();
 </script>
 <!-- 기사 전문 모달 -->
 <div class="article-overlay" id="articleOverlay" onclick="closeArticle(event)">
@@ -481,5 +479,6 @@ loadData();
 </div>
 
 <script src="/js/kickoff-nav.js"></script>
+<script>loadData();</script>
 </body>
 </html>
