@@ -353,6 +353,9 @@
       </div>
       <div id="boardBody"></div>
     </div>
+    <div style="text-align:center;margin-top:20px;">
+      <button id="boardMore" class="btn btn-secondary btn-sm" style="display:none;" onclick="_boardShowAll=true;renderBoard();">더 보기</button>
+    </div>
 
     <!-- 관련 뉴스 -->
     <div id="transferNewsSection" style="display:none; margin-top:56px;">
@@ -473,6 +476,8 @@ const ARROW = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path
 let activeFilter = 'all';
 let _data = null;
 let _openIdx = null;
+let _boardShowAll = false;
+const BOARD_LIMIT = 8;
 
 const NEWS_SVG = `<svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="5" y="5" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M9 10h10M9 14h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
 
@@ -769,19 +774,25 @@ function renderFilterBar() {
 function setFilter(key) {
   activeFilter = key;
   _openIdx = null;
+  _boardShowAll = false;
   renderFilterBar();
   renderBoard();
 }
 
 function renderBoard() {
   const all = _data.transfers || [];
-  const list = activeFilter === 'all' ? all : all.filter(t => t.badge === activeFilter);
+  const full = activeFilter === 'all' ? all : all.filter(t => t.badge === activeFilter);
 
-  if (!list.length) {
+  const moreBtn = document.getElementById('boardMore');
+  if (!full.length) {
     document.getElementById('boardBody').innerHTML =
       `<div class="empty-state"><h3>해당 조건의 이적 정보가 없습니다.</h3><p>다른 필터를 선택해보세요.</p></div>`;
+    if (moreBtn) moreBtn.style.display = 'none';
     return;
   }
+
+  const list = _boardShowAll ? full : full.slice(0, BOARD_LIMIT);
+  if (moreBtn) moreBtn.style.display = (full.length > BOARD_LIMIT && !_boardShowAll) ? 'inline-flex' : 'none';
 
   document.getElementById('boardBody').innerHTML = list.map((t, i) => {
     const [bc, bt] = BADGE_MAP[t.badge] || ['badge-result', t.badge];
