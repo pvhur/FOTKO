@@ -726,6 +726,8 @@ app.get('/kickoff/analysis',  (req, res) => sendHTML(res, V('health/analysis.htm
 app.get('/kickoff/login',     (req, res) => sendHTML(res, V('health/login.html')));
 app.get('/kickoff/signup',    (req, res) => sendHTML(res, V('health/signup.html')));
 app.get('/kickoff/admin',     (req, res) => sendHTML(res, V('health/admin.html')));
+app.get('/kickoff/privacy',   (req, res) => sendHTML(res, V('health/privacy.html')));
+app.get('/kickoff/terms',     (req, res) => sendHTML(res, V('health/terms.html')));
 
 if (process.env.VERCEL !== '1') {
   app.listen(PORT, () =>
