@@ -521,9 +521,21 @@
         <div class="panel">
           <div class="panel-head">
             <h3>기사 목록</h3>
-            <button class="btn btn-secondary btn-sm" onclick="addNews()">+ 기사 추가</button>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="collectNewsFromGNews()">⟳ GNews 수집</button>
+              <button class="btn btn-secondary btn-sm" onclick="addNews()">+ 기사 추가</button>
+            </div>
           </div>
           <div class="panel-body">
+            <div id="gnewsBox" style="display:none;margin-bottom:16px;border:1px solid var(--hairline);border-radius:var(--r-md);padding:12px;background:var(--surface-2);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <input id="gnewsQuery" class="inp inp-sm" value="축구" style="width:160px;" placeholder="검색어" />
+                <button class="btn btn-secondary btn-sm" onclick="collectNewsFromGNews()">검색</button>
+                <span style="font-size:11px;color:var(--ink-tertiary);">가져온 뒤 <b>사실만 직접 재작성</b>하세요 (요약 그대로 게시 금지)</span>
+                <button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="document.getElementById('gnewsBox').style.display='none'">닫기</button>
+              </div>
+              <div id="gnewsResults" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto;"></div>
+            </div>
             <div class="edit-list" id="newsList"></div>
           </div>
         </div>
@@ -1034,6 +1046,45 @@ function mkNewsRow(n={}) {
   return d;
 }
 function addNews() { const l=document.getElementById('newsList'); l.insertBefore(mkNewsRow(), l.firstChild); updateCounts(); }
+
+/* ── GNews 수집 ── */
+let _gnewsItems = [];
+async function collectNewsFromGNews() {
+  const box = document.getElementById('gnewsBox');
+  const res = document.getElementById('gnewsResults');
+  box.style.display = 'block';
+  const q = (document.getElementById('gnewsQuery').value || '축구').trim();
+  res.innerHTML = '<div style="font-size:12px;color:var(--ink-tertiary);padding:8px;">불러오는 중…</div>';
+  try {
+    const r = await fetch('/api/collect/news?q=' + encodeURIComponent(q), { credentials:'include' });
+    const d = await r.json();
+    if (!r.ok) { res.innerHTML = `<div style="font-size:12px;color:#f87171;padding:8px;">${d.error||'오류'}</div>`; return; }
+    _gnewsItems = d.items || [];
+    if (!_gnewsItems.length) { res.innerHTML = '<div style="font-size:12px;color:var(--ink-tertiary);padding:8px;">결과가 없습니다.</div>'; return; }
+    res.innerHTML = _gnewsItems.map((it, i) => `
+      <div style="display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--hairline);border-radius:var(--r-sm);background:var(--surface-1);">
+        ${it.image ? `<img src="${it.image}" style="width:54px;height:32px;object-fit:cover;border-radius:4px;flex-shrink:0;" onerror="this.style.display='none'" />` : ''}
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ESC(it.title)}</div>
+          <div style="font-size:11px;color:var(--ink-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ESC(it.source)} · ${ESC((it.publishedAt||'').slice(0,10))}</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="importGNews(${i})">가져오기</button>
+      </div>`).join('');
+  } catch { res.innerHTML = '<div style="font-size:12px;color:#f87171;padding:8px;">네트워크 오류</div>'; }
+}
+function importGNews(i) {
+  const it = _gnewsItems[i]; if (!it) return;
+  const meta = it.source ? `${it.source}` : '';
+  const row = mkNewsRow({
+    category: meta, badge: 'new', time: (it.publishedAt||'').slice(0,10),
+    title: it.title, desc: it.desc, image: it.image || '',
+    content: `(아래는 GNews에서 가져온 원문 요약입니다. 저작권 보호를 위해 사실만 남기고 직접 재작성하세요.)\n\n${it.desc||''}\n\n출처: ${it.url||''}`,
+  });
+  const l = document.getElementById('newsList');
+  l.insertBefore(row, l.firstChild);
+  updateCounts();
+  row.scrollIntoView({ behavior:'smooth', block:'center' });
+}
 function collectNews() {
   D.news = [...document.querySelectorAll('#newsList [data-row]')].map(r => ({
     category: r.querySelector('.ni-cat').value,

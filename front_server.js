@@ -665,6 +665,37 @@ async function notifyNewTransfers(prevTransfers, nextTransfers) {
 }
 
 /* ══════════════════════════════════════════════════════
+   뉴스 수집 (GNews) — 어드민 가져오기용 (editor 이상)
+═══════════════════════════════════════════════════════ */
+app.get('/api/collect/news', requireEditor, async (req, res) => {
+  const key = process.env.GNEWS_API_KEY;
+  if (!key) return res.status(400).json({ error: 'GNEWS_API_KEY 미설정' });
+
+  const q    = (req.query.q || '축구').toString().slice(0, 80);
+  const lang = (req.query.lang || 'ko').toString().slice(0, 5);
+  const url  = `https://gnews.io/api/v4/search?q=${encodeURIComponent(q)}`
+             + `&lang=${encodeURIComponent(lang)}&max=10&sortby=publishedAt&apikey=${key}`;
+  try {
+    const r = await fetch(url);
+    const d = await r.json();
+    if (!r.ok) return res.status(502).json({ error: d.errors?.[0] || 'GNews 오류' });
+    const items = (d.articles || []).map(a => ({
+      title:       a.title || '',
+      desc:        a.description || '',
+      url:         a.url || '',
+      image:       a.image || '',
+      source:      a.source?.name || '',
+      publishedAt: a.publishedAt || '',
+    }));
+    res.set('Cache-Control', 'no-store');
+    res.json({ items });
+  } catch (e) {
+    console.error('[collect/news]', e.message);
+    res.status(500).json({ error: '수집 중 오류' });
+  }
+});
+
+/* ══════════════════════════════════════════════════════
    좋아요(하트) API — 항목 키별 누적 카운트
 ═══════════════════════════════════════════════════════ */
 
