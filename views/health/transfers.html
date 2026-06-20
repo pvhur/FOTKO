@@ -163,6 +163,23 @@
     @media(max-width:1024px) { .transfer-news-grid { grid-template-columns:repeat(2,1fr); } }
     @media(max-width:768px)  { .transfer-news-grid { grid-template-columns:1fr; } }
 
+    /* ── 이적사가 (타임라인) ── */
+    .saga-btn { display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:var(--r-pill); border:1px solid rgba(239,68,68,.3); background:rgba(239,68,68,.1); color:#fb7171; font-size:13px; font-weight:600; cursor:pointer; transition:background .14s; }
+    .saga-btn:hover { background:rgba(239,68,68,.18); }
+    .saga-modal { background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--r-xl); width:100%; max-width:680px; max-height:88vh; overflow-y:auto; position:relative; }
+    .saga-head { position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:18px 24px; background:var(--surface-1); border-bottom:1px solid var(--hairline); }
+    .saga-head h2 { font-size:20px; font-weight:700; letter-spacing:-.5px; background:linear-gradient(135deg,#fff,#fca5a5,#ef4444); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .saga-head .sub { font-size:12px; color:var(--ink-tertiary); margin-top:2px; }
+    .saga-body { padding:24px 28px 36px; }
+    .saga-day { position:relative; padding-left:26px; padding-bottom:22px; border-left:2px solid var(--hairline); margin-left:6px; }
+    .saga-day:last-child { padding-bottom:0; }
+    .saga-node { position:absolute; left:-8px; top:3px; width:13px; height:13px; border-radius:50%; background:#ef4444; border:3px solid var(--surface-1); box-shadow:0 0 10px rgba(239,68,68,.6); }
+    .saga-day-label { font-size:14px; font-weight:700; color:#fb923c; margin-bottom:12px; }
+    .saga-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--hairline); border-radius:var(--r-md); background:var(--surface-2); margin-bottom:8px; }
+    .saga-item .si-player { font-size:13px; font-weight:600; color:var(--ink); }
+    .saga-item .si-move { font-size:12px; color:var(--ink-subtle); display:flex; align-items:center; gap:5px; margin-top:2px; }
+    .saga-item .si-fee { font-size:13px; font-weight:600; color:var(--warn); margin-left:auto; white-space:nowrap; }
+
     /* ── 기사 모달 ── */
     .article-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s; }
     .article-overlay.open { opacity:1; pointer-events:all; }
@@ -345,6 +362,14 @@
     <!-- 메인 -->
     <div class="tf-main">
 
+    <!-- 이적사가 진입 -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+      <button class="saga-btn" onclick="openSaga()">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M10 2v3h3M5.5 8h5M5.5 10.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        이적사가 — 시간순 보기
+      </button>
+    </div>
+
     <!-- 팀 필터 배너 -->
     <div id="teamFilterBanner" style="display:none;align-items:center;gap:10px;padding:10px 16px;margin-bottom:12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:var(--r-md);">
       <span style="font-size:13px;color:var(--ink);"><strong id="teamFilterName"></strong> 이적 소식만 보는 중</span>
@@ -406,6 +431,22 @@
     </div>
   </div>
 </footer>
+
+<!-- 이적사가 (타임라인) 모달 -->
+<div class="article-overlay" id="sagaOverlay" onclick="closeSaga(event)">
+  <div class="saga-modal" id="sagaModal">
+    <div class="saga-head">
+      <div>
+        <h2>이적사가</h2>
+        <div class="sub">시간순으로 정리한 이적 연대기</div>
+      </div>
+      <div class="article-modal-close" onclick="closeSagaDirect()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="saga-body" id="sagaBody"></div>
+  </div>
+</div>
 
 <!-- 기사 전문 모달 -->
 <div class="article-overlay" id="articleOverlay" onclick="closeArticle(event)">
@@ -513,6 +554,54 @@ function renderStats(data) {
 }
 
 function heart(key) { return window.Likes ? Likes.heartHTML(key) : ''; }
+
+/* ── 이적사가 (시간순 타임라인) ── */
+function openSaga() {
+  const all = (_data && _data.transfers) || [];
+  const groups = {};
+  all.forEach(t => {
+    const d = (t.date && t.date.trim()) ? t.date.trim() : '날짜 미상';
+    (groups[d] = groups[d] || []).push(t);
+  });
+  // 날짜 키 정렬 (최신 위, '날짜 미상'은 맨 아래)
+  const keys = Object.keys(groups).sort((a, b) => {
+    if (a === '날짜 미상') return 1;
+    if (b === '날짜 미상') return -1;
+    return b.localeCompare(a);
+  });
+
+  const body = document.getElementById('sagaBody');
+  if (!keys.length) {
+    body.innerHTML = `<div style="color:var(--ink-tertiary);font-size:14px;text-align:center;padding:24px 0;">아직 이적 소식이 없습니다.</div>`;
+  } else {
+    body.innerHTML = keys.map(day => `
+      <div class="saga-day">
+        <span class="saga-node"></span>
+        <div class="saga-day-label">${day}</div>
+        ${groups[day].map(t => {
+          const [bc, bt] = BADGE_MAP[t.badge] || ['badge-result', t.badge];
+          return `
+          <div class="saga-item">
+            <span class="badge ${bc}" style="font-size:10px;">${bt}</span>
+            <div>
+              <div class="si-player">${t.player || ''}</div>
+              <div class="si-move"><span>${t.from || ''}</span>${ARROW}<span style="color:var(--ink-muted);">${t.to || ''}</span></div>
+            </div>
+            <span class="si-fee">${t.fee || ''}</span>
+          </div>`;
+        }).join('')}
+      </div>`).join('');
+  }
+
+  document.getElementById('sagaOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('sagaModal').scrollTop = 0;
+}
+function closeSaga(e) { if (e && e.target !== document.getElementById('sagaOverlay')) return; closeSagaDirect(); }
+function closeSagaDirect() {
+  document.getElementById('sagaOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
 
 async function load() {
   initParticles();
@@ -778,7 +867,7 @@ function closeArticleDirect() {
   document.getElementById('articleOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArticleDirect(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeArticleDirect(); closeSagaDirect(); } });
 
 function renderFilterBar() {
   document.getElementById('filterBar').innerHTML =
