@@ -320,10 +320,6 @@
         <div class="burn-stat-label">공식 발표</div>
       </div>
       <div class="burn-stat">
-        <div class="burn-stat-val white" id="statRumor">—</div>
-        <div class="burn-stat-label">루머</div>
-      </div>
-      <div class="burn-stat">
         <div class="burn-stat-val green" id="statDone">—</div>
         <div class="burn-stat-label">완료</div>
       </div>
@@ -518,7 +514,6 @@ const BADGE_MAP = {
 const FILTERS = [
   { key:'all',      label:'전체' },
   { key:'official', label:'공식 발표' },
-  { key:'rumor',    label:'루머' },
   { key:'done',     label:'완료' },
 ];
 const ARROW = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -548,7 +543,6 @@ function renderStats(data) {
   const news = (data.news || []).filter(n => n.badge === 'transfer');
   document.getElementById('statTotal').textContent   = transfers.length;
   document.getElementById('statOfficial').textContent = transfers.filter(t => t.badge === 'official').length;
-  document.getElementById('statRumor').textContent   = transfers.filter(t => t.badge === 'rumor').length;
   document.getElementById('statDone').textContent    = transfers.filter(t => t.badge === 'done').length;
   document.getElementById('statNews').textContent    = news.length;
 }
@@ -557,7 +551,7 @@ function heart(key) { return window.Likes ? Likes.heartHTML(key) : ''; }
 
 /* ── 이적사가 (시간순 타임라인) ── */
 function openSaga() {
-  const all = (_data && _data.transfers) || [];
+  const all = ((_data && _data.transfers) || []).filter(t => t.badge !== 'rumor');
   const groups = {};
   all.forEach(t => {
     const d = (t.date && t.date.trim()) ? t.date.trim() : '날짜 미상';
@@ -900,7 +894,8 @@ function clearTeamFilter() {
 }
 
 function renderBoard() {
-  const all = _data.transfers || [];
+  // 루머는 숨김 — 공식 발표/완료만 노출
+  const all = (_data.transfers || []).filter(t => t.badge !== 'rumor');
   let full = activeFilter === 'all' ? all : all.filter(t => t.badge === activeFilter);
   if (_teamFilter) {
     const key = _teamFilter.toLowerCase();

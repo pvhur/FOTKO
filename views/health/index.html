@@ -348,8 +348,7 @@ function renderNews(items) {
 
 
 const TR_FILTERS = [
-  { k:'all', l:'전체' }, { k:'official', l:'공식 발표' },
-  { k:'rumor', l:'루머' }, { k:'done', l:'완료' },
+  { k:'all', l:'전체' }, { k:'official', l:'공식 발표' }, { k:'done', l:'완료' },
 ];
 let _trFilter = 'all';
 const TR_LIMIT = 6;
@@ -357,7 +356,8 @@ const TR_LIMIT = 6;
 function setTrFilter(k) { _trFilter = k; window._trShowAll = false; renderTransfers(); }
 
 function renderTransfers() {
-  const all = window._fd?.transfers || [];
+  // 루머는 숨김 — 공식 발표/완료만 노출
+  const all = (window._fd?.transfers || []).filter(t => t.badge !== 'rumor');
 
   // 상태 필터 칩
   const fb = document.getElementById('transferFilter');
