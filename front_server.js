@@ -730,6 +730,108 @@ app.post('/api/likes/:key', async (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════
+   댓글 API — 게시물(item_key)별
+═══════════════════════════════════════════════════════ */
+
+// 댓글 목록
+app.get('/api/comments', async (req, res) => {
+  const key = String(req.query.key || '').slice(0, 300);
+  if (!key) return res.json([]);
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, username, body, created_at FROM comments WHERE item_key=$1 ORDER BY created_at',
+      [key]
+    );
+    res.set('Cache-Control', 'no-store');
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: '서버 오류' }); }
+});
+
+// 댓글 작성 (로그인 필요)
+app.post('/api/comments', requireAuth, async (req, res) => {
+  const key  = String(req.body.key || '').slice(0, 300);
+  const body = sanitize(req.body.body || '').slice(0, 500);
+  if (!key || !body) return res.status(400).json({ error: '내용을 입력하세요.' });
+  try {
+    const id = Date.now().toString() + Math.random().toString(36).slice(2, 6);
+    await pool.query(
+      `INSERT INTO comments (id, item_key, user_id, username, body, created_at)
+       VALUES ($1,$2,$3,$4,$5,$6)`,
+      [id, key, req.session.userId, req.session.username || 'user', body, new Date().toISOString()]
+    );
+    res.json({ ok: true, id });
+  } catch (e) { res.status(500).json({ error: '서버 오류' }); }
+});
+
+// 댓글 삭제 (본인 또는 admin)
+app.delete('/api/comments/:id', requireAuth, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT user_id FROM comments WHERE id=$1', [req.params.id]);
+    if (!rows[0]) return res.status(404).json({ error: '없음' });
+    if (rows[0].user_id !== req.session.userId && req.session.role !== 'admin')
+      return res.status(403).json({ error: '권한 없음' });
+    await pool.query('DELETE FROM comments WHERE id=$1', [req.params.id]);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: '서버 오류' }); }
+});
+
+/* ══════════════════════════════════════════════════════
+   커뮤니티 게시판 API
+═══════════════════════════════════════════════════════ */
+
+// 글 목록 (최신순)
+app.get('/api/posts', async (req, res) => {
+  const cat = req.query.category ? sanitize(req.query.category) : null;
+  try {
+    const { rows } = cat
+      ? await pool.query('SELECT id, category, title, username, views, created_at FROM posts WHERE category=$1 ORDER BY created_at DESC LIMIT 100', [cat])
+      : await pool.query('SELECT id, category, title, username, views, created_at FROM posts ORDER BY created_at DESC LIMIT 100');
+    res.set('Cache-Control', 'no-store');
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: '서버 오류' }); }
+});
+
+// 글 단건 (조회수 +1)
+app.get('/api/posts/:id', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM posts WHERE id=$1', [req.params.id]);
+    if (!rows[0]) return res.status(404).json({ error: '없음' });
+    pool.query('UPDATE posts SET views=views+1 WHERE id=$1', [req.params.id]).catch(()=>{});
+    res.set('Cache-Control', 'no-store');
+    res.json(rows[0]);
+  } catch (e) { res.status(500).json({ error: '서버 오류' }); }
+});
+
+// 글 작성 (로그인 필요)
+app.post('/api/posts', requireAuth, async (req, res) => {
+  const category = sanitize(req.body.category || 'free').slice(0, 20) || 'free';
+  const title    = sanitize(req.body.title || '').slice(0, 120);
+  const body     = (req.body.body || '').toString().slice(0, 5000);
+  if (!title || !body.trim()) return res.status(400).json({ error: '제목과 내용을 입력하세요.' });
+  try {
+    const id = Date.now().toString() + Math.random().toString(36).slice(2, 6);
+    await pool.query(
+      `INSERT INTO posts (id, category, title, body, user_id, username, created_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      [id, category, title, body, req.session.userId, req.session.username || 'user', new Date().toISOString()]
+    );
+    res.json({ ok: true, id });
+  } catch (e) { res.status(500).json({ error: '서버 오류' }); }
+});
+
+// 글 삭제 (본인 또는 admin)
+app.delete('/api/posts/:id', requireAuth, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT user_id FROM posts WHERE id=$1', [req.params.id]);
+    if (!rows[0]) return res.status(404).json({ error: '없음' });
+    if (rows[0].user_id !== req.session.userId && req.session.role !== 'admin')
+      return res.status(403).json({ error: '권한 없음' });
+    await pool.query('DELETE FROM posts WHERE id=$1', [req.params.id]);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: '서버 오류' }); }
+});
+
+/* ══════════════════════════════════════════════════════
    헬스체크 (호스팅 플랫폼용)
 ═══════════════════════════════════════════════════════ */
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
@@ -759,6 +861,9 @@ app.get('/kickoff/signup',    (req, res) => sendHTML(res, V('health/signup.html'
 app.get('/kickoff/admin',     (req, res) => sendHTML(res, V('health/admin.html')));
 app.get('/kickoff/privacy',   (req, res) => sendHTML(res, V('health/privacy.html')));
 app.get('/kickoff/terms',     (req, res) => sendHTML(res, V('health/terms.html')));
+app.get('/kickoff/community',       (req, res) => sendHTML(res, V('health/community.html')));
+app.get('/kickoff/community/write', (req, res) => sendHTML(res, V('health/community-write.html')));
+app.get('/kickoff/community/:id',   (req, res) => sendHTML(res, V('health/community-post.html')));
 
 if (process.env.VERCEL !== '1') {
   app.listen(PORT, () =>

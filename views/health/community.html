@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>커뮤니티 — Kickoff</title>
+  <meta name="description" content="Kickoff 커뮤니티 — 축구 팬들이 자유롭게 이야기를 나누는 게시판." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/kickoff.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5886476101959679" crossorigin="anonymous"></script>
+  <style>
+    .cm-wrap { max-width:900px; margin:0 auto; padding:calc(56px + 40px) 32px 80px; }
+    .cm-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; }
+    .cm-cats { display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap; }
+    .post-row { display:grid; grid-template-columns:64px 1fr 100px 70px; gap:10px; align-items:center; padding:14px 16px; border-bottom:1px solid var(--hairline); cursor:pointer; transition:background .12s; }
+    .post-row:hover { background:var(--surface-2); }
+    .post-cat { font-size:11px; font-weight:600; color:var(--primary-hover); }
+    .post-title { font-size:14px; font-weight:500; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .post-author { font-size:12px; color:var(--ink-subtle); text-align:right; }
+    .post-meta { font-size:11px; color:var(--ink-tertiary); text-align:right; }
+    .cm-empty { padding:56px 0; text-align:center; color:var(--ink-tertiary); }
+    @media(max-width:768px){ .cm-wrap{ padding:calc(56px+24px) 16px 56px; } .post-row{ grid-template-columns:1fr 64px; } .post-cat,.post-meta{ display:none; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="/kickoff" class="nav-logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".4"/>
+      </svg>
+      Kickoff
+    </a>
+    <ul class="nav-links">
+      <li><a href="/kickoff">홈</a></li>
+      <li><a href="/kickoff/transfers">이적 시장 🔥</a></li>
+      <li><a href="/kickoff/community" class="active">커뮤니티</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="/kickoff/login" class="btn btn-secondary btn-sm" id="nav-login-btn">로그인</a>
+      <a href="#" class="btn btn-primary btn-sm">구독하기</a>
+    </div>
+  </div>
+</nav>
+
+<main class="cm-wrap">
+  <div class="cm-head">
+    <div>
+      <div class="eyebrow-label">커뮤니티</div>
+      <h1 class="t-display-md">팬들의 이야기</h1>
+    </div>
+    <a href="/kickoff/community/write" class="btn btn-primary btn-sm">✎ 글쓰기</a>
+  </div>
+
+  <div class="cm-cats" id="cmCats"></div>
+
+  <div class="panel">
+    <div id="postList"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-bottom" style="border-top:none;">
+      <p>© 2026 Kickoff. All rights reserved.</p>
+      <div class="footer-links"><a href="/kickoff/privacy">개인정보처리방침</a><a href="/kickoff/terms">이용약관</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const CATS = [
+  { k:'all',  l:'전체' },
+  { k:'free', l:'자유게시판' },
+  { k:'cheer',l:'응원톡' },
+  { k:'talk', l:'이적 토론' },
+];
+let _cat = 'all';
+
+function fmt(iso) {
+  if (!iso) return '';
+  const d = new Date(iso); const now = new Date();
+  const diff = (now - d) / 1000;
+  if (diff < 3600) return Math.floor(diff/60) + '분 전';
+  if (diff < 86400) return Math.floor(diff/3600) + '시간 전';
+  return `${d.getMonth()+1}.${d.getDate()}`;
+}
+const CAT_LABEL = { free:'자유', cheer:'응원', talk:'토론' };
+
+function renderCats() {
+  document.getElementById('cmCats').innerHTML = CATS.map(c =>
+    `<div class="chip${c.k===_cat?' active':''}" onclick="setCat('${c.k}')">${c.l}</div>`).join('');
+}
+function setCat(k) { _cat = k; renderCats(); loadPosts(); }
+
+async function loadPosts() {
+  const list = document.getElementById('postList');
+  list.innerHTML = '<div class="cm-empty">불러오는 중…</div>';
+  try {
+    const url = _cat === 'all' ? '/api/posts' : '/api/posts?category=' + _cat;
+    const rows = await fetch(url).then(r => r.json());
+    if (!rows.length) { list.innerHTML = '<div class="cm-empty">아직 글이 없습니다. 첫 글을 남겨보세요!</div>'; return; }
+    list.innerHTML = rows.map(p => `
+      <div class="post-row" onclick="location.href='/kickoff/community/${p.id}'">
+        <span class="post-cat">${CAT_LABEL[p.category]||'자유'}</span>
+        <span class="post-title">${esc(p.title)}</span>
+        <span class="post-author">${esc(p.username)}</span>
+        <span class="post-meta">${fmt(p.created_at)} · 조회 ${p.views||0}</span>
+      </div>`).join('');
+  } catch { list.innerHTML = '<div class="cm-empty">불러오기 실패</div>'; }
+}
+function esc(s){ return (s||'').replace(/[<>&"]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+
+renderCats(); loadPosts();
+</script>
+<script src="/js/kickoff-nav.js"></script>
+</body>
+</html>

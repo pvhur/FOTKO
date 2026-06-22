@@ -77,6 +77,34 @@ async function initDB() {
       )
     `;
 
+    // 댓글 — 게시물 키별 (item_key = 뉴스/이적 등 하트와 동일 키 체계)
+    await _sql`
+      CREATE TABLE IF NOT EXISTS comments (
+        id         TEXT PRIMARY KEY,
+        item_key   TEXT NOT NULL,
+        user_id    TEXT,
+        username   TEXT NOT NULL,
+        body       TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      )
+    `;
+    await _sql`CREATE INDEX IF NOT EXISTS idx_comments_item ON comments(item_key)`;
+
+    // 커뮤니티 게시판 글
+    await _sql`
+      CREATE TABLE IF NOT EXISTS posts (
+        id         TEXT PRIMARY KEY,
+        category   TEXT NOT NULL DEFAULT 'free',
+        title      TEXT NOT NULL,
+        body       TEXT NOT NULL,
+        user_id    TEXT,
+        username   TEXT NOT NULL,
+        views      INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+      )
+    `;
+    await _sql`CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at)`;
+
     // 카카오 알림 연결 정보
     await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_id TEXT`;
     await _sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS kakao_notify BOOLEAN NOT NULL DEFAULT false`;

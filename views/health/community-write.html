@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>글쓰기 — Kickoff 커뮤니티</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/kickoff.css" />
+  <style>
+    .cm-wrap { max-width:760px; margin:0 auto; padding:calc(56px + 40px) 32px 80px; }
+    .w-field { margin-bottom:16px; }
+    .w-field label { display:block; font-size:12px; font-weight:600; color:var(--ink-subtle); margin-bottom:6px; text-transform:uppercase; letter-spacing:.3px; }
+    .w-input, .w-area, .w-select { width:100%; background:var(--surface-2); border:1px solid var(--hairline); border-radius:var(--r-md); padding:11px 14px; color:var(--ink); font-size:15px; font-family:inherit; outline:none; transition:border-color .14s, box-shadow .14s; }
+    .w-input:focus, .w-area:focus, .w-select:focus { border-color:var(--primary-focus); box-shadow:0 0 0 2px rgba(34,197,94,.18); }
+    .w-area { min-height:280px; resize:vertical; line-height:1.7; }
+    .w-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+    .w-err { font-size:13px; color:#f87171; min-height:18px; }
+    @media(max-width:768px){ .cm-wrap{ padding:calc(56px+24px) 16px 56px; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="/kickoff" class="nav-logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L17.32 6V14L10 18L2.68 14V6L10 2Z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6L14 8.5V13.5L10 16L6 13.5V8.5L10 6Z" fill="currentColor" opacity=".4"/>
+      </svg>
+      Kickoff
+    </a>
+    <ul class="nav-links">
+      <li><a href="/kickoff">홈</a></li>
+      <li><a href="/kickoff/transfers">이적 시장 🔥</a></li>
+      <li><a href="/kickoff/community" class="active">커뮤니티</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="/kickoff/login" class="btn btn-secondary btn-sm" id="nav-login-btn">로그인</a>
+      <a href="#" class="btn btn-primary btn-sm">구독하기</a>
+    </div>
+  </div>
+</nav>
+
+<main class="cm-wrap">
+  <div class="eyebrow-label">커뮤니티</div>
+  <h1 class="t-display-md" style="margin-bottom:24px;">글쓰기</h1>
+
+  <div id="needLogin" style="display:none;" class="panel">
+    <div style="padding:40px;text-align:center;">
+      <p style="color:var(--ink-subtle);margin-bottom:16px;">글을 쓰려면 로그인이 필요합니다.</p>
+      <a href="/kickoff/login?redirect=/kickoff/community/write" class="btn btn-primary btn-sm">로그인하기</a>
+    </div>
+  </div>
+
+  <div id="writeForm" style="display:none;">
+    <div class="w-field">
+      <label>카테고리</label>
+      <select class="w-select" id="w-cat">
+        <option value="free">자유게시판</option>
+        <option value="cheer">응원톡</option>
+        <option value="talk">이적 토론</option>
+      </select>
+    </div>
+    <div class="w-field">
+      <label>제목</label>
+      <input class="w-input" id="w-title" maxlength="120" placeholder="제목을 입력하세요" />
+    </div>
+    <div class="w-field">
+      <label>내용</label>
+      <textarea class="w-area" id="w-body" maxlength="5000" placeholder="내용을 입력하세요. 다른 매체 기사를 그대로 붙여넣지 말고, 본인의 의견으로 작성해 주세요."></textarea>
+    </div>
+    <div class="w-err" id="w-err"></div>
+    <div class="w-actions">
+      <a href="/kickoff/community" class="btn btn-secondary btn-sm">취소</a>
+      <button class="btn btn-primary btn-sm" id="w-submit" onclick="submitPost()">등록</button>
+    </div>
+  </div>
+</main>
+
+<script>
+(async function () {
+  try {
+    const r = await fetch('/api/auth/me', { credentials:'include' });
+    if (r.ok) document.getElementById('writeForm').style.display = 'block';
+    else document.getElementById('needLogin').style.display = 'block';
+  } catch { document.getElementById('needLogin').style.display = 'block'; }
+})();
+
+async function submitPost() {
+  const category = document.getElementById('w-cat').value;
+  const title    = document.getElementById('w-title').value.trim();
+  const body     = document.getElementById('w-body').value.trim();
+  const err      = document.getElementById('w-err');
+  if (!title || !body) { err.textContent = '제목과 내용을 입력하세요.'; return; }
+  err.textContent = '';
+  const btn = document.getElementById('w-submit');
+  btn.textContent = '등록 중…'; btn.disabled = true;
+  try {
+    const r = await fetch('/api/posts', {
+      method:'POST', credentials:'include',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ category, title, body }),
+    });
+    const d = await r.json();
+    if (!r.ok) { err.textContent = d.error || '등록 실패'; return; }
+    location.href = '/kickoff/community/' + d.id;
+  } catch { err.textContent = '서버 오류'; }
+  finally { btn.textContent = '등록'; btn.disabled = false; }
+}
+</script>
+<script src="/js/kickoff-nav.js"></script>
+</body>
+</html>
