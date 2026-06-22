@@ -176,7 +176,7 @@
     <div class="section-header-row">
       <div>
         <div class="eyebrow-label">인기뉴스</div>
-        <h2 class="t-display-md">지금 뜨는 인기 뉴스</h2>
+        <h2 class="t-display-md">인기 & 최신 소식</h2>
       </div>
     </div>
     <div class="news-grid" id="popularGrid"></div>
@@ -275,26 +275,45 @@ async function loadData() {
   const d   = await res.json();
   window._fd = d;
   if (window.Likes) await Likes.load();
-  renderPopularNews(d.popular);
+  renderPopularNews();
   renderNews(d.news);
   renderTransfers();
 }
 function heart(key) { return window.Likes ? Likes.heartHTML(key) : ''; }
 
-function renderPopularNews(items) {
-  items = items || [];
-  if (!items.length) { document.getElementById('popularGrid').innerHTML =
-    '<div style="grid-column:1/-1;color:var(--ink-tertiary);font-size:14px;padding:24px 0;">등록된 인기 뉴스가 없습니다.</div>'; return; }
-  document.getElementById('popularGrid').innerHTML = items.map((p, i) => `
-    <article class="news-card" style="cursor:pointer;" onclick="openPopular(${i})">
+function renderPopularNews() {
+  // 인기 + 축구뉴스 + 이적뉴스를 한 피드로 통합
+  const feed = [];
+  (window._fd?.popular || []).forEach(p => feed.push({
+    title:p.title, meta:p.meta, image:p.image, content:p.content,
+    category:'인기', tag:'인기', tagCls:'badge-new', key:'pp:'+(p.title||''),
+  }));
+  (window._fd?.news || []).forEach(n => feed.push({
+    title:n.title, meta:n.time, desc:n.desc, image:n.image, content:n.content,
+    category:n.category||'축구', tag:'축구', tagCls:'badge-result', key:'nw:'+(n.title||''),
+  }));
+  (window._fd?.transferNews || []).forEach(n => feed.push({
+    title:n.title, meta:n.time, desc:n.desc, image:n.image, content:n.content,
+    category:n.category||'이적', tag:'이적', tagCls:'badge-warn', key:'tn:'+(n.title||''),
+  }));
+  window._feed = feed;
+
+  const grid = document.getElementById('popularGrid');
+  if (!feed.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;color:var(--ink-tertiary);font-size:14px;padding:24px 0;">등록된 뉴스가 없습니다.</div>';
+    return;
+  }
+  grid.innerHTML = feed.map((p, i) => `
+    <article class="news-card" style="cursor:pointer;" onclick="openFeed(${i})">
       <div class="news-thumb">${p.image ? `<img src="${p.image}" alt="" style="width:100%;height:100%;object-fit:cover;" />` : `<div class="news-thumb-inner">${NEWS_SVG}</div>`}</div>
       <div class="news-body">
-        <div class="news-category">인기</div>
+        <div class="news-category">${p.category}</div>
         <div class="news-title">${p.title || ''}</div>
+        ${p.desc ? `<div class="news-desc">${p.desc}</div>` : ''}
         <div class="news-footer">
-          <span class="badge badge-new">HOT</span>
+          <span class="badge ${p.tagCls}">${p.tag}</span>
           <div style="display:flex;align-items:center;gap:10px;">
-            ${heart('pp:'+(p.title||''))}
+            ${heart(p.key)}
             <span>${p.meta || ''}</span>
           </div>
         </div>
@@ -302,15 +321,15 @@ function renderPopularNews(items) {
     </article>`).join('');
 }
 
-function openPopular(i) {
-  const p = (window._fd?.popular || [])[i];
+function openFeed(i) {
+  const p = (window._feed || [])[i];
   if (!p) return;
   const mImg = document.getElementById('modalImage');
   if (p.image) { mImg.src = p.image; mImg.style.display = 'block'; } else { mImg.style.display = 'none'; }
-  document.getElementById('modalCategory').textContent = '인기뉴스';
+  document.getElementById('modalCategory').textContent = p.category || '';
   document.getElementById('modalTitle').textContent    = p.title || '';
   document.getElementById('modalMeta').innerHTML       = `<span>${p.meta || ''}</span>`;
-  document.getElementById('modalDesc').textContent     = '';
+  document.getElementById('modalDesc').textContent     = p.desc || '';
   const contentEl = document.getElementById('modalContent');
   if (p.content && p.content.trim()) {
     contentEl.textContent = p.content;
